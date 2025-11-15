@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
     private final UserService userService;
 
@@ -26,5 +26,11 @@ public class UserController {
     @GetMapping("/getall")
     public List<User> getAll() {
         return userService.getAllUser();
+    }
+
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable Long id){
+        userService.removeUserById(id);
+        return "User id " + id + " deleted successfully";
     }
 }
