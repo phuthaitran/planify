@@ -1,0 +1,96 @@
+/* Reset */
+* {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Container */
+.signin-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #74b9ff, #a29bfe);
+}
+
+/* Box */
+.signin-box {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Title */
+.signin-box h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #2d3436;
+}
+
+/* Labels & Inputs */
+.signin-box label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  margin-top: 12px;
+  color: #2d3436;
+}
+
+.signin-box input {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.signin-box input:focus {
+  border-color: #0984e3;
+}
+
+/* Button */
+.signin-box button {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #0984e3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.signin-box button:hover {
+  background-color: #0769b1;
+}
+
+/* Error */
+.error {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* Sign-up text */
+.signup-text {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.signup-text a {
+  color: #0984e3;
+  text-decoration: none;
+}
+
+.signup-text a:hover {
+  text-decoration: underline;
+}

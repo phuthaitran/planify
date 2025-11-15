@@ -1,0 +1,18 @@
+# Node
+frontend/node_modules
+frontend/dist
+frontend/build
+frontend/.env
+
+# Java/Maven
+backend/target
+backend/.mvn
+**/!.mvn/wrapper/maven-wrapper.jar
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
