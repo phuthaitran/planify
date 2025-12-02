@@ -3,7 +3,7 @@ package com.planify.backend.mapper;
 import com.planify.backend.dto.request.UserCreationRequest;
 import com.planify.backend.dto.request.UserUpdateRequest;
 import com.planify.backend.dto.response.UserResponse;
-import com.planify.backend.entity.User;
+import com.planify.backend.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

@@ -1,4 +1,4 @@
-package com.planify.backend.Service;
+package com.planify.backend.service;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -7,10 +7,10 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.planify.backend.dto.request.AuthenticationRequest;
 import com.planify.backend.dto.request.IntrospectRequest;
+import com.planify.backend.dto.request.LogoutRequest;
 import com.planify.backend.dto.response.AuthenticationResponse;
 import com.planify.backend.dto.response.IntrospectResponse;
-import com.planify.backend.dto.response.UserResponse;
-import com.planify.backend.entity.User;
+import com.planify.backend.model.User;
 import com.planify.backend.exception.AppException;
 import com.planify.backend.exception.ErrorCode;
 import com.planify.backend.repository.UserRepository;
@@ -20,17 +20,15 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -83,6 +81,7 @@ public class AuthenticationService {
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
+                .jwtID(UUID.randomUUID().toString()) //Tự gen ra 1 ID duy nhất cho 1 token
                 .claim("scope", buildScope(user))
                 .build();
 
@@ -118,6 +117,19 @@ public class AuthenticationService {
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
 
+        verifyToken(token);
+
+        return IntrospectResponse.builder()
+                .valid(true)
+                .build();
+    }
+
+    //Hàm logout
+    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+        var signToken = verifyToken(request.getToken());
+    }
+
+    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
         //Verify Token bằng Class JWSVerifier
         JWSVerifier jwsVerifier = new MACVerifier(SIGNER_KEY.getBytes());
 
@@ -128,8 +140,11 @@ public class AuthenticationService {
 
         var verified = signedJWT.verify(jwsVerifier);
 
-        return IntrospectResponse.builder()
-                .valid(verified && expityTime.after(new Date()))
-                .build();
+        //Nếu chữ ký không đúng hoặc hết hạn
+        if(!(verified && expityTime.after(new Date()))){
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        return signedJWT;
     }
 }

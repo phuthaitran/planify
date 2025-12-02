@@ -1,9 +1,9 @@
 package com.planify.backend.configuration;
 
-import com.planify.backend.entity.User;
-import com.planify.backend.entity.Role;
-import com.planify.backend.entity.Role.RoleName;
-import com.planify.backend.entity.UserRole;
+import com.planify.backend.model.User;
+import com.planify.backend.model.Role;
+import com.planify.backend.model.Role.RoleName;
+import com.planify.backend.model.UserRole;
 import com.planify.backend.repository.RoleRepository;
 import com.planify.backend.repository.UserRepository;
 import com.planify.backend.repository.UserRoleRepository;
@@ -11,14 +11,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
-
-import java.util.HashSet;
 
 @Configuration
 @RequiredArgsConstructor

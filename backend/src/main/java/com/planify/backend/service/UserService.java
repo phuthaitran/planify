@@ -1,11 +1,11 @@
-package com.planify.backend.Service;
+package com.planify.backend.service;
 
 import com.planify.backend.dto.request.UserCreationRequest;
 import com.planify.backend.dto.request.UserUpdateRequest;
 import com.planify.backend.dto.response.UserResponse;
-import com.planify.backend.entity.Role;
-import com.planify.backend.entity.User;
-import com.planify.backend.entity.UserRole;
+import com.planify.backend.model.Role;
+import com.planify.backend.model.User;
+import com.planify.backend.model.UserRole;
 import com.planify.backend.exception.AppException;
 import com.planify.backend.exception.ErrorCode;
 import com.planify.backend.mapper.UserMapper;
@@ -22,7 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.planify.backend.entity.Role.RoleName;
+import com.planify.backend.model.Role.RoleName;
 
 
 import java.util.HashSet;

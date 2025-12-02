@@ -1,6 +1,6 @@
 package com.planify.backend.repository;
 
-import com.planify.backend.entity.User;
+import com.planify.backend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

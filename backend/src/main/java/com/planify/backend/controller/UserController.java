@@ -1,6 +1,6 @@
 package com.planify.backend.controller;
 
-import com.planify.backend.Service.UserService;
+import com.planify.backend.service.UserService;
 import com.planify.backend.dto.request.ApiResponse;
 import com.planify.backend.dto.request.UserCreationRequest;
 import com.planify.backend.dto.request.UserUpdateRequest;
