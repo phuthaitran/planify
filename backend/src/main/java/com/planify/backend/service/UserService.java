@@ -2,17 +2,19 @@ package com.planify.backend.service;
 
 import com.planify.backend.model.User;
 import com.planify.backend.repository.UserRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PACKAGE, makeFinal = true)
 @Service
 public class UserService {
-    private final UserRepository userRepository;
-
-    @Autowired
-    public UserService(UserRepository userRepository) {this.userRepository = userRepository;}
+    UserRepository userRepository;
 
     public void saveUser(User user){
         userRepository.save(user);
@@ -22,7 +24,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public void removeUserById(Long userId){
+    public void removeUserById(Integer userId){
         userRepository.deleteById(userId);
     }
 }

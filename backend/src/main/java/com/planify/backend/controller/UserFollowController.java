@@ -20,26 +20,26 @@ public class UserFollowController {
     }
 
     @PostMapping("{id}/follow/{targetId}")
-    public ResponseEntity<@NonNull Void> follow(@PathVariable Long id, @PathVariable Long targetId) {
+    public ResponseEntity<@NonNull Void> follow(@PathVariable Integer id, @PathVariable Integer targetId) {
         followService.follow(id, targetId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("{id}/unfollow/{targetId}")
-    public ResponseEntity<@NonNull Void> unfollow(@PathVariable Long id, @PathVariable Long targetId) {
+    public ResponseEntity<@NonNull Void> unfollow(@PathVariable Integer id, @PathVariable Integer targetId) {
         followService.unfollow(id, targetId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("{id}/followers")
-    public ResponseEntity<@NonNull List<UserDto>> getFollowers(@PathVariable Long id) {
+    public ResponseEntity<@NonNull List<UserDto>> getFollowers(@PathVariable Integer id) {
         List<User> followers = followService.getFollowers(id);
         List<UserDto> dtos = followers.stream().map(UserDto::from).collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("{id}/followings")
-    public ResponseEntity<@NonNull List<UserDto>> getFollowing(@PathVariable Long id) {
+    public ResponseEntity<@NonNull List<UserDto>> getFollowing(@PathVariable Integer id) {
         List<User> following = followService.getFollowing(id);
         List<UserDto> dtos = following.stream().map(UserDto::from).collect(Collectors.toList());
         return ResponseEntity.ok(dtos);

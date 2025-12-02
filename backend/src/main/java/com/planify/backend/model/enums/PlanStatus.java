@@ -1,4 +1,4 @@
-package com.planify.backend.model;
+package com.planify.backend.model.enums;
 
 public enum PlanStatus {
     INCOMPLETE,

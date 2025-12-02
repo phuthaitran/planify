@@ -1,23 +1,30 @@
 package com.planify.backend.model;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name="tbl_notification")
+@Table(name="notification")
 public class Notification {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private Long id;
+    Integer id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name="user_id")
-    private User recipient;
+    @JoinColumn(name="user_id", nullable = false)
+    User recipient;
 
     @Column(name="message_text")
-    private String messageText;
+    String messageText;
 
     @Column(name="time", nullable = false)
-    private LocalDateTime time;
+    LocalDateTime time;
 }
