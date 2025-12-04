@@ -22,9 +22,10 @@ public class Notification {
     @JoinColumn(name="user_id", nullable = false)
     User recipient;
 
+    @Column(nullable = false, columnDefinition = "ENUM('task_deadline', 'task_fork', 'follower', 'daily_reminder')")
+    String type;
     @Column(name="message_text")
     String messageText;
-
     @Column(name="time", nullable = false)
     LocalDateTime time;
 }
