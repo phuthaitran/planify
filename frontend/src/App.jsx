@@ -1,15 +1,24 @@
-import React from "react";
-// Import the main page component
-import ProfilePage from "./pages/ProfilePage";
+import { useState } from 'react'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from './pages/Home.jsx';
+import MainLayout from './layout/MainLayout.jsx';
+import Profile from "./pages/Profile.jsx";
 
-export default function App() {
-  /*
-    This is the root component of your React application.
-    Everything your app displays will start from here.
 
-    <ProfilePage /> is the main screen that your app shows.
-    You can later switch this to use React Router
-    if you want to have multiple pages.
-  */
-  return <ProfilePage />;
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+
+
+          {/* Add more pages here */}
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
+
+export default App;
+
