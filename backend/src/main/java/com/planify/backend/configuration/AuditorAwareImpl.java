@@ -1,7 +1,7 @@
 package com.planify.backend.configuration;
 
 
-import com.planify.backend.entity.User;
+import com.planify.backend.model.User;
 import com.planify.backend.repository.UserRepository;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;

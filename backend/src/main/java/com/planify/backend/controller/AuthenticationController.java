@@ -1,10 +1,8 @@
 package com.planify.backend.controller;
 
 import com.nimbusds.jose.JOSEException;
-import com.planify.backend.Service.AuthenticationService;
-import com.planify.backend.dto.request.ApiResponse;
-import com.planify.backend.dto.request.AuthenticationRequest;
-import com.planify.backend.dto.request.IntrospectRequest;
+import com.planify.backend.dto.request.*;
+import com.planify.backend.service.AuthenticationService;
 import com.planify.backend.dto.response.AuthenticationResponse;
 import com.planify.backend.dto.response.IntrospectResponse;
 import lombok.AccessLevel;
@@ -37,6 +35,20 @@ public class AuthenticationController {
     ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
         return ApiResponse.<IntrospectResponse>builder()
                 .result(authenticationService.introspect(request))
+                .build();
+    }
+
+    @PostMapping("/logout")
+    ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException , JOSEException{
+        authenticationService.logout(request);
+        return ApiResponse.<Void>builder()
+                .build();
+    }
+
+    @PostMapping("/refresh")
+    ApiResponse<AuthenticationResponse> authenticate(@RequestBody RefreshRequest request) throws ParseException, JOSEException {
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(authenticationService.refreshToken(request))
                 .build();
     }
 }

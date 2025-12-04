@@ -1,4 +1,4 @@
-package com.planify.backend.entity;
+package com.planify.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;

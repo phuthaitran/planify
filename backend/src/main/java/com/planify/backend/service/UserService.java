@@ -1,11 +1,11 @@
-package com.planify.backend.Service;
+package com.planify.backend.service;
 
 import com.planify.backend.dto.request.UserCreationRequest;
 import com.planify.backend.dto.request.UserUpdateRequest;
 import com.planify.backend.dto.response.UserResponse;
-import com.planify.backend.entity.Role;
-import com.planify.backend.entity.User;
-import com.planify.backend.entity.UserRole;
+import com.planify.backend.model.Role;
+import com.planify.backend.model.User;
+import com.planify.backend.model.UserRole;
 import com.planify.backend.exception.AppException;
 import com.planify.backend.exception.ErrorCode;
 import com.planify.backend.mapper.UserMapper;
@@ -21,7 +21,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.planify.backend.entity.Role.RoleName;
+import org.springframework.transaction.annotation.Transactional;
+import com.planify.backend.model.Role.RoleName;
 
 
 import java.util.HashSet;
@@ -112,18 +113,42 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         userMapper.updateUser(user , request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        
+        // Chỉ update password nếu có trong request
+        if(request.getPassword() != null && !request.getPassword().isEmpty()){
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
 
         //Khi update User → updated_by = ID user đang đăng nhập
-        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        user.setUpdated_by(Integer.parseInt(currentUser));
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        user.setUpdated_by(currentUser.getId());
 
         return buildUserResponse(userRepository.save(user));
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @Transactional
     public void deleteUser(Integer id){
+        // Kiểm tra user có tồn tại không
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        
+        // Xóa các foreign key references trước khi xóa user
+        // Set created_by = NULL cho các user được tạo bởi user này
+        userRepository.clearCreatedByReferences(id);
+        
+        // Set updated_by = NULL cho các user được update bởi user này
+        userRepository.clearUpdatedByReferences(id);
+        
+        // Xóa các UserRole liên quan (có thể đã có cascade, nhưng để chắc chắn)
+        userRoleRepository.deleteAll(user.getUserRoles());
+        
+        // Cuối cùng mới xóa user
         userRepository.deleteById(id);
+        
+        log.info("User with id {} has been deleted", id);
     }
 
     public UserResponse getMyInfo(){

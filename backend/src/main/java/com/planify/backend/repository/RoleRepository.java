@@ -1,7 +1,7 @@
 package com.planify.backend.repository;
 
-import com.planify.backend.entity.Role;
-import com.planify.backend.entity.Role.RoleName;
+import com.planify.backend.model.Role;
+import com.planify.backend.model.Role.RoleName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
