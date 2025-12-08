@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./login_signup.css";
-import Eye from "../assets/icons/Eye.svg";
-import EyeOff from "../assets/icons/Eye_off.svg";
+import Eye from "./assets/icons/Eye.svg";
+import EyeOff from "./assets/icons/Eye_off.svg";
 
 const LoginSignup = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -220,3 +220,4 @@ const LoginSignup = () => {
 };
 
 export default LoginSignup;
+
