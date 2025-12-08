@@ -17,8 +17,8 @@ body {
 /* Main container */
 .container {
   position: relative;
-  width: 800px;       /* fixed width */
-  height: 500px;      /* fixed height */
+  width: 800px;
+  height: 500px;
   display: flex;
   overflow: hidden;
   border-radius: 20px;
@@ -26,7 +26,7 @@ body {
   background-color: #fff;
 }
 
-/* Form containers */
+/* Form containers - normal smooth sliding */
 .form-container {
   position: absolute;
   width: 50%;
@@ -36,7 +36,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  transition: all 0.6s ease;
+  transition: transform 0.7s ease-in-out, opacity 0.4s ease-in-out;
   background-color: white;
   z-index: 2;
 }
@@ -75,13 +75,15 @@ body {
 /* Positioning for login/signup */
 .login-container {
   left: 0;
+  transform: translateX(0);
 }
 
 .signup-container {
   right: 0;
+  transform: translateX(0);
 }
 
-/* Cover */
+/* Cover - normal smooth slide */
 .cover {
   position: absolute;
   left: 50%;
@@ -92,7 +94,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 0.6s ease;
+  transition: left 0.7s ease-in-out;  /* Changed to normal smooth easing */
   z-index: 1;
   border-radius: 0 20px 20px 0;
   overflow: hidden;
@@ -105,20 +107,35 @@ body {
   padding: 20px;
 }
 
-/* Active class for sliding effect */
+/* Active state - normal slide */
 .container.active .cover {
   left: 0;
   border-radius: 20px 0 0 20px;
 }
 
-.container.active .login-container {
-  pointer-events: none;
-  opacity: 0;
+/* Form visibility & normal slide animation */
+.container .login-container {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
 }
 
-.container:not(.active) .signup-container {
-  pointer-events: none;
+.container .signup-container {
   opacity: 0;
+  transform: translateX(100%);
+  pointer-events: none;
+}
+
+.container.active .login-container {
+  opacity: 0;
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+
+.container.active .signup-container {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
 }
 
 /* Checkbox styling */
@@ -144,4 +161,35 @@ p {
 
 span {
   color: #000;
+}
+
+/* Password wrapper & eye icon */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding: 12px 40px 12px 12px;
+  box-sizing: border-box;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.eye-icon:hover {
+  opacity: 1;
 }
