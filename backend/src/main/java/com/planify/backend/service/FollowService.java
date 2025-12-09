@@ -25,15 +25,15 @@ public class FollowService {
     @Transactional
     public void follow(Integer followerId, Integer followeeId) {
         if (followerId.equals(followeeId)) {
-            throw new IllegalArgumentException("Cannot follow yourself");
+            throw new IllegalArgumentException("Cannot follow yourself!");
         }
         if (followRepository.existsByFollowerIdAndFollowingId(followerId, followeeId)) {
             return;
         }
         User follower = userRepository.findById(followerId)
-                .orElseThrow(() -> new EntityNotFoundException("Follower not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Follower not found!"));
         User followee = userRepository.findById(followeeId)
-                .orElseThrow(() -> new EntityNotFoundException("Followee not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Followee not found!"));
 
         Follow follow = new Follow();
         follow.setFollower(follower);

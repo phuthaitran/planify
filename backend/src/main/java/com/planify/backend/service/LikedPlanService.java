@@ -44,10 +44,10 @@ public class LikedPlanService {
     }
 
     public List<Plan> getLikedPlans(Integer userId) {
-        return likedPlanRepository.findPlansByUserId(userId);
+        return likedPlanRepository.findPlanByUserId(userId);
     }
 
     public List<User> getLikers(Integer planId) {
-        return likedPlanRepository.findUsersByPlanId(planId);
+        return likedPlanRepository.findUserByPlanId(planId);
     }
 }

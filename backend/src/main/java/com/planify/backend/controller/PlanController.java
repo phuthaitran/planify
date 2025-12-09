@@ -48,14 +48,25 @@ public class PlanController {
 
     }
 
-    @GetMapping("/{planId}")
+    @GetMapping("/plan/{planId}")
     ResponseEntity<ApiResponse<PlanResponse>> getPlanById(@PathVariable("planId") Integer planId) {
-        Plan plan = planService.getPlan(planId);
+        Plan plan = planService.getPlanById(planId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<PlanResponse>builder()
                         .code(HttpStatus.OK.value())
                         .result(planMapper.toResponse(plan))
+                        .build());
+    }
+
+    @GetMapping("/user/{userId}")
+    ResponseEntity<ApiResponse<List<PlanResponse>>> getPlanFromUser(@PathVariable Integer userId) {
+        List<Plan> plans = planService.getPlanByUser(userId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<List<PlanResponse>>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(planMapper.toResponseList(plans))
                         .build());
     }
 

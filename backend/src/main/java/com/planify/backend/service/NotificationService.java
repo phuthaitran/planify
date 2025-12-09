@@ -55,6 +55,10 @@ public class NotificationService {
     }
 
     public List<Notification> getNotificationsByUserId(Integer userId) {
-        return notificationRepository.getNotificationsByRecipientId(userId);
+        return notificationRepository.getNotificationByRecipientId(userId);
+    }
+
+    public void deleteNotificationById(Integer notificationId) {
+        notificationRepository.deleteById(notificationId);
     }
 }

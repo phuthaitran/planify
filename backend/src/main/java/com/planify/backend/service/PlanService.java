@@ -36,8 +36,12 @@ public class PlanService {
         planRepository.deleteById(planId);
     }
 
-    public Plan getPlan(Integer planId) {
+    public Plan getPlanById(Integer planId) {
         return planRepository.findPlanById(planId);
+    }
+
+    public List<Plan> getPlanByUser(Integer userId) {
+        return planRepository.findPlanByUserId(userId);
     }
 
     public List<Plan> getAllPlans() {

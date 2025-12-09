@@ -31,7 +31,7 @@ public class FollowController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.<String>builder()
                         .code(HttpStatus.CREATED.value())
-                        .result("User " + id + " followed " + targetId)
+                        .result("User " + id + " followed" + " user " + targetId)
                         .build());
     }
 
@@ -42,7 +42,7 @@ public class FollowController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .body(ApiResponse.<String>builder()
                         .code(HttpStatus.NO_CONTENT.value())
-                        .result("User " + id + " followed " + targetId)
+                        .result("User " + id + " unfollowed " + " user " + targetId)
                         .build());
     }
 
