@@ -11,6 +11,7 @@ import com.planify.backend.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -22,30 +23,34 @@ public class ForkedPlanService {
     PlanRepository planRepository;
     PlanMapper planMapper;
     PlanService planService;
+    JwtUserContext jwtUserContext;
 
-    public void forkPlan(Integer userId, Integer planId) {
-        User adopter =  userRepository.findById(userId)
+    public Plan forkPlan(Integer planId) {
+        Integer currentUserId = jwtUserContext.getCurrentUserId();
+        User currentUser =  userRepository.findById(currentUserId)
                 .orElseThrow(() -> new RuntimeException("User not found!"));
 
         Plan originalPlan =  planRepository.findById(planId)
                 .orElseThrow(() -> new RuntimeException("Plan not found!"));
 
-        if (originalPlan.getOwner().getId().equals(adopter.getId())) {
+        if (originalPlan.getOwner().getId().equals(currentUser.getId())) {
             throw new IllegalArgumentException("You cannot fork your plan!");
         }
 
         PlanRequest adoptedPlanRequest = planMapper.toRequest(originalPlan);
-        adoptedPlanRequest.setOwnerId(adopter.getId());
         Plan adoptedPlan = planService.addPlan(adoptedPlanRequest);
 
         ForkedPlan forkedPlan = new ForkedPlan();
         forkedPlan.setOriginalPlan(originalPlan);
-        forkedPlan.setAdoptedUser(adopter);
+        forkedPlan.setAdoptedUser(currentUser);
         forkedPlan.setAdoptedPlan(adoptedPlan);
         forkedPlanRepository.save(forkedPlan);
+        return adoptedPlan;
     }
 
-    public void deleteForkedPlan(Integer userId, Integer planId) {
+    // This deletes the forked_plan entries, not unforking
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    public void deleteForkedPlanRecord(Integer userId, Integer planId) {
         forkedPlanRepository.deleteByAdoptedUserIdAndAdoptedPlanId(userId, planId);
     }
 }

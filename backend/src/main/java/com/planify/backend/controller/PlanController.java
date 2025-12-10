@@ -20,12 +20,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PACKAGE, makeFinal = true)
 @RestController
-@RequestMapping("/plans")
+@RequestMapping
 public class PlanController {
     PlanService planService;
     PlanMapper planMapper;
 
-    @PostMapping
+    @PostMapping("/plans")
     ResponseEntity<ApiResponse<PlanResponse>> addPlan(@RequestBody PlanRequest request) {
         Plan plan = planService.addPlan(request);
 
@@ -36,19 +36,18 @@ public class PlanController {
                         .build());
     }
 
-    @DeleteMapping("/{planId}")
+    @DeleteMapping("/plans/{planId}")
     ResponseEntity<ApiResponse<Void>> deletePlan(@PathVariable Integer planId) {
-        planService.removePlanById(planId);
+        planService.deletePlanById(planId);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<Void>builder()
-                        .code(HttpStatus.NO_CONTENT.value())
-                        .message("Plan id " + planId + "removed")
+                        .code(HttpStatus.OK.value())
+                        .message("Plan removed successfully")
                         .build());
-
     }
 
-    @GetMapping("/plan/{planId}")
+    @GetMapping("/plans/{planId}")
     ResponseEntity<ApiResponse<PlanResponse>> getPlanById(@PathVariable("planId") Integer planId) {
         Plan plan = planService.getPlanById(planId);
 
@@ -59,7 +58,7 @@ public class PlanController {
                         .build());
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/users/{userId}/plans")
     ResponseEntity<ApiResponse<List<PlanResponse>>> getPlanFromUser(@PathVariable Integer userId) {
         List<Plan> plans = planService.getPlanByUser(userId);
 
@@ -70,7 +69,7 @@ public class PlanController {
                         .build());
     }
 
-    @GetMapping("/getall")
+    @GetMapping("/plans")
     ResponseEntity<ApiResponse<List<PlanResponse>>> getAllPlan() {
         List<Plan> plans = planService.getAllPlans();
 
@@ -78,6 +77,17 @@ public class PlanController {
                 .body(ApiResponse.<List<PlanResponse>>builder()
                         .code(HttpStatus.OK.value())
                         .result(planMapper.toResponseList(plans))
+                        .build());
+    }
+
+    @PatchMapping("/plans/{planId}")
+    ResponseEntity<ApiResponse<PlanResponse>> updatePlan(@PathVariable Integer planId, @RequestBody PlanRequest request) {
+        Plan plan = planService.updatePlan(planId, request);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<PlanResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(planMapper.toResponse(plan))
                         .build());
     }
 }

@@ -1,6 +1,7 @@
 package com.planify.backend.controller;
 
 import com.planify.backend.dto.request.ApiResponse;
+import com.planify.backend.model.Plan;
 import com.planify.backend.service.ForkedPlanService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +19,24 @@ import org.springframework.web.bind.annotation.*;
 public class ForkedPlanController {
     ForkedPlanService forkedPlanService;
 
-    @PostMapping("/{userId}/fork/{planId}")
-    ResponseEntity<ApiResponse<String>> forkPlan(@PathVariable Integer userId, @PathVariable Integer planId) {
-        forkedPlanService.forkPlan(userId, planId);
+    @PostMapping("/plans/{planId}/fork")
+    ResponseEntity<ApiResponse<Plan>> forkPlan(@PathVariable Integer planId) {
+        Plan adoptedPlan = forkedPlanService.forkPlan(planId);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<String>builder()
+                .body(ApiResponse.<Plan>builder()
                         .code(HttpStatus.CREATED.value())
-                        .result("User " + userId + " forked"+ " plan " + planId)
+                        .message("Plan forked successfully")
+                        .result(adoptedPlan)
+                        .build());
+    }
+
+    @DeleteMapping("forked_plan")
+    ResponseEntity<ApiResponse<Void>> deleteForkedPlan(@RequestParam Integer userId, @RequestParam Integer planId) {
+        forkedPlanService.deleteForkedPlanRecord(userId, planId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(ApiResponse.<Void>builder()
+                        .code(HttpStatus.NO_CONTENT.value())
                         .build());
     }
 }
