@@ -14,3 +14,49 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+npm install
+npm install react-router
+
+
+frontend
+├── node_modules
+├── public
+└── src
+├── assets
+│   └── icons
+├── components
+│   ├── common
+│   │   ├── Carousel.jsx
+│   │   ├── LikeButton.jsx
+│   │   ├── PlanCard.jsx
+│   │   ├── PlanList.jsx
+│   │   ├── ViewButton.jsx
+│   │   └── ViewMoreButton.jsx
+│   ├── explore
+│   │   ├── ExploreHeader.jsx
+│   │   └── ExploreTags.jsx
+│   └── plan
+│       ├── PlanDetail.jsx
+│       ├── PlanHeader.jsx
+│       ├── StagelItem.jsx
+│       ├── SubtaskItem.jsx
+│       └── TaskItem.jsx
+│   ├── Header.jsx
+│   └── Sidebar.jsx
+├── data
+│   ├── mockData.js
+│   ├── myPlanData.js
+│   └── planData.js
+├── layout
+└── pages
+    ├── ExplorePage.css
+    ├── ExplorePage.jsx
+    ├── Home.jsx
+    ├── login_signup.css
+    ├── LoginSignup.jsx
+    ├── MyPlanPage.jsx
+    ├── PlanDetailPage.jsx
+    ├── PlanPage.jsx
+    ├── Profile.jsx
+    └── SavedPage.jsx
