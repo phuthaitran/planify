@@ -11,11 +11,15 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -78,6 +82,31 @@ public class SubtaskController {
                 .body(ApiResponse.<TimingResponse>builder()
                         .code(HttpStatus.OK.value())
                         .result(timing)
+                        .build());
+    }
+
+    // New endpoint: todo list (incomplete subtasks ordered by days left)
+    @GetMapping("/users/{userId}/todo")
+    ResponseEntity<ApiResponse<List<SubtaskResponse>>> getTodoList(@PathVariable Integer userId) {
+        List<Subtask> subtasks = subtaskService.getTodoList(userId);
+        LocalDate today = LocalDate.now();
+
+        List<SubtaskResponse> responses = subtasks.stream().map(s -> {
+            SubtaskResponse r = subtaskMapper.toResponse(s);
+            if (s.getScheduledDate() != null) {
+                long days = ChronoUnit.DAYS.between(today, s.getScheduledDate());
+                r.setDaysLeft((int) days);
+            } else {
+                // If no scheduled date, put a large positive value to sort at end; daysLeft null for display
+                r.setDaysLeft(null);
+            }
+            return r;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<List<SubtaskResponse>>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(responses)
                         .build());
     }
 }

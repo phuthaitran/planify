@@ -112,4 +112,11 @@ public class SubtaskService {
                 .status(status)
                 .build();
     }
+
+
+
+    // New: return incomplete scheduled subtasks for todo list ordered by scheduled_date asc
+    public List<Subtask> getTodoList(Integer ownerId) {
+        return subtaskRepository.findIncompleteScheduledByOwnerOrdered(ownerId);
+    }
 }

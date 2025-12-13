@@ -15,4 +15,5 @@ public class SubtaskResponse {
     String description;
     Integer duration;
     String status;
+    Integer daysLeft;
 }

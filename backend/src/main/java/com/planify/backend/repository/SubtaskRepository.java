@@ -26,4 +26,9 @@ public interface SubtaskRepository extends JpaRepository<@NonNull Subtask, @NonN
     // Sum durations of completed subtasks for a task
     @Query("select coalesce(sum(st.duration), 0) from Subtask st where st.task_id.id = :taskId and st.status = 'completed'")
     Integer sumCompletedDurationByTaskId(@Param("taskId") @NonNull Integer taskId);
+
+
+    // New: find incomplete subtasks (not completed) for an owner that have a scheduled_date, ordered by scheduled_date asc
+    @Query("select st from Subtask st where st.task_id.stage_id.plan_id.owner.id = :ownerId and st.status <> 'completed' and st.scheduled_date is not null order by st.scheduled_date asc")
+    List<Subtask> findIncompleteScheduledByOwnerOrdered(@Param("ownerId") @NonNull Integer ownerId);
 }
