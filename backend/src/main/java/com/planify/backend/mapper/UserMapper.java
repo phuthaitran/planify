@@ -9,8 +9,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import java.util.List;
-
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
     //MapStruct sẽ tạo code để biến UserCreationRequest → User
@@ -28,8 +26,11 @@ public interface UserMapper {
     //Ignore các field không nên được update từ request
     @Mapping(target = "username", ignore = true)  // Không cho phép update username
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "created_by", ignore = true)
+    @Mapping(target = "created_date", ignore = true)
+    @Mapping(target = "updated_date", ignore = true)
     @Mapping(target = "userRoles", ignore = true)
     void updateUser(@MappingTarget User user, UserUpdateRequest request );
 
-    List<UserResponse> toUserResponseList(List<User> users);
+
 }

@@ -61,6 +61,15 @@ public class UserService {
 
         userRoleRepository.save(userRole);
 
+        //Xử lý created_by trong trường hợp tự đăng nhập sẽ lấy người tạo là chính id đó
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean noAuthenticatedUser = (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName()));
+
+        if(noAuthenticatedUser){
+            savedUser.setCreated_by(savedUser.getId());
+            savedUser = userRepository.save(savedUser); // Lưu lại lần 2 để update created_by
+        }
+
         return buildUserResponse(savedUser);
     }
 
@@ -110,6 +119,12 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
+        //Khi update User → updated_by = ID user đang đăng nhập
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        user.setUpdated_by(currentUser.getId());
+
         return buildUserResponse(userRepository.save(user));
     }
 
@@ -119,6 +134,13 @@ public class UserService {
         // Kiểm tra user có tồn tại không
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        
+        // Xóa các foreign key references trước khi xóa user
+        // Set created_by = NULL cho các user được tạo bởi user này
+        userRepository.clearCreatedByReferences(id);
+        
+        // Set updated_by = NULL cho các user được update bởi user này
+        userRepository.clearUpdatedByReferences(id);
         
         // Xóa các UserRole liên quan (có thể đã có cascade, nhưng để chắc chắn)
         userRoleRepository.deleteAll(user.getUserRoles());

@@ -12,4 +12,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     boolean existsByUsername(String username);
 
     Optional<User> findByUsername(String username);
+    
+    @Modifying
+    @Query("UPDATE User u SET u.created_by = NULL WHERE u.created_by = :userId")
+    void clearCreatedByReferences(@Param("userId") Integer userId);
+    
+    @Modifying
+    @Query("UPDATE User u SET u.updated_by = NULL WHERE u.updated_by = :userId")
+    void clearUpdatedByReferences(@Param("userId") Integer userId);
 }
