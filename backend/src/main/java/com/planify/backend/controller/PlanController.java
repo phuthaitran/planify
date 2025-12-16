@@ -74,10 +74,9 @@ public class PlanController {
     ResponseEntity<ApiResponse<List<PlanResponse>>> getAllPlan() {
         List<Plan> plans = planService.getAllPlans();
 
-        List<PlanResponse> responses = planMapper.toResponseList(plans).stream().map(r -> {
+        List<PlanResponse> responses = planMapper.toResponseList(plans).stream().peek(r -> {
             r.setExpectedTime(planService.computeExpectedTime(r.getId()));
             r.setActualTime(planService.computeActualTime(r.getId()));
-            return r;
         }).collect(Collectors.toList());
 
         return ResponseEntity.status(HttpStatus.OK)

@@ -15,6 +15,9 @@ public interface SubtaskRepository extends JpaRepository<@NonNull Subtask, @NonN
     @Query("select st from Subtask st where st.id = :subtaskId and st.task_id.id = :taskId")
     Subtask findSubtaskById(@Param("subtaskId") @NonNull Integer subtaskId, @Param("taskId") @NonNull Integer taskId);
 
+    @Query("select coalesce(sum(st.duration), 0) from Subtask st where st.task_id.id = :taskId")
+    Integer sumDurationByTaskId(@Param("taskId") @NonNull Integer taskId);
+
     // Sum durations of completed subtasks for a plan (walk through relationships task->stage->plan)
     @Query("select coalesce(sum(st.duration), 0) from Subtask st where st.task_id.stage_id.plan_id.id = :planId and st.status = 'completed'")
     Integer sumCompletedDurationByPlanId(@Param("planId") @NonNull Integer planId);

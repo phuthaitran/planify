@@ -1,13 +1,19 @@
 package com.planify.backend.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "subtask")
 public class Subtask {
@@ -17,6 +23,7 @@ public class Subtask {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
+    @JsonIgnore
     Task task_id;
 
     @Column(nullable = false, unique = true,  length = 120)
@@ -26,7 +33,7 @@ public class Subtask {
     String description;
 
     @Column(nullable = false)
-    Integer duration;
+    int duration;
 
     @Column(nullable = false, columnDefinition = "ENUM('incompleted', 'completed', 'cancelled')")
     String status;

@@ -11,6 +11,6 @@ public class SubtaskRequest {
     Integer taskId;
     String title;
     String description;
-    Integer duration;
+    int duration;
     String status;
 }

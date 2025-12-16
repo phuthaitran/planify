@@ -3,6 +3,7 @@ package com.planify.backend.repository;
 import com.planify.backend.model.Stage;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -24,4 +25,8 @@ public interface StageRepository extends JpaRepository<@NonNull Stage, @NonNull 
     // Sum durations of stages that belong to a plan (expected time)
     @Query("select coalesce(sum(s.duration), 0) from Stage s where s.plan_id.id = :planId")
     Integer sumDurationByPlanId(@Param("planId") @NonNull Integer planId);
+
+    @Modifying
+    @Query(value = "UPDATE stage SET duration = :duration WHERE id = :stageId", nativeQuery = true)
+    void updateDuration(@Param("stageId") Integer stageId, @Param("duration") Integer duration);
 }

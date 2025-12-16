@@ -1,11 +1,17 @@
 package com.planify.backend.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "task")
 public class Task {
@@ -16,11 +22,12 @@ public class Task {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stage_id")
+    @JsonIgnore
     Stage stage_id;
 
     @Column(nullable = false)
     String description;
 
     @Column(nullable = false)
-    Integer duration;
+    int duration;
 }

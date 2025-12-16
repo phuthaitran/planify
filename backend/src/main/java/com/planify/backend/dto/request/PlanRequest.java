@@ -13,6 +13,5 @@ public class PlanRequest {
     String description;
     String visibility;
     String status;
-    int duration;
     String picture;
 }

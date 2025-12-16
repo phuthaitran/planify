@@ -10,5 +10,4 @@ import lombok.experimental.FieldDefaults;
 public class TaskRequest {
     Integer stageId;
     String description;
-    Integer duration;
 }

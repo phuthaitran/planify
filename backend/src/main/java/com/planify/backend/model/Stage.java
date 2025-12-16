@@ -1,6 +1,7 @@
 package com.planify.backend.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +26,7 @@ public class Stage {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="plan_id")
+    @JsonIgnore
     Plan plan_id;
 
     @Column(nullable = false, unique = true,  length = 120)
@@ -34,7 +36,7 @@ public class Stage {
     String description;
 
     @Column(nullable = false)
-    Integer duration;
+    int duration;
 
     @CreatedDate
     LocalDateTime created_date;

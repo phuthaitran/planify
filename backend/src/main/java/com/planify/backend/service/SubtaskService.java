@@ -6,12 +6,17 @@ import com.planify.backend.exception.AppException;
 import com.planify.backend.exception.ErrorCode;
 import com.planify.backend.model.Subtask;
 import com.planify.backend.model.Task;
+import com.planify.backend.model.Stage;
+import com.planify.backend.model.Plan;
 import com.planify.backend.repository.SubtaskRepository;
 import com.planify.backend.repository.TaskRepository;
+import com.planify.backend.repository.StageRepository;
+import com.planify.backend.repository.PlanRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +28,10 @@ public class SubtaskService {
     private TaskRepository taskRepository;
     private SubtaskRepository subtaskRepository;
     private TaskService taskService;
+    private StageRepository stageRepository;
+    private PlanRepository planRepository;
 
+    @Transactional
     public Subtask addSubtask(SubtaskRequest request){
         Task task = taskRepository.findTaskById(request.getTaskId());
         if(task == null){
@@ -36,9 +44,32 @@ public class SubtaskService {
         subtask.setDuration(request.getDuration());
         subtask.setStatus(request.getStatus());
 
-        return subtaskRepository.save(subtask);
+        // Save the new subtask
+        Subtask saved = subtaskRepository.save(subtask);
+
+        // Detach all entities to prevent cascading issues
+        taskRepository.flush();
+
+        // Recompute and persist durations up the chain: Task -> Stage -> Plan
+        Integer taskDuration = subtaskRepository.sumDurationByTaskId(task.getId());
+        taskRepository.updateDuration(task.getId(), taskDuration);
+
+        Stage stage = task.getStage_id();
+        if (stage != null) {
+            Integer stageDuration = taskRepository.sumDurationByStageId(stage.getId());
+            stageRepository.updateDuration(stage.getId(), stageDuration);
+
+            Plan plan = stage.getPlan_id();
+            if (plan != null) {
+                Integer planDuration = stageRepository.sumDurationByPlanId(plan.getId());
+                planRepository.updateDuration(plan.getId(), planDuration);
+            }
+        }
+
+        return saved;
     }
 
+    @Transactional
     public void removeSubtask(Integer subtaskId, Integer taskId, Integer stageId, Integer planId) {
         // Validate that the task belongs to the given stage and plan
         Task task = taskService.getTaskByIdAndStageId(taskId, stageId, planId);
@@ -51,7 +82,27 @@ public class SubtaskService {
             throw new AppException(ErrorCode.SUBTASK_NOT_FOUND);
         }
 
+        // Delete the subtask
         subtaskRepository.delete(subtask);
+
+        // Detach all entities to prevent cascading issues
+        taskRepository.flush();
+
+        // Recompute and persist durations up the chain: Task -> Stage -> Plan
+        Integer taskDuration = subtaskRepository.sumDurationByTaskId(task.getId());
+        taskRepository.updateDuration(task.getId(), taskDuration);
+
+        Stage stage = task.getStage_id();
+        if (stage != null) {
+            Integer stageDuration = taskRepository.sumDurationByStageId(stage.getId());
+            stageRepository.updateDuration(stage.getId(), stageDuration);
+
+            Plan plan = stage.getPlan_id();
+            if (plan != null) {
+                Integer planDuration = stageRepository.sumDurationByPlanId(plan.getId());
+                planRepository.updateDuration(plan.getId(), planDuration);
+            }
+        }
     }
 
     public Subtask getSubtaskById(Integer subtaskId, Integer taskId, Integer stageId, Integer planId){
@@ -78,8 +129,7 @@ public class SubtaskService {
         List<Integer> ids = subtaskRepository.findAllSubtask(taskId);
         List<Subtask> results = new ArrayList<>();
         for (Integer id : ids) {
-            Subtask s = subtaskRepository.findById(id).orElse(null);
-            if (s != null) results.add(s);
+            subtaskRepository.findById(id).ifPresent(results::add);
         }
         return results;
     }

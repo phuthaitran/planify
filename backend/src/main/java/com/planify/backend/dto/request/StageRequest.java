@@ -11,5 +11,4 @@ public class StageRequest {
     Integer planId;
     String title;
     String description;
-    Integer duration;
 }

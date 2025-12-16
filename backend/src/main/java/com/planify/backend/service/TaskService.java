@@ -33,7 +33,8 @@ public class TaskService {
 
         Task task = new Task();
         task.setDescription(taskRequest.getDescription());
-        task.setDuration(taskRequest.getDuration());
+//        task.setDuration(taskRequest.getDuration());
+
         task.setStage_id(stage);
 
         return taskRepository.save(task);

@@ -30,7 +30,7 @@ public class PlanService {
         plan.setDescription(request.getDescription());
         plan.setVisibility(request.getVisibility());
         plan.setStatus(request.getStatus());
-        plan.setDuration(request.getDuration());
+//        plan.setDuration(request.getDuration());
         plan.setPicture(request.getPicture());
 
         plan.setOwner(userRepository.findById(request.getOwnerId())

@@ -27,7 +27,7 @@ public class StageService {
         Stage stage = new Stage();
         stage.setTitle(stageRequest.getTitle());
         stage.setDescription(stageRequest.getDescription());
-        stage.setDuration(stageRequest.getDuration());
+//        stage.setDuration(stageRequest.getDuration());
         stage.setPlan_id(planRepository.findPlanById(stageRequest.getPlanId()));
 
         return stageRepository.save(stage);
