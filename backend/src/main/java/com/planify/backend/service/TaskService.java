@@ -109,4 +109,16 @@ public class TaskService {
                 .status(status)
                 .build();
     }
+
+    // New: partial update for Task
+    public Task updateTaskPartial(Integer taskId, com.planify.backend.dto.request.TaskUpdateRequest request) {
+        Task task = taskRepository.findTaskById(taskId);
+        if (task == null) {
+            throw new AppException(ErrorCode.TASK_NOT_FOUND);
+        }
+
+        if (request.getDescription() != null) task.setDescription(request.getDescription());
+
+        return taskRepository.save(task);
+    }
 }

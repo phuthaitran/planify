@@ -75,4 +75,17 @@ public class StageService {
                 .status(status)
                 .build();
     }
+
+    // New: partial update for Stage
+    public Stage updateStagePartial(Integer stageId, com.planify.backend.dto.request.StageUpdateRequest request) {
+        Stage stage = stageRepository.findStageById(stageId);
+        if (stage == null) {
+            throw new AppException(ErrorCode.STAGE_NOT_FOUND);
+        }
+
+        if (request.getTitle() != null) stage.setTitle(request.getTitle());
+        if (request.getDescription() != null) stage.setDescription(request.getDescription());
+
+        return stageRepository.save(stage);
+    }
 }

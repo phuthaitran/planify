@@ -79,4 +79,14 @@ public class TaskController {
                         .result(timing)
                         .build());
     }
+
+    @PatchMapping("/tasks/{taskId}")
+    ResponseEntity<ApiResponse<TaskResponse>> updateTaskPartial(@PathVariable Integer taskId, @RequestBody com.planify.backend.dto.request.TaskUpdateRequest request) {
+        com.planify.backend.model.Task updated = taskService.updateTaskPartial(taskId, request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<TaskResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(taskMapper.toResponse(updated))
+                        .build());
+    }
 }

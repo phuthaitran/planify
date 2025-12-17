@@ -11,7 +11,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +50,9 @@ public class SubtaskController {
                         .message("Subtask id " + subtaskId + " removed")
                         .build());
     }
+
+
+
 
     @GetMapping("/plans/{planId}/{stageId}/{taskId}/{subtaskId}")
     ResponseEntity<ApiResponse<SubtaskResponse>> getSubtaskById(@PathVariable Integer planId, @PathVariable Integer stageId, @PathVariable Integer taskId, @PathVariable Integer subtaskId){
@@ -107,6 +109,17 @@ public class SubtaskController {
                 .body(ApiResponse.<List<SubtaskResponse>>builder()
                         .code(HttpStatus.OK.value())
                         .result(responses)
+                        .build());
+    }
+
+    // New: PATCH endpoint to partially update a subtask (propagates duration changes)
+    @PatchMapping("/subtasks/{subtaskId}")
+    ResponseEntity<ApiResponse<SubtaskResponse>> updateSubtaskPartial(@PathVariable Integer subtaskId, @RequestBody com.planify.backend.dto.request.SubtaskUpdateRequest request) {
+        com.planify.backend.model.Subtask updated = subtaskService.updateSubtaskPartial(subtaskId, request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<SubtaskResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(subtaskMapper.toResponse(updated))
                         .build());
     }
 }

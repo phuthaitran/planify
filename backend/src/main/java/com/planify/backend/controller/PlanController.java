@@ -56,16 +56,7 @@ public class PlanController {
 
     }
 
-    @PatchMapping("/plans/{planId}")
-    ResponseEntity<ApiResponse<PlanResponse>> updatePlan(@PathVariable Integer planId, @RequestBody PlanRequest request) {
-        Plan plan = planService.updatePlan(planId, request);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.<PlanResponse>builder()
-                        .code(HttpStatus.OK.value())
-                        .result(planMapper.toResponse(plan))
-                        .build());
-    }
 
 
     @GetMapping("/plans/{planId}")
@@ -107,6 +98,21 @@ public class PlanController {
                 .body(ApiResponse.<TimingResponse>builder()
                         .code(HttpStatus.OK.value())
                         .result(timing)
+                        .build());
+    }
+
+    // New: PATCH endpoint to partially update a plan
+    @PatchMapping("/plans/{planId}")
+    ResponseEntity<ApiResponse<PlanResponse>> updatePlanPartial(@PathVariable Integer planId, @RequestBody PlanUpdateRequest request) {
+        Plan updated = planService.updatePlanPartial(planId, request);
+        PlanResponse resp = planMapper.toResponse(updated);
+        resp.setExpectedTime(planService.computeExpectedTime(updated.getId()));
+        resp.setActualTime(planService.computeActualTime(updated.getId()));
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<PlanResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(resp)
                         .build());
     }
 }

@@ -83,4 +83,15 @@ public class StageController {
                         .result(timing)
                         .build());
     }
+
+    // New: PATCH endpoint to partially update a stage
+    @PatchMapping("/stages/{stageId}")
+    ResponseEntity<ApiResponse<StageResponse>> updateStagePartial(@PathVariable Integer stageId, @RequestBody com.planify.backend.dto.request.StageUpdateRequest request) {
+        com.planify.backend.model.Stage updated = stageService.updateStagePartial(stageId, request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<StageResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(stageMapper.toResponse(updated))
+                        .build());
+    }
 }

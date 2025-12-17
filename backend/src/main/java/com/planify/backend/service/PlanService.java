@@ -1,11 +1,9 @@
 package com.planify.backend.service;
 
 import com.planify.backend.dto.request.PlanRequest;
-import com.planify.backend.dto.request.PlanUpdateRequest;
 import com.planify.backend.dto.response.TimingResponse;
 import com.planify.backend.exception.AppException;
 import com.planify.backend.exception.ErrorCode;
-import com.planify.backend.mapper.PlanMapper;
 import com.planify.backend.model.Plan;
 import com.planify.backend.model.TimeStatus;
 import com.planify.backend.repository.PlanRepository;
@@ -15,9 +13,7 @@ import com.planify.backend.repository.SubtaskRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -30,7 +26,6 @@ public class PlanService {
     UserRepository userRepository;
     StageRepository stageRepository;
     SubtaskRepository subtaskRepository;
-    private final PlanMapper planMapper;
 
     public Plan addPlan(PlanRequest request) {
         Plan plan = new Plan();
@@ -46,18 +41,7 @@ public class PlanService {
         return planRepository.save(plan);
     }
 
-    public Plan updatePlan(Integer planId, PlanRequest request) {
-        Plan plan = planRepository.findById(planId).orElseThrow(() -> new RuntimeException("Plan not found"));
 
-        planMapper.updatePlan(request, plan);
-
-        if (request.getOwnerId() != null) {
-            plan.setOwner(userRepository.findById(request.getOwnerId())
-                    .orElseThrow(() -> new RuntimeException("Owner not found")));
-        }
-
-        return planRepository.save(plan);
-    }
 
     public void removePlanById(Integer planId) {
         planRepository.deleteById(planId);
@@ -100,5 +84,20 @@ public class PlanService {
                 .actualTime(actual)
                 .status(status)
                 .build();
+    }
+
+    // New: partial update for Plan
+    public Plan updatePlanPartial(Integer planId, com.planify.backend.dto.request.PlanUpdateRequest request) {
+        Plan plan = planRepository.findPlanById(planId);
+        if (plan == null) {
+            throw new AppException(ErrorCode.PLAN_NOT_FOUND);
+        }
+
+        if (request.getTitle() != null) plan.setTitle(request.getTitle());
+        if (request.getDescription() != null) plan.setDescription(request.getDescription());
+        if (request.getPicture() != null) plan.setPicture(request.getPicture());
+        if (request.getStatus() != null) plan.setStatus(request.getStatus());
+
+        return planRepository.save(plan);
     }
 }

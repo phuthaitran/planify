@@ -169,4 +169,58 @@ public class SubtaskService {
     public List<Subtask> getTodoList(Integer ownerId) {
         return subtaskRepository.findIncompleteScheduledByOwnerOrdered(ownerId);
     }
+
+    // New: partial update for Subtask. If duration is updated, propagate changes up to Task, Stage, and Plan.
+    @Transactional
+    public Subtask updateSubtaskPartial(Integer subtaskId, com.planify.backend.dto.request.SubtaskUpdateRequest request) {
+        // Find the subtask
+        Subtask subtask = subtaskRepository.findById(subtaskId).orElse(null);
+        if (subtask == null) {
+            throw new AppException(ErrorCode.SUBTASK_NOT_FOUND);
+        }
+
+        Integer oldDuration = (subtask.getDuration() == 0) ? 0 : subtask.getDuration();
+        boolean durationChanged = false;
+
+        if (request.getTitle() != null) subtask.setTitle(request.getTitle());
+        if (request.getDescription() != null) subtask.setDescription(request.getDescription());
+        if (request.getStatus() != null) subtask.setStatus(request.getStatus());
+        if (request.getDuration() != null) {
+            if (request.getDuration() < 0) {
+                throw new AppException(ErrorCode.INVALID_REQUEST);
+            }
+            if (!request.getDuration().equals(oldDuration)) {
+                subtask.setDuration(request.getDuration());
+                durationChanged = true;
+            }
+        }
+
+        Subtask saved = subtaskRepository.save(subtask);
+
+        if (durationChanged) {
+            // Recompute task duration as sum of its subtasks
+            Task task = saved.getTask_id();
+            if (task != null) {
+                Integer taskDuration = subtaskRepository.sumDurationByTaskId(task.getId());
+                taskRepository.updateDuration(task.getId(), taskDuration);
+
+                Stage stage = task.getStage_id();
+                if (stage != null) {
+                    Integer stageDuration = taskRepository.sumDurationByStageId(stage.getId());
+                    stageRepository.updateDuration(stage.getId(), stageDuration);
+
+                    Plan plan = stage.getPlan_id();
+                    if (plan != null) {
+                        Integer planDuration = stageRepository.sumDurationByPlanId(plan.getId());
+                        planRepository.updateDuration(plan.getId(), planDuration);
+                    }
+                }
+            }
+
+            // Flush changes to ensure DB state is consistent within the transaction
+            taskRepository.flush();
+        }
+
+        return saved;
+    }
 }

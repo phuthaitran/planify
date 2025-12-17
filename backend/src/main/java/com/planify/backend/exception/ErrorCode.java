@@ -13,7 +13,8 @@ public enum ErrorCode{
     PLAN_NOT_FOUND(1009, "Plan not found"),
     STAGE_NOT_FOUND(1010, "Stage not found"),
     TASK_NOT_FOUND(1011, "Task not found"),
-    SUBTASK_NOT_FOUND(1012, "Subtask not found");
+    SUBTASK_NOT_FOUND(1012, "Subtask not found"),
+    INVALID_REQUEST(1013, "Invalid request");
 
     private int code;
     private String message;
