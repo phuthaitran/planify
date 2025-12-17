@@ -22,7 +22,7 @@ const PlanList = ({ initialPlans = [], defaultType = "plan" }) => {
 
   return (
     <>
-      <style jsx>{`
+      <style jsx="true">{`
         .planlist-wrapper {
           background: white;
           border-radius: 28px;
@@ -133,7 +133,7 @@ const PlanList = ({ initialPlans = [], defaultType = "plan" }) => {
       <div className="planlist-wrapper">
         <div className="planlist-container">
           <div className="header">
-            <h1 className="title">Tất cả</h1>
+            <h1 className="title">All Plans</h1>
 
             <div className="search-box">
               <input

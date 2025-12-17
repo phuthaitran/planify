@@ -16,30 +16,34 @@ import PlanDetailPage from "./layout/PlanDetailPage.jsx";
 // (nếu còn dùng)
 import PlanPage from "./pages/PlanPage";
 
+import { PlansProvider } from "./context/planContext.jsx";
+
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Trang Login/Signup - không dùng MainLayout */}
-        <Route path="/" element={<LoginSignup />} />
+      <PlansProvider>
+        <Routes>
+          {/* Trang Login/Signup - không dùng MainLayout */}
+          <Route path="/" element={<LoginSignup />} />
 
-        {/* Các trang chính có MainLayout */}
-        <Route element={<MainLayout />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/plan" element={<MyPlanPage />} />
-          <Route path="/saved" element={<SavedPage />} />
-          <Route path="/commu" element={<ExplorePage />} />
-          <Route path="/add" element={<CreatePlan />} />
+          {/* Các trang chính có MainLayout */}
+          <Route element={<MainLayout />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/plan" element={<MyPlanPage />} />
+            <Route path="/saved" element={<SavedPage />} />
+            <Route path="/commu" element={<ExplorePage />} />
+            <Route path="/add" element={<CreatePlan />} />
 
-          {/* Detail plan */}
-          <Route path="/plans/:id" element={<PlanDetailPage />} />
+            {/* Detail plan */}
+            <Route path="/plans/:id" element={<PlanDetailPage />} />
 
-          {/* Các route khác nếu cần */}
-        </Route>
+            {/* Các route khác nếu cần */}
+          </Route>
 
-        {/* Optional: Redirect từ root về /login nếu muốn login là trang đầu tiên */}
-        {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
-      </Routes>
+          {/* Optional: Redirect từ root về /login nếu muốn login là trang đầu tiên */}
+          {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
+        </Routes>
+      </PlansProvider>
     </BrowserRouter>
   );
 }

@@ -36,7 +36,7 @@ const Carousel = ({ title, items, type, onViewMore }) => {
 
   return (
     <>
-      <style jsx>{`
+      <style jsx="true">{`
         .carousel-box {
           background: white;
           border-radius: 16px;

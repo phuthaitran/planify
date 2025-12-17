@@ -6,7 +6,7 @@ const PlanCard = ({ item }) => {
   return (
     <>
       {/* Unified Card Styles */}
-      <style jsx>{`
+      <style jsx="true">{`
         .card {
           position: relative;
           width: 240px;
@@ -61,10 +61,17 @@ const PlanCard = ({ item }) => {
       {/* Card với Link bọc phần nội dung chính */}
       <div className="card">
         <Link to={`/plans/${item.id}`} className="card-content">
-          <div className="card-image" />
+          <div className="card-image">
+            <img 
+              src={`http://localhost:8080/planify${encodeURI(item.picture)}`}
+              onError={(e) => (e.target.style.display = "none")}
+              alt={item.title || item.name} 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </div>
           <div className="card-info">
             <h3>{item.title || item.name}</h3>
-            <p>{item.duration || item.info || "No description available"}</p>
+            <p>{item.duration || item.description || "No description available"}</p>
           </div>
         </Link>
 

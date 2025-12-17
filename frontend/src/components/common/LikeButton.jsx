@@ -13,7 +13,7 @@ const LikeButton = ({ itemId, type, isLiked: controlledLiked, onToggle }) => {
   return (
     <>
       {/* Embedded styles – only this button, no global pollution */}
-      <style jsx>{`
+      <style jsx="true">{`
         .like-btn {
           position: absolute;
           bottom: 12px;

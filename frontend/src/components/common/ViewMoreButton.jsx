@@ -5,7 +5,7 @@ import React from "react";
 const ViewMoreButton = ({ children = "Xem thêm →", onClick }) => {
   return (
     <>
-      <style jsx>{`
+      <style jsx="true">{`
         .view-more-btn {
           background: none;
           border: none;

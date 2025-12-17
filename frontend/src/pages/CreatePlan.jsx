@@ -1,7 +1,7 @@
 import React from "react";
 import PlanInfo from "../components/createPlan/PlanInfo";
 import { useState } from "react";
-import { createPlan, updatePlan, deletePlan } from "../api/plan";
+import { createPlan } from "../api/plan";
 import { uploadImage } from "../api/image";
 import { useNavigate } from "react-router-dom";
 
@@ -25,6 +25,11 @@ const CreatePlan = () => {
         const imgResponse = await uploadImage(pictureFile);
         picture = imgResponse.data.result;
         console.log("Uploaded picture path:", picture);
+      }
+
+      if (!title) {
+        alert("Title is required");
+        return;
       }
 
       const response = await createPlan({

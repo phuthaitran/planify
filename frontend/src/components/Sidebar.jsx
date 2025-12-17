@@ -24,7 +24,7 @@ export default function Sidebar() {
   return (
     <>
       {/* === CSS TOÀN BỘ SIDEBAR – ĐẶT TRONG FILE NÀY === */}
-      <style jsx>{`
+      <style jsx="true">{`
         .sidebar-active {
           background: #eef2ff !important;
           color: #4f46e5 !important;

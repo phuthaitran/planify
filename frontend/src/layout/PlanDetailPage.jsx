@@ -2,12 +2,17 @@
 //mock detail plan after click the card
 import React from 'react';
 import { useParams, Link } from "react-router-dom";
-import allPlans from "../data/allPlans"; // ← Quan trọng: dùng chung data
+import { useState, useEffect } from 'react';
+import { getAllPlans } from '../api/plan.js';
+import { usePlans } from '../context/planContext.jsx';
+// import allPlans from "../data/allPlans"; // ← Quan trọng: dùng chung data
 
 const PlanDetailPage = () => {
   const { id } = useParams();
   const planId = parseInt(id); // chuyển string → number
-  const plan = allPlans.find(p => p.id === planId);
+  const { plans } = usePlans();
+
+  const plan = plans.find(p => p.id === planId);
 
   if (!plan) {
     return (

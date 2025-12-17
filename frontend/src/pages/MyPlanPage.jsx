@@ -1,21 +1,24 @@
 import React, { useState } from 'react';
-import allPlans from '../data/allPlans'; // NEW: dùng data chung
 import Carousel from "../components/common/Carousel.jsx";
 import PlanList from "../components/common/PlanList.jsx";
+import { jwtDecode } from 'jwt-decode';
+import { usePlans } from '../context/planContext.jsx';
 
 const MyPlanPage = () => {
   const [fullView, setFullView] = useState(null);
-
-  // Giả lập user hiện tại (sau này lấy từ context/auth)
-  const currentUserId = "user123";
+  const { plans } = usePlans();  // Toàn bộ plans
 
   // Lọc kế hoạch của user hiện tại
-  const myPlans = allPlans.filter(p => p.authorId === currentUserId);
+  const token = localStorage.getItem("accessToken");
+  const decoded = jwtDecode(token);
+  const currentUserId = decoded.userId;
+
+  const myPlans = plans.filter(plan => plan.ownerId === currentUserId);
 
   // Tạm thời không có lastOpened và status → bỏ filter cũ
   // Nếu sau này cần thì thêm field vào allPlans.js
-  const recentlyOpened = myPlans; // tạm dùng tất cả
-  const inProcess = myPlans;       // tạm dùng tất cả
+  const recentlyOpened = plans; // tạm dùng tất cả
+  const inProcess = plans;       // tạm dùng tất cả
 
   // === CHẾ ĐỘ XEM TẤT CẢ ===
   if (fullView) {
@@ -37,7 +40,7 @@ const MyPlanPage = () => {
               padding: '8px 0',
             }}
           >
-            ← Quay lại
+            ← Return
           </button>
           <h1 style={{ fontSize: '32px', fontWeight: '700', margin: '16px 0 40px', color: '#1e293b' }}>
             {fullView.title}
@@ -52,10 +55,10 @@ const MyPlanPage = () => {
   return (
     <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
       <Carousel
-        title="Recently opened"
+        title="Recently Opened"
         items={recentlyOpened}
         type="plan"
-        onViewMore={() => setFullView({ title: 'Recently opened', items: recentlyOpened })}
+        onViewMore={() => setFullView({ title: 'Recently Opened', items: recentlyOpened })}
       />
       <Carousel
         title="In Process"

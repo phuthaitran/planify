@@ -13,12 +13,3 @@ export const uploadImage = async(file) => {
 		},
 	});
 };
-
-export const getImage = async(filename) => {
-	const token = localStorage.getItem("accessToken");
-    return await axios.get(`${API_URL}/${filename}`, {
-		headers:{
-			Authorization: `Bearer ${token}`,
-		},
-	});
-};

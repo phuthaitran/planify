@@ -5,7 +5,6 @@ import PlanList from './PlanList';
 const FullListView = ({ title, items, onBack }) => {
   return (
     <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
-      }}>
       {/* Header với nút back */}
       <div style={{
         padding: '24px 40px 0',
