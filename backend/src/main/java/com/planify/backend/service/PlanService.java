@@ -15,7 +15,9 @@ import com.planify.backend.repository.SubtaskRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -44,15 +46,15 @@ public class PlanService {
         return planRepository.save(plan);
     }
 
-    public Plan updatePlan(Integer planId, PlanUpdateRequest request) {
-        Plan plan = planRepository.findById(planId).orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
-        planMapper.updatePlan(plan, request);
+    public Plan updatePlan(Integer planId, PlanRequest request) {
+        Plan plan = planRepository.findById(planId).orElseThrow(() -> new RuntimeException("Plan not found"));
 
-        plan.setTitle(request.getTitle());
-        plan.setDescription(request.getDescription());
-        plan.setVisibility(request.getVisibility());
-        plan.setStatus(request.getStatus());
-        plan.setPicture(request.getPicture());
+        planMapper.updatePlan(request, plan);
+
+        if (request.getOwnerId() != null) {
+            plan.setOwner(userRepository.findById(request.getOwnerId())
+                    .orElseThrow(() -> new RuntimeException("Owner not found")));
+        }
 
         return planRepository.save(plan);
     }

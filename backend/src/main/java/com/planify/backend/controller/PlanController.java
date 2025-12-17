@@ -23,12 +23,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PACKAGE, makeFinal = true)
 @RestController
-@RequestMapping("/plans")
+@RequestMapping
 public class PlanController {
     PlanService planService;
     PlanMapper planMapper;
 
-    @PostMapping
+    @PostMapping("/plans")
     ResponseEntity<ApiResponse<PlanResponse>> addPlan(@RequestBody PlanRequest request) {
         Plan plan = planService.addPlan(request);
 
@@ -44,7 +44,7 @@ public class PlanController {
                         .build());
     }
 
-    @DeleteMapping("/{planId}")
+    @DeleteMapping("/plans/{planId}")
     ResponseEntity<ApiResponse<Void>> deletePlan(@PathVariable Integer planId) {
         planService.removePlanById(planId);
 
@@ -56,9 +56,19 @@ public class PlanController {
 
     }
 
+    @PatchMapping("/plans/{planId}")
+    ResponseEntity<ApiResponse<PlanResponse>> updatePlan(@PathVariable Integer planId, @RequestBody PlanRequest request) {
+        Plan plan = planService.updatePlan(planId, request);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<PlanResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(planMapper.toResponse(plan))
+                        .build());
+    }
 
 
-    @GetMapping("/{planId}")
+    @GetMapping("/plans/{planId}")
     ResponseEntity<ApiResponse<PlanResponse>> getPlanById(@PathVariable("planId") Integer planId) {
         Plan plan = planService.getPlan(planId);
 
@@ -73,7 +83,7 @@ public class PlanController {
                         .build());
     }
 
-    @GetMapping("/getall")
+    @GetMapping("/plans/getall")
     ResponseEntity<ApiResponse<List<PlanResponse>>> getAllPlan() {
         List<Plan> plans = planService.getAllPlans();
 
