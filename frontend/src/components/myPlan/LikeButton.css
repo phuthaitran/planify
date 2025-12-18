@@ -1,0 +1,35 @@
+/* LikeButton.css */
+
+.like-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.like-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.like-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: #94a3b8;
+  transition: fill 0.2s ease;
+}
+
+.like-btn.liked svg {
+  fill: #ef4444;
+}

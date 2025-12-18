@@ -1,0 +1,182 @@
+/* ExploreHeader.css */
+
+.explore-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* ========== SEARCH BAR ========== */
+.search-bar {
+  position: relative;
+  flex: 1;
+  max-width: 520px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 14px 60px 14px 20px;
+  font-size: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 30px;
+  outline: none;
+  background: white;
+  transition: all 0.3s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.search-bar input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+}
+
+.search-bar input::placeholder {
+  color: #94a3b8;
+}
+
+.search-icon-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.search-icon-btn:hover {
+  background: #f1f5f9;
+}
+
+.search-icon-btn:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+.search-icon-img {
+  width: 40px;
+  height: 40px;
+  color: #94a3b8;
+}
+
+/* ========== TABS ========== */
+.main-tabs {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  padding: 12px 32px;
+  border: none;
+  background: #e0e7ff;
+  color: #4338ca;
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  background: #c7d2fe;
+  transform: translateY(-2px);
+}
+
+.tab-btn.active {
+  background: #4f46e5;
+  color: white;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.tab-btn:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 768px) {
+  .explore-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .search-bar {
+    max-width: 100%;
+  }
+
+  .search-bar input {
+    padding: 12px 54px 12px 16px;
+    font-size: 15px;
+  }
+
+  .search-icon-img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .main-tabs {
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .tab-btn {
+    padding: 10px 24px;
+    font-size: 14px;
+    flex: 1;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-bar input {
+    padding: 11px 50px 11px 14px;
+    font-size: 14px;
+  }
+
+  .search-icon-img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .tab-btn {
+    padding: 9px 20px;
+    font-size: 13px;
+  }
+}
+
+/* ========== ACCESSIBILITY ========== */
+.search-bar input:focus,
+.tab-btn:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+/* ========== DARK MODE SUPPORT (OPTIONAL) ========== */
+@media (prefers-color-scheme: dark) {
+  .search-bar input {
+    background: #1e293b;
+    border-color: #334155;
+    color: #f1f5f9;
+  }
+
+  .search-bar input::placeholder {
+    color: #64748b;
+  }
+
+  .search-icon-btn:hover {
+    background: #334155;
+  }
+}
