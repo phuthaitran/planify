@@ -26,6 +26,7 @@ public class PlanService {
         plan.setStatus(request.getStatus());
         plan.setDuration(request.getDuration());
         plan.setPicture(request.getPicture());
+        plan.setReminderAt(request.getReminderAt());
 
         plan.setOwner(userRepository.findById(request.getOwnerId())
                 .orElseThrow(() -> new RuntimeException("Owner not found")));
@@ -42,5 +43,13 @@ public class PlanService {
 
     public List<Plan> getAllPlans() {
         return planRepository.findAll();
+    }
+
+    public List<Plan> filterPlansByTags(List<String> tagNames) {
+        // Bạn có thể thêm logic kiểm tra ở đây
+        if (tagNames == null || tagNames.isEmpty()) {
+            return planRepository.findAll();
+        }
+        return planRepository.findByTagNames(tagNames);
     }
 }

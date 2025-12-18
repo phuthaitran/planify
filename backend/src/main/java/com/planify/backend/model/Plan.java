@@ -10,6 +10,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -20,15 +22,16 @@ import java.time.LocalDateTime;
 public class Plan {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-     Integer id;
+    Integer id;
 
     @Column(nullable = false, unique = true,  length = 120)
-     String title;
+    String title;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name="user_id", nullable = false)
     User owner;
 
+    @Column(nullable = false, length = 120)
     String description;
 
     @Column(nullable = false, columnDefinition = "ENUM('private', 'public')")
@@ -38,7 +41,7 @@ public class Plan {
     String status;
 
     @Column(nullable = false)
-    int duration;
+    Long duration;
 
     @CreatedDate
     LocalDateTime created_date;
@@ -47,4 +50,19 @@ public class Plan {
     LocalDateTime updated_date;
 
     String picture;
+
+    @Column
+    LocalDateTime reminderAt;
+
+    @Column
+    LocalDateTime expiredAt;
+
+    @Column
+    boolean reminderSent;
+
+    @Column
+    boolean expiredSent;
+
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL)
+    Set<TagPlan> tagPlans = new HashSet<>();
 }

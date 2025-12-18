@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-12-06T21:12:03+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 25.0.1 (Ubuntu)"
+    date = "2025-12-16T10:41:56+0700",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 25.0.1 (Oracle Corporation)"
 )
 @Component
 public class PlanMapperImpl implements PlanMapper {
@@ -29,7 +29,9 @@ public class PlanMapperImpl implements PlanMapper {
         planResponse.title( plan.getTitle() );
         planResponse.visibility( plan.getVisibility() );
         planResponse.status( plan.getStatus() );
-        planResponse.duration( plan.getDuration() );
+        if ( plan.getDuration() != null ) {
+            planResponse.duration( plan.getDuration().intValue() );
+        }
 
         return planResponse.build();
     }

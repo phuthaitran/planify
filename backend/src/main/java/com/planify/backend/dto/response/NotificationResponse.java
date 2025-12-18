@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NotificationResponse {
     Integer id;
+    Integer planId;
     Integer recipientId;
     String type;
     String messageText;

@@ -48,7 +48,8 @@ public class User {
 
     @LastModifiedDate
     LocalDateTime updated_date;
-    int status;
+    @Column(name="status",nullable = false, columnDefinition = "INT DEFAULT 0")
+    int status = 0;
 
     //mappedBy = "user": Quan hệ này được “quy định” ở field user trong entity UserRole.
     //cascade = CascadeType.ALL : Khi bạn thao tác với User, JPA sẽ tự áp dụng cùng thao tác cho UserRole. Ví dụ: Khi bạn save,delete user: → JPA tự save(),delete() những UserRole mới được thêm vào set.

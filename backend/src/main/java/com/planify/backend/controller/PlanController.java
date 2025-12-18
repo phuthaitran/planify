@@ -23,7 +23,7 @@ import java.util.List;
 @RequestMapping("/plans")
 public class PlanController {
     PlanService planService;
-    PlanMapper planMapper;
+    PlanMapper  planMapper;
 
     @PostMapping
     ResponseEntity<ApiResponse<PlanResponse>> addPlan(@RequestBody PlanRequest request) {
@@ -67,6 +67,16 @@ public class PlanController {
                 .body(ApiResponse.<List<PlanResponse>>builder()
                         .code(HttpStatus.OK.value())
                         .result(planMapper.toResponseList(plans))
+                        .build());
+    }
+    @GetMapping("/filter")
+    ResponseEntity<ApiResponse<List<PlanResponse>>> filterPlans(@RequestParam(required = false) List<String> tags) {
+        List<Plan> results = planService.filterPlansByTags(tags);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<List<PlanResponse>>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(planMapper.toResponseList(results))
                         .build());
     }
 }

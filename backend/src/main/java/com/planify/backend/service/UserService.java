@@ -42,6 +42,7 @@ public class UserService {
     UserRoleRepository userRoleRepository;
 
     public UserResponse createUser(UserCreationRequest request){
+
         User user = userMapper.toUser(request);
 
         //Hash Password
@@ -51,7 +52,7 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         //Xử lý Role
-        Role roleUser = roleRepository.findByName(RoleName.user)
+        Role roleUser = roleRepository.findByName(RoleName.USER)
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
         UserRole userRole = UserRole.builder()

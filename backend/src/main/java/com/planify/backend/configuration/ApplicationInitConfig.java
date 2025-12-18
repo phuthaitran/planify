@@ -37,10 +37,10 @@ public class ApplicationInitConfig {
                         return Optional.of(roleRepository.save(Role.builder().name(RoleName.ADMIN).build()));
                     });
 
-            roleRepository.findByName(RoleName.user)
+            roleRepository.findByName(RoleName.USER)
                     .or(() -> {
                         log.info("Role USER not found, creating default USER role");
-                        return Optional.of(roleRepository.save(Role.builder().name(RoleName.user).build()));
+                        return Optional.of(roleRepository.save(Role.builder().name(RoleName.USER).build()));
                     });
 
             if(userRepository.findByUsername("admin").isEmpty()){
@@ -52,7 +52,8 @@ public class ApplicationInitConfig {
 
                 admin = userRepository.save(admin);
 
-                Role adminRole = roleRepository.findByName(RoleName.ADMIN).get();
+                Role adminRole = roleRepository.findByName(RoleName.ADMIN)
+                        .orElseThrow(() -> new RuntimeException("Role ADMIN not found"));
 
                 UserRole ur = UserRole.builder()
                         .user(admin)
