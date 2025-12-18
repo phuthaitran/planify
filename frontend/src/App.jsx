@@ -1,35 +1,40 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import LoginSignup from "./pages/LoginSignup.jsx";
+
+// Main layout và các page chính
+import Home from "./pages/Home.jsx";
+import MainLayout from "./layouts/MainLayout.jsx";
+import MyPlan from "./pages/MyPlan.jsx";
+import Saved from "./pages/SavedPlan.jsx";
+import Commu from "./pages/ExplorePage.jsx";
+import Add from "./pages/CreatePlan.jsx";
+import MyProfile from "./pages/MyProfile.jsx";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        {/* Trang Login/Signup - không dùng MainLayout */}
+        <Route path="/" element={<LoginSignup />} />
+
+        {/* Các trang chính có MainLayout */}
+        <Route element={<MainLayout />}>
+          <Route path="/home" element={<Home />} />
+          <Route path="/myplan" element={<MyPlan />} />
+          <Route path="/saved" element={<Saved />} />
+          <Route path="/commu" element={<Commu />} />
+          <Route path="/add" element={<Add />} />
+          <Route path="/myprofile" element={<MyProfile />} />
+          {/* Detail plan */}
+          <Route path="/plans/:id" element={<Add />} />
+
+          {/* Các route khác nếu cần */}
+        </Route>
+
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
