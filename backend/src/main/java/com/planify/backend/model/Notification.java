@@ -21,14 +21,20 @@ public class Notification {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     Integer id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_id")
+    private Plan plan;
+
     @ManyToOne(optional = false)
     @JoinColumn(name="user_id", nullable = false)
     User recipient;
 
     @Column(nullable = false, columnDefinition = "ENUM('task_deadline', 'task_fork', 'follower', 'daily_reminder')")
     String type;
+
     @Column(name="message_text")
     String messageText;
+
     @CreatedDate
     LocalDateTime time;
 }

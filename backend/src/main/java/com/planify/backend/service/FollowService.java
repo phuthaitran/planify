@@ -50,6 +50,7 @@ public class FollowService {
 
         notificationService.sendEmailNotification(
                 notifRequest,
+                null,
                 currentUser.getUsername() + " followed you");
     }
 

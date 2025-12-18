@@ -91,6 +91,17 @@ public class PlanController {
                         .build());
     }
 
+    @GetMapping("/plans/filter")
+    ResponseEntity<ApiResponse<List<PlanResponse>>> filterPlans(@RequestParam(required = false) List<String> tags) {
+        List<Plan> results = planService.filterPlansByTags(tags);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<List<PlanResponse>>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(planMapper.toResponseList(results))
+                        .build());
+    }
+
     @PatchMapping("/plans/{planId}")
     ResponseEntity<ApiResponse<PlanResponse>> updatePlan(@PathVariable Integer planId, @RequestBody PlanRequest request) {
         Plan plan = planService.updatePlan(planId, request);

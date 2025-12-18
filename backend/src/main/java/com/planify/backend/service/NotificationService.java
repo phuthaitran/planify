@@ -2,6 +2,7 @@ package com.planify.backend.service;
 
 import com.planify.backend.dto.request.NotificationRequest;
 import com.planify.backend.model.Notification;
+import com.planify.backend.model.Plan;
 import com.planify.backend.model.User;
 import com.planify.backend.repository.NotificationRepository;
 import com.planify.backend.repository.UserRepository;
@@ -23,7 +24,7 @@ import java.util.List;
 @Service
 public class NotificationService {
     final NotificationRepository notificationRepository;
-    JavaMailSender mailSender;
+    final JavaMailSender mailSender;
     final UserRepository userRepository;
     @Value("${spring.mail.username}")
     String gmailAddress;
@@ -41,13 +42,17 @@ public class NotificationService {
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    public Notification sendEmailNotification(NotificationRequest request, String subject) {
+    public Notification sendEmailNotification(NotificationRequest request, Plan plan, String subject) {
         Notification notification = new Notification();
         notification.setType(request.getType());
         notification.setMessageText(request.getMessageText());
         User recipient = userRepository.findById(request.getRecipientId())
                 .orElseThrow(() -> new EntityNotFoundException("Recipient not found"));
+
         notification.setRecipient(recipient);
+        if (plan != null){
+            notification.setPlan(plan);
+        }
         if (recipient.getNotification_enabled().equals("false")){
             return notificationRepository.save(notification);
         }
@@ -68,7 +73,7 @@ public class NotificationService {
             throw new AccessDeniedException("You are not allowed to access these notifications");
         }
 
-        return notificationRepository.getNotificationByRecipientId(userId);
+        return notificationRepository.getNotificationsByRecipientId(userId);
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")

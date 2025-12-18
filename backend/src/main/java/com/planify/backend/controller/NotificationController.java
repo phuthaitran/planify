@@ -39,7 +39,7 @@ public class NotificationController {
 
     @PostMapping("/notifications/send")
     ResponseEntity<ApiResponse<NotificationResponse>> sendEmailNotification(@RequestBody NotificationRequest request, @RequestParam String title) {
-        Notification notif = notificationService.sendEmailNotification(request, title);
+        Notification notif = notificationService.sendEmailNotification(request, null, title);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.<NotificationResponse>builder()

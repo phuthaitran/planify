@@ -52,7 +52,8 @@ public class ApplicationInitConfig {
 
                 admin = userRepository.save(admin);
 
-                Role adminRole = roleRepository.findByName(RoleName.ADMIN).get();
+                Role adminRole = roleRepository.findByName(RoleName.ADMIN)
+                        .orElseThrow(() -> new RuntimeException("Role ADMIN not found"));
 
                 UserRole ur = UserRole.builder()
                         .user(admin)

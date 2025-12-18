@@ -102,11 +102,15 @@ DROP TABLE IF EXISTS `notification`;
 CREATE TABLE `notification` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
-  `type` enum('task_deadline','task_fork','follower','daily_reminder') COLLATE utf8mb4_bin NOT NULL,
-  `message_text` text COLLATE utf8mb4_bin,
+  `type` enum('task_deadline','task_fork','follower','task_reminder') COLLATE utf8mb4_bin NOT NULL,
+  `message_text` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
   `time` datetime NOT NULL,
+  `plan_id` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_notification_user_idx` (`user_id`),
+  KEY `fk_notification_plan_idx` (`plan_id`),
+  KEY `idx_notification_plan_id` (`plan_id`),
+  CONSTRAINT `fk_notification_plan` FOREIGN KEY (`plan_id`) REFERENCES `plan` (`id`),
   CONSTRAINT `fk_notification_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
@@ -120,15 +124,22 @@ CREATE TABLE `plan` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
   `title` varchar(120) COLLATE utf8mb4_bin NOT NULL,
-  `description` longtext COLLATE utf8mb4_bin,
-  `duration` int DEFAULT NULL,
-  `picture` varchar(120) COLLATE utf8mb4_bin DEFAULT NULL,
-  `visibility` enum('private','public') COLLATE utf8mb4_bin DEFAULT NULL,
-  `status` enum('incompleted','completed','cancelled') COLLATE utf8mb4_bin DEFAULT NULL,
+  `description` varchar(120) COLLATE utf8mb4_bin NOT NULL,
+  `duration` bigint NOT NULL,
+  `picture` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
+  `visibility` enum('private','public') COLLATE utf8mb4_bin NOT NULL,
+  `status` enum('incompleted','completed','cancelled') COLLATE utf8mb4_bin NOT NULL,
   `created_date` datetime DEFAULT NULL,
   `updated_date` datetime DEFAULT NULL,
+  `expired_at` datetime(6) DEFAULT NULL,
+  `expired_sent` bit(1) DEFAULT NULL,
+  `reminder_at` datetime(6) DEFAULT NULL,
+  `reminder_sent` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_plan_user_idx` (`user_id`),
+  KEY `idx_plan_reminder` (`reminder_sent`,`reminder_at`),
+  KEY `idx_plan_expired` (`expired_sent`,`expired_at`),
+  KEY `idx_plan_user_id` (`user_id`),
   CONSTRAINT `fk_plan_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
@@ -201,7 +212,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tag_plan`;
 CREATE TABLE `tag_plan` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `plan_id` int NOT NULL,
   `tag_id` int NOT NULL,
   PRIMARY KEY (`id`),
@@ -235,10 +246,10 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(120) COLLATE utf8mb4_bin NOT NULL,
-  `password` varchar(120) COLLATE utf8mb4_bin NOT NULL,
-  `email` varchar(120) COLLATE utf8mb4_bin NOT NULL,
-  `avatar` varchar(200) COLLATE utf8mb4_bin DEFAULT NULL,
+  `username` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `avatar` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
   `notificationenabled` enum('true','false') COLLATE utf8mb4_bin DEFAULT NULL,
   `bio` longtext COLLATE utf8mb4_bin,
   PRIMARY KEY (`id`)
@@ -280,4 +291,4 @@ CREATE TABLE invalidated_token (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-10 21:30:23
+-- Dump completed on 2025-12-18 15:04:10
