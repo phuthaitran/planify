@@ -5,8 +5,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 
 import java.time.LocalDateTime;
@@ -14,6 +17,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name="plan")
 public class Plan {
@@ -38,6 +42,14 @@ public class Plan {
 
     @Column(nullable = false)
     int duration;
+
+    @CreationTimestamp
+    @Column(name="created_date", updatable = false)
+    LocalDateTime created_date;
+
+    @UpdateTimestamp
+    @Column(name="updated_date")
+    LocalDateTime updated_date;
 
     String picture;
 }
