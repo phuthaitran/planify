@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -40,6 +41,12 @@ public class Subtask {
 
     // New: optional scheduled date used for daily todo lists
     LocalDate scheduled_date;
+
+    @Column(name="started_at")
+    LocalDateTime started_at;
+
+    @Column(name="completed_at")
+    LocalDateTime completed_at;
 
     // Explicit camel-case accessors for code that expects Java-style property names
     public LocalDate getScheduledDate() {

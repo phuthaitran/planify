@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 
 @Getter
 @Setter
@@ -30,4 +32,10 @@ public class Task {
 
     @Column(nullable = false)
     int duration;
+
+    @Column(name="started_at")
+    LocalDateTime started_at;
+
+    @Column(name="completed_at")
+    LocalDateTime completed_at;
 }

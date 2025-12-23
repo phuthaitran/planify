@@ -2,21 +2,25 @@ package com.planify.backend.service;
 
 import com.planify.backend.dto.request.PlanRequest;
 import com.planify.backend.dto.request.PlanUpdateRequest;
-import com.planify.backend.dto.response.TimingResponse;
+import com.planify.backend.dto.response.ProgressResponse;
 import com.planify.backend.exception.AppException;
 import com.planify.backend.exception.ErrorCode;
 import com.planify.backend.model.Plan;
+import com.planify.backend.model.Stage;
 import com.planify.backend.model.TimeStatus;
 import com.planify.backend.repository.PlanRepository;
-import com.planify.backend.repository.UserRepository;
 import com.planify.backend.repository.StageRepository;
-import com.planify.backend.repository.SubtaskRepository;
+import com.planify.backend.repository.UserRepository;
+import com.planify.backend.util.TimeCalculator;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 
 @RequiredArgsConstructor
@@ -26,7 +30,6 @@ public class PlanService {
     PlanRepository planRepository;
     UserRepository userRepository;
     StageRepository stageRepository;
-    SubtaskRepository subtaskRepository;
     JwtUserContext jwtUserContext;
 
     public Plan addPlan(PlanRequest request) {
@@ -42,8 +45,6 @@ public class PlanService {
         return planRepository.save(plan);
     }
 
-
-
     public void removePlanById(Integer planId) {
         planRepository.deleteById(planId);
     }
@@ -56,36 +57,6 @@ public class PlanService {
         return planRepository.findAll();
     }
 
-    // New helpers to compute expected and actual times
-    public Integer computeExpectedTime(Integer planId) {
-        return stageRepository.sumDurationByPlanId(planId);
-    }
-
-    public Integer computeActualTime(Integer planId) {
-        return subtaskRepository.sumCompletedDurationByPlanId(planId);
-    }
-
-    // New: compute time status for plan
-    public TimingResponse computeTimeStatus(Integer planId) {
-        Integer expected = computeExpectedTime(planId);
-        Integer actual = computeActualTime(planId);
-
-        TimeStatus status;
-        if (actual < expected) {
-            status = TimeStatus.EARLY;
-        } else if (actual > expected) {
-            status = TimeStatus.LATE;
-        } else {
-            status = TimeStatus.ON_TIME;
-        }
-
-        return TimingResponse.builder()
-                .planId(planId)
-                .expectedTime(expected)
-                .actualTime(actual)
-                .status(status)
-                .build();
-    }
 
     // New: partial update for Plan
     public Plan updatePlanPartial(Integer planId, PlanUpdateRequest request) {
@@ -100,5 +71,67 @@ public class PlanService {
         if (request.getStatus() != null) plan.setStatus(request.getStatus());
 
         return planRepository.save(plan);
+    }
+
+    public ProgressResponse computeProgress(Integer planId) {
+        Plan plan = planRepository.findPlanById(planId);
+        if (plan == null) {
+            throw new AppException(ErrorCode.PLAN_NOT_FOUND);
+        }
+
+        List<Stage> stages = stageRepository.findAllStage(planId);
+
+        if (stages.isEmpty()) {
+            return new ProgressResponse(
+                    0,
+                    plan.getDuration(),
+                    TimeStatus.NOT_STARTED
+            );
+        }
+
+        LocalDateTime startedAt = stages.stream()
+                .map(Stage::getStarted_at)
+                .filter(Objects::nonNull)
+                .min(Comparator.naturalOrder())
+                .orElse(null);
+        if (startedAt == null) {
+            return new ProgressResponse(
+                    0,
+                    plan.getDuration(),
+                    TimeStatus.NOT_STARTED
+            );
+        }
+
+        LocalDateTime completedAt = stages.stream()
+                .map(Stage::getCompleted_at)
+                .filter(Objects::nonNull)
+                .max(Comparator.naturalOrder())
+                .orElse(null);
+        if (completedAt == null) {
+            return new ProgressResponse(
+                    0,
+                    plan.getDuration(),
+                    TimeStatus.IN_PROGRESS
+            );
+        }
+
+        long actualDuration = TimeCalculator.calculateActualDays(
+                startedAt,
+                completedAt
+        );
+        TimeStatus status;
+
+        if (actualDuration < plan.getDuration()) {
+            status = TimeStatus.EARLY;
+        } else if (actualDuration > plan.getDuration()) {
+            status = TimeStatus.LATE;
+        } else {
+            status = TimeStatus.ON_TIME;
+        }
+        return ProgressResponse.builder()
+                .expectedDays(plan.getDuration())
+                .actualDays(actualDuration)
+                .status(status)
+                .build();
     }
 }

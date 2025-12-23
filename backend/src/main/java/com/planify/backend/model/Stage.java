@@ -36,4 +36,10 @@ public class Stage {
     @Column(nullable = false)
     int duration;
 
+    @Column(name="started_at")
+    LocalDateTime started_at;
+
+    @Column(name="completed_at")
+    LocalDateTime completed_at;
+
 }

@@ -2,8 +2,10 @@ package com.planify.backend.controller;
 
 import com.planify.backend.dto.request.SubtaskRequest;
 import com.planify.backend.dto.response.ApiResponse;
+import com.planify.backend.dto.response.ProgressResponse;
 import com.planify.backend.dto.response.SubtaskResponse;
 import com.planify.backend.dto.response.TimingResponse;
+import com.planify.backend.dto.request.SubtaskUpdateRequest;
 import com.planify.backend.mapper.SubtaskMapper;
 import com.planify.backend.model.Subtask;
 import com.planify.backend.service.SubtaskService;
@@ -76,16 +78,6 @@ public class SubtaskController {
                         .build());
     }
 
-    // New endpoint: timing for a subtask
-    @GetMapping("/plans/{planId}/{stageId}/{taskId}/{subtaskId}/timing")
-    ResponseEntity<ApiResponse<TimingResponse>> getTimingForSubtask(@PathVariable Integer planId, @PathVariable Integer stageId, @PathVariable Integer taskId, @PathVariable Integer subtaskId) {
-        TimingResponse timing = subtaskService.computeTimeStatus(planId, stageId, taskId, subtaskId);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.<TimingResponse>builder()
-                        .code(HttpStatus.OK.value())
-                        .result(timing)
-                        .build());
-    }
 
     // New endpoint: todo list (incomplete subtasks ordered by days left)
     @GetMapping("/users/{userId}/todo")
@@ -114,12 +106,22 @@ public class SubtaskController {
 
     // New: PATCH endpoint to partially update a subtask (propagates duration changes)
     @PatchMapping("/subtasks/{subtaskId}")
-    ResponseEntity<ApiResponse<SubtaskResponse>> updateSubtaskPartial(@PathVariable Integer subtaskId, @RequestBody com.planify.backend.dto.request.SubtaskUpdateRequest request) {
-        com.planify.backend.model.Subtask updated = subtaskService.updateSubtaskPartial(subtaskId, request);
+    ResponseEntity<ApiResponse<SubtaskResponse>> updateSubtaskPartial(@PathVariable Integer subtaskId, @RequestBody SubtaskUpdateRequest request) {
+        Subtask updated = subtaskService.updateSubtaskPartial(subtaskId, request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<SubtaskResponse>builder()
                         .code(HttpStatus.OK.value())
                         .result(subtaskMapper.toResponse(updated))
+                        .build());
+    }
+
+    @GetMapping("/plans/{planId}/{stageId}/{taskId}/{subtaskId}/progress")
+    ResponseEntity<ApiResponse<ProgressResponse>> getSubtaskProgress(@PathVariable Integer planId, @PathVariable Integer stageId, @PathVariable Integer taskId, @PathVariable Integer subtaskId) {
+        ProgressResponse progress = subtaskService.computeProgress(planId, stageId, taskId, subtaskId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<ProgressResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(progress)
                         .build());
     }
 }

@@ -2,6 +2,7 @@ package com.planify.backend.controller;
 
 import com.planify.backend.dto.request.TaskRequest;
 import com.planify.backend.dto.response.ApiResponse;
+import com.planify.backend.dto.response.ProgressResponse;
 import com.planify.backend.dto.response.TaskResponse;
 import com.planify.backend.dto.response.TimingResponse;
 import com.planify.backend.mapper.TaskMapper;
@@ -70,23 +71,24 @@ public class TaskController {
                         .build());
     }
 
-    @GetMapping("/plans/{planId}/{stageId}/{taskId}/timing")
-    ResponseEntity<ApiResponse<TimingResponse>> getTimingForTask(@PathVariable Integer planId, @PathVariable Integer stageId, @PathVariable Integer taskId) {
-        TimingResponse timing = taskService.computeTimeStatus(planId, stageId, taskId);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.<TimingResponse>builder()
-                        .code(HttpStatus.OK.value())
-                        .result(timing)
-                        .build());
-    }
 
     @PatchMapping("/tasks/{taskId}")
     ResponseEntity<ApiResponse<TaskResponse>> updateTaskPartial(@PathVariable Integer taskId, @RequestBody com.planify.backend.dto.request.TaskUpdateRequest request) {
-        com.planify.backend.model.Task updated = taskService.updateTaskPartial(taskId, request);
+        Task updated = taskService.updateTaskPartial(taskId, request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<TaskResponse>builder()
                         .code(HttpStatus.OK.value())
                         .result(taskMapper.toResponse(updated))
+                        .build());
+    }
+
+    @GetMapping("/plans/{planId}/{stageId}/{taskId}/progress")
+    ResponseEntity<ApiResponse<ProgressResponse>> getTaskProgress(@PathVariable Integer planId, @PathVariable Integer stageId, @PathVariable Integer taskId) {
+        ProgressResponse progress = taskService.computeProgress(planId, stageId, taskId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<ProgressResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(progress)
                         .build());
     }
 }

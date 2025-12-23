@@ -7,8 +7,6 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 
@@ -50,6 +48,12 @@ public class Plan {
     @UpdateTimestamp
     @Column(name="updated_date")
     LocalDateTime updated_date;
+
+    @Column(name="started_at")
+    LocalDateTime started_at;
+
+    @Column(name="completed_at")
+    LocalDateTime completed_at;
 
     String picture;
 }
