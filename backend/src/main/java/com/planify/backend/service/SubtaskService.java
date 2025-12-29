@@ -17,7 +17,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -76,7 +76,7 @@ public class SubtaskService {
             throw new AppException(ErrorCode.TASK_NOT_FOUND);
         }
 
-        Subtask subtask = subtaskRepository.findSubtaskById(subtaskId, taskId);
+        Subtask subtask = subtaskRepository.findSubtaskByIdAndTaskId(subtaskId, taskId);
         if (subtask == null) {
             throw new AppException(ErrorCode.SUBTASK_NOT_FOUND);
         }
@@ -111,7 +111,7 @@ public class SubtaskService {
             throw new AppException(ErrorCode.TASK_NOT_FOUND);
         }
 
-        Subtask subtask = subtaskRepository.findSubtaskById(subtaskId, taskId);
+        Subtask subtask = subtaskRepository.findSubtaskByIdAndTaskId(subtaskId, taskId);
         if (subtask == null){
             throw new AppException(ErrorCode.SUBTASK_NOT_FOUND);
         }
@@ -135,7 +135,7 @@ public class SubtaskService {
             throw new AppException(ErrorCode.TASK_NOT_FOUND);
         }
 
-        Subtask subtask = subtaskRepository.findSubtaskById(subtaskId, taskId);
+        Subtask subtask = subtaskRepository.findSubtaskByIdAndTaskId(subtaskId, taskId);
         if (subtask == null){
             throw new AppException(ErrorCode.SUBTASK_NOT_FOUND);
         }
@@ -233,5 +233,22 @@ public class SubtaskService {
         }
 
         return saved;
+    }
+
+    public Subtask startSubtask(Integer subtaskId) {
+        Subtask subtask = subtaskRepository.findById(subtaskId).orElse(null);
+        if (subtask == null) {
+            throw new AppException(ErrorCode.SUBTASK_NOT_FOUND);
+        }
+        subtask.setStarted_at(LocalDateTime.now());
+        return subtaskRepository.save(subtask);
+    }
+    public Subtask completeSubtask(Integer subtaskId) {
+        Subtask subtask = subtaskRepository.findById(subtaskId).orElse(null);
+        if (subtask == null) {
+            throw new AppException(ErrorCode.SUBTASK_NOT_FOUND);
+        }
+        subtask.setCompleted_at(LocalDateTime.now());
+        return subtaskRepository.save(subtask);
     }
 }

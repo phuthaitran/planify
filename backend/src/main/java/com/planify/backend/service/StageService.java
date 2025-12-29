@@ -129,4 +129,22 @@ public class StageService {
                 .status(status)
                 .build();
     }
+
+    public Stage startStage(Integer stageId) {
+        Stage stage = stageRepository.findStageById(stageId);
+        if (stage == null) {
+            throw new AppException(ErrorCode.STAGE_NOT_FOUND);
+        }
+        stage.setStarted_at(LocalDateTime.now());
+        return stageRepository.save(stage);
+    }
+
+    public Stage completeStage(Integer stageId) {
+        Stage stage = stageRepository.findStageById(stageId);
+        if (stage == null) {
+            throw new AppException(ErrorCode.STAGE_NOT_FOUND);
+        }
+        stage.setCompleted_at(LocalDateTime.now());
+        return stageRepository.save(stage);
+    }
 }

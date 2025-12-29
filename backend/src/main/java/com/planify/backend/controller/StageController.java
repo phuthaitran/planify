@@ -96,4 +96,24 @@ public class StageController {
                         .result(progress)
                         .build());
     }
+
+    @PatchMapping("/stages/{stageId}/start")
+    ResponseEntity<ApiResponse<StageResponse>> startStage(@PathVariable Integer stageId) {
+        Stage stage = stageService.startStage(stageId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<StageResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(stageMapper.toResponse(stage))
+                        .build());
+    }
+
+    @PatchMapping("/stages/{stageId}/complete")
+    ResponseEntity<ApiResponse<StageResponse>> completeStage(@PathVariable Integer stageId) {
+        Stage stage = stageService.completeStage(stageId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<StageResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(stageMapper.toResponse(stage))
+                        .build());
+    }
 }

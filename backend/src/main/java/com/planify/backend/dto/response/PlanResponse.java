@@ -2,6 +2,7 @@ package com.planify.backend.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -18,4 +19,6 @@ public class PlanResponse {
     // Computed when returning the DTO
     Integer expectedTime;
     Integer actualTime;
+    LocalDateTime created_date;
+    LocalDateTime updated_date;
 }

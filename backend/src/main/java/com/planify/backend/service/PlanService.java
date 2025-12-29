@@ -39,7 +39,7 @@ public class PlanService {
         plan.setVisibility(request.getVisibility());
         plan.setStatus(request.getStatus());
         plan.setPicture(request.getPicture());
-
+        // update: add created_time to response
         plan.setOwner(userRepository.findById(jwtUserContext.getCurrentUserId())
                 .orElseThrow(() -> new RuntimeException("Owner not found")));
         return planRepository.save(plan);
@@ -133,5 +133,23 @@ public class PlanService {
                 .actualDays(actualDuration)
                 .status(status)
                 .build();
+    }
+
+    public Plan startPlan(Integer planId) {
+        Plan plan = planRepository.findPlanById(planId);
+        if (plan == null) {
+            throw new AppException(ErrorCode.PLAN_NOT_FOUND);
+        }
+        plan.setStarted_at(LocalDateTime.now());
+        return planRepository.save(plan);
+    }
+
+    public Plan completePlan(Integer planId) {
+        Plan plan = planRepository.findPlanById(planId);
+        if (plan == null) {
+            throw new AppException(ErrorCode.PLAN_NOT_FOUND);
+        }
+        plan.setCompleted_at(LocalDateTime.now());
+        return planRepository.save(plan);
     }
 }

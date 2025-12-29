@@ -98,4 +98,24 @@ public class PlanController {
                         .result(progress)
                         .build());
     }
+
+    @PatchMapping("/plans/{planId}/start")
+    ResponseEntity<ApiResponse<PlanResponse>> startPlan(@PathVariable Integer planId) {
+        Plan plan = planService.startPlan(planId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<PlanResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(planMapper.toResponse(plan))
+                        .build());
+    }
+
+    @PatchMapping("/plans/{planId}/complete")
+    ResponseEntity<ApiResponse<PlanResponse>> completePlan(@PathVariable Integer planId) {
+        Plan plan = planService.completePlan(planId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<PlanResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(planMapper.toResponse(plan))
+                        .build());
+    }
 }

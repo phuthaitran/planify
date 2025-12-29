@@ -4,7 +4,6 @@ import com.planify.backend.dto.request.TaskRequest;
 import com.planify.backend.dto.response.ApiResponse;
 import com.planify.backend.dto.response.ProgressResponse;
 import com.planify.backend.dto.response.TaskResponse;
-import com.planify.backend.dto.response.TimingResponse;
 import com.planify.backend.mapper.TaskMapper;
 import com.planify.backend.model.Task;
 import com.planify.backend.service.TaskService;
@@ -89,6 +88,26 @@ public class TaskController {
                 .body(ApiResponse.<ProgressResponse>builder()
                         .code(HttpStatus.OK.value())
                         .result(progress)
+                        .build());
+    }
+
+    @PatchMapping("/tasks/{taskId}/start")
+    ResponseEntity<ApiResponse<TaskResponse>> startTask(@PathVariable Integer taskId) {
+        Task task = taskService.startTask(taskId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<TaskResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(taskMapper.toResponse(task))
+                        .build());
+    }
+
+    @PatchMapping("/tasks/{taskId}/complete")
+    ResponseEntity<ApiResponse<TaskResponse>> completeTask(@PathVariable Integer taskId) {
+        Task task = taskService.completeTask(taskId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<TaskResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(taskMapper.toResponse(task))
                         .build());
     }
 }

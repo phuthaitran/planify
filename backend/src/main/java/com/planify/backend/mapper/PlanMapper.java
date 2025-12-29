@@ -12,8 +12,12 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface PlanMapper {
     @Mapping(source = "owner.id", target = "ownerId")
+    @Mapping(source = "created_date", target = "created_date")
+    @Mapping(source = "updated_date", target = "updated_date")
     PlanResponse toResponse(Plan plan);
     @Mapping(source = "owner.id", target = "ownerId")
+    @Mapping(source = "created_date", target = "created_date")
+    @Mapping(source = "updated_date", target = "updated_date")
     List<PlanResponse> toResponseList(List<Plan> plans);
 
     @Mapping(target = "owner", ignore = true)

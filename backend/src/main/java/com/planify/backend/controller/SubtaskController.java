@@ -4,7 +4,6 @@ import com.planify.backend.dto.request.SubtaskRequest;
 import com.planify.backend.dto.response.ApiResponse;
 import com.planify.backend.dto.response.ProgressResponse;
 import com.planify.backend.dto.response.SubtaskResponse;
-import com.planify.backend.dto.response.TimingResponse;
 import com.planify.backend.dto.request.SubtaskUpdateRequest;
 import com.planify.backend.mapper.SubtaskMapper;
 import com.planify.backend.model.Subtask;
@@ -122,6 +121,26 @@ public class SubtaskController {
                 .body(ApiResponse.<ProgressResponse>builder()
                         .code(HttpStatus.OK.value())
                         .result(progress)
+                        .build());
+    }
+
+    @PatchMapping("/subtasks/{subtaskId}/start")
+    ResponseEntity<ApiResponse<SubtaskResponse>> startSubtask(@PathVariable Integer subtaskId) {
+        Subtask subtask = subtaskService.startSubtask(subtaskId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<SubtaskResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(subtaskMapper.toResponse(subtask))
+                        .build());
+    }
+
+    @PatchMapping("/subtasks/{subtaskId}/complete")
+    ResponseEntity<ApiResponse<SubtaskResponse>> completeSubtask(@PathVariable Integer subtaskId) {
+        Subtask subtask = subtaskService.completeSubtask(subtaskId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<SubtaskResponse>builder()
+                        .code(HttpStatus.OK.value())
+                        .result(subtaskMapper.toResponse(subtask))
                         .build());
     }
 }

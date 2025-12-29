@@ -164,4 +164,22 @@ public class TaskService {
                 .status(status)
                 .build();
     }
+
+    public Task startTask(Integer taskId) {
+        Task task = taskRepository.findTaskById(taskId);
+        if (task == null) {
+            throw new AppException(ErrorCode.TASK_NOT_FOUND);
+        }
+        task.setStarted_at(LocalDateTime.now());
+        return taskRepository.save(task);
+    }
+
+    public Task completeTask(Integer taskId) {
+        Task task = taskRepository.findTaskById(taskId);
+        if (task == null) {
+            throw new AppException(ErrorCode.TASK_NOT_FOUND);
+        }
+        task.setCompleted_at(LocalDateTime.now());
+        return taskRepository.save(task);
+    }
 }
