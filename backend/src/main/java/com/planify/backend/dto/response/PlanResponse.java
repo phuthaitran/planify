@@ -3,6 +3,8 @@ package com.planify.backend.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,4 +19,6 @@ public class PlanResponse {
     String status;
     int duration;
     String picture;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 }

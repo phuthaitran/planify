@@ -3,6 +3,9 @@ package com.planify.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -25,4 +28,8 @@ public class ForkedPlan {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "adopted_user_id")
     User adoptedUser;
+
+    @CreationTimestamp
+    @Column(name="created_at", nullable = false, updatable = false)
+    LocalDateTime createdAt;
 }

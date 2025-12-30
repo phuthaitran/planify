@@ -10,9 +10,9 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name="liked_plan",
+@Table(name="bookmark",
         uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "plan_id"}))
-public class LikedPlan {
+public class Bookmark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
