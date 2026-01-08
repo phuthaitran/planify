@@ -10,7 +10,9 @@ public enum ErrorCode{
     USER_NOT_EXISTED(1006, "User not existed"),
     UNAUTHENTICATED(1007, "Unauthenticated"),
     ROLE_NOT_FOUND(1008, "Role not found"),
-    USER_ALREADY_EXISTS(1010, "User already exists");
+    USER_ALREADY_EXISTS(1010, "User already exists"),
+    FORBIDDEN(1009, "Access denied"),
+    UNAUTHORIZED(1011, "You do not have permission to access this resource");
 
     private int code;
     private String message;

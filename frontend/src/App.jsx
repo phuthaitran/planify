@@ -1,55 +1,45 @@
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { useState } from 'react'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import LoginSignup from "./pages/LoginSignup.jsx";
 
-// Main layout và các page chính
+//main
 import MainLayout from './layout/MainLayout.jsx';
+
+//page
 import Home from './pages/Home.jsx';
 import MyPlanPage from "./pages/MyPlanPage.jsx";
 import SavedPage from "./pages/SavedPage";
 import ExplorePage from "./pages/ExplorePage.jsx";
 import CreatePlan from "./pages/CreatePlan.jsx";
 
-// Detail plan
+//detail plan, just for demo
 import PlanDetailPage from "./layout/PlanDetailPage.jsx";
 
-// (nếu còn dùng)
+//idk
 import PlanPage from "./pages/PlanPage";
 
-import { PlansProvider } from "./context/PlanContext.jsx";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Trang Login/Signup - không dùng MainLayout */}
-        <Route path="/" element={<LoginSignup />} />
+        <Route element={<MainLayout/>}>
+          <Route path="/" element={<Home/>} />
+          <Route path="/plan" element={<MyPlanPage/>} />
+          <Route path="/saved" element={<SavedPage/>} />
+          <Route path="/commu" element={<ExplorePage />} />
+          <Route path="/add" element={<CreatePlan/>} />  {/* testing login signup */}
 
-        {/* Các trang chính có MainLayout */}
-        <Route element={<MainLayout />}>
-          <Route 
-            element={
-              <PlansProvider> 
-                <Outlet/> 
-              </PlansProvider>
-            }
-          >
-            <Route path="/home" element={<Home />} />
-            <Route path="/plan" element={<MyPlanPage />} />
-            <Route path="/saved" element={<SavedPage />} />
-            <Route path="/commu" element={<ExplorePage />} />
-            <Route path="/add" element={<CreatePlan />} />
+          {/*detailplan*/}
+          <Route path="/plans/:id" element={<PlanDetailPage />} />
 
-            {/* Detail plan */}
-            <Route path="/plans/:id" element={<PlanDetailPage />} />
-            {/* Các route khác nếu cần */}
-          </Route>
+
         </Route>
-          {/* Optional: Redirect từ root về /login nếu muốn login là trang đầu tiên */}
-          {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
       </Routes>
     </BrowserRouter>
   );
 }
 
 export default App;
+
