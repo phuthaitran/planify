@@ -3,19 +3,11 @@ package com.planify.backend.dto.request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PlanRequest {
-    String title;
+public class TaskRequest {
+    Integer stageId;
     String description;
-    String visibility;
-    String status;
-    String picture;
-    LocalDateTime reminderAt;
-    LocalDateTime expiredAt;
-
 }

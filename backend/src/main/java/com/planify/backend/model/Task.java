@@ -1,49 +1,41 @@
 package com.planify.backend.model;
 
 import jakarta.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+
+
 @Getter
 @Setter
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name="stage")
-public class Stage {
+@Table(name = "task")
+public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_id", nullable = false)
-    Plan plan_id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stage_id")
+    @JsonIgnore
+    Stage stage_id;
 
-    @Column(nullable = false, length = 120)
-    String title;
-
-    @Column(columnDefinition = "TEXT")
+    @Column(nullable = false)
     String description;
 
-    Integer duration;
-
-    @CreatedDate
-    LocalDateTime created_date;
-
-    @LastModifiedDate
-    LocalDateTime updated_date;
+    @Column(nullable = false)
+    int duration;
 
     @Column(name="started_at")
     LocalDateTime started_at;
 
     @Column(name="completed_at")
     LocalDateTime completed_at;
-
-
 }

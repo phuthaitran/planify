@@ -41,15 +41,23 @@ public class Plan {
     @Column(nullable = false)
     Long duration;
 
+
+
     String picture;
 
     @CreationTimestamp
     @Column(name="created_date", nullable = false, updatable = false)
-    LocalDateTime createdAt;
+    LocalDateTime created_date;
 
     @UpdateTimestamp
     @Column(name="updated_date", nullable = false)
-    LocalDateTime updatedAt;
+    LocalDateTime updated_date;
+
+    @Column(name="started_at")
+    LocalDateTime started_at;
+
+    @Column(name="completed_at")
+    LocalDateTime completed_at;
 
     @Column
     LocalDateTime reminderAt;
