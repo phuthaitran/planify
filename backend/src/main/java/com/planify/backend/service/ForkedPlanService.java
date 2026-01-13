@@ -11,6 +11,7 @@ import com.planify.backend.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +35,11 @@ public class ForkedPlanService {
                 .orElseThrow(() -> new RuntimeException("Plan not found!"));
 
         if (originalPlan.getOwner().getId().equals(currentUser.getId())) {
-            throw new IllegalArgumentException("You cannot fork your plan!");
+            throw new IllegalArgumentException("You cannot fork your own plan!");
+        }
+
+        if (!"public".equals(originalPlan.getVisibility())){
+            throw new AccessDeniedException("You do not have permission to fork this plan!");
         }
 
         PlanRequest adoptedPlanRequest = planMapper.toRequest(originalPlan);

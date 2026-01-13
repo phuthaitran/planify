@@ -1,9 +1,9 @@
 package com.planify.backend.service;
 
-import com.planify.backend.model.LikedPlan;
+import com.planify.backend.model.Bookmark;
 import com.planify.backend.model.Plan;
 import com.planify.backend.model.User;
-import com.planify.backend.repository.LikedPlanRepository;
+import com.planify.backend.repository.BookmarkRepository;
 import com.planify.backend.repository.PlanRepository;
 import com.planify.backend.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,42 +18,42 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PACKAGE, makeFinal = true)
 @Service
-public class LikedPlanService {
+public class BookmarkService {
     UserRepository userRepository;
     PlanRepository planRepository;
-    LikedPlanRepository likedPlanRepository;
+    BookmarkRepository bookmarkRepository;
     JwtUserContext jwtUserContext;
 
-    public void likePlan(Integer planId) {
+    public void bookmark(Integer planId) {
         Integer currentUserId = jwtUserContext.getCurrentUserId();
         User currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new EntityNotFoundException("Plan not found"));
 
-        LikedPlan likedPlan = new LikedPlan();
-        if (!likedPlanRepository.existsByUserIdAndPlanId(currentUserId, planId)) {
-            likedPlan.setUser(currentUser);
-            likedPlan.setPlan(plan);
+        Bookmark bookmark = new Bookmark();
+        if (!bookmarkRepository.existsByUserIdAndPlanId(currentUserId, planId)) {
+            bookmark.setUser(currentUser);
+            bookmark.setPlan(plan);
         }
 
-        likedPlanRepository.save(likedPlan);
+        bookmarkRepository.save(bookmark);
     }
 
     @Transactional
-    public void unlikePlan(Integer planId) {
+    public void removeBookmark(Integer planId) {
         Integer currentUserId = jwtUserContext.getCurrentUserId();
-        if (!likedPlanRepository.existsByUserIdAndPlanId(currentUserId, planId)) {
+        if (!bookmarkRepository.existsByUserIdAndPlanId(currentUserId, planId)) {
             return;
         }
-        likedPlanRepository.deleteByUserIdAndPlanId(currentUserId, planId);
+        bookmarkRepository.deleteByUserIdAndPlanId(currentUserId, planId);
     }
 
-    public List<Plan> getLikedPlans(Integer userId) {
-        return likedPlanRepository.findPlanByUserId(userId);
+    public List<Plan> getBookmarkedPlans(Integer userId) {
+        return bookmarkRepository.findPlanByUserId(userId);
     }
 
-    public List<User> getLikers(Integer planId) {
-        return likedPlanRepository.findUserByPlanId(planId);
+    public List<User> getBookmarkers(Integer planId) {
+        return bookmarkRepository.findUserByPlanId(planId);
     }
 }

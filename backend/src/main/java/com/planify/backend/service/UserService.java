@@ -16,7 +16,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,10 +29,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Slf4j
+@Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PACKAGE, makeFinal = true)
-@Service
+@Slf4j
 public class UserService {
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
@@ -95,17 +94,41 @@ public class UserService {
                 .toList();
     }
 
-    @PostAuthorize("returnObject.username == authentication.name")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public UserResponse getUser(Integer id){
         return buildUserResponse(userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED))
         );
     }
 
-    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse updateUser(Integer id, UserUpdateRequest request ){
+        // Lấy thông tin user hiện tại từ SecurityContext
+        var context = SecurityContextHolder.getContext();
+        var authentication = context.getAuthentication();
+
+        if(authentication == null || authentication.getName() == null){
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        String currentUsername = authentication.getName();
+
+        // Lấy user cần update từ database
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        // Kiểm tra quyền: phải là chính user đó HOẶC là ADMIN
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("SCOPE_ADMIN"));
+
+        boolean isOwner = user.getUsername().equals(currentUsername);
+
+        // Nếu không phải admin và không phải chính chủ thì từ chối
+        if (!isAdmin && !isOwner) {
+            log.warn("User {} attempted to update user {} without permission", currentUsername, id);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        log.info("User {} is updating user {}", currentUsername, id);
 
         userMapper.updateUser(user , request);
 
@@ -116,7 +139,6 @@ public class UserService {
 
         return buildUserResponse(userRepository.save(user));
     }
-
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @Transactional
     public void deleteUser(Integer id){

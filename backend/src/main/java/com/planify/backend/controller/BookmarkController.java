@@ -5,7 +5,7 @@ import com.planify.backend.dto.response.PlanResponse;
 import com.planify.backend.dto.response.UserResponse;
 import com.planify.backend.mapper.PlanMapper;
 import com.planify.backend.mapper.UserMapper;
-import com.planify.backend.service.LikedPlanService;
+import com.planify.backend.service.BookmarkService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,32 +21,32 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PACKAGE, makeFinal = true)
 @RestController
 @RequestMapping
-public class LikedPlanController {
-    LikedPlanService likedPlanService;
+public class BookmarkController {
+    BookmarkService bookmarkService;
     PlanMapper planMapper;
     UserMapper userMapper;
 
-    @PostMapping("/plans/{planId}/like")
-    ResponseEntity<ApiResponse<Void>> likePlan(@PathVariable Integer planId) {
-        likedPlanService.likePlan(planId);
+    @PostMapping("/plans/{planId}/bookmark")
+    ResponseEntity<ApiResponse<Void>> bookmark(@PathVariable Integer planId) {
+        bookmarkService.bookmark(planId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .body(ApiResponse.<Void>builder()
                         .code(HttpStatus.NO_CONTENT.value())
                         .build());
     }
 
-    @DeleteMapping("/plans/{planId}/unlike")
-    ResponseEntity<ApiResponse<Void>> unlikePlan(@PathVariable Integer planId) {
-        likedPlanService.unlikePlan(planId);
+    @DeleteMapping("/plans/{planId}/bookmark")
+    ResponseEntity<ApiResponse<Void>> removeBookmark(@PathVariable Integer planId) {
+        bookmarkService.removeBookmark(planId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .body(ApiResponse.<Void>builder()
                         .code(HttpStatus.NO_CONTENT.value())
                         .build());
     }
 
-    @GetMapping("/users/{userId}/liked_plans")
-    ResponseEntity<ApiResponse<List<PlanResponse>>> getLikedPlans(@PathVariable Integer userId) {
-        List<com.planify.backend.model.Plan> plans = likedPlanService.getLikedPlans(userId);
+    @GetMapping("/users/{userId}/bookmarks")
+    ResponseEntity<ApiResponse<List<PlanResponse>>> getBookmarks(@PathVariable Integer userId) {
+        List<com.planify.backend.model.Plan> plans = bookmarkService.getBookmarkedPlans(userId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<List<PlanResponse>>builder()
@@ -55,9 +55,9 @@ public class LikedPlanController {
                         .build());
     }
 
-    @GetMapping("/plans/{planId}/likers")
-    ResponseEntity<ApiResponse<List<UserResponse>>> getLikers(@PathVariable Integer planId) {
-        List<com.planify.backend.model.User> users = likedPlanService.getLikers(planId);
+    @GetMapping("/plans/{planId}/bookmarkers")
+    ResponseEntity<ApiResponse<List<UserResponse>>> getBookmarkers(@PathVariable Integer planId) {
+        List<com.planify.backend.model.User> users = bookmarkService.getBookmarkers(planId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<List<UserResponse>>builder()

@@ -50,6 +50,7 @@ CREATE TABLE `follow` (
   `id` int NOT NULL AUTO_INCREMENT,
   `follower_id` int NOT NULL,
   `following_id` int NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `fk_follower_user_idx` (`follower_id`),
   KEY `fk_follower_idx` (`following_id`),
@@ -68,6 +69,7 @@ CREATE TABLE `forked_plan` (
   `original_plan_id` int DEFAULT NULL,
   `adopted_plan_id` int DEFAULT NULL,
   `adopted_user_id` int DEFAULT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `fk_original_plan_idx` (`original_plan_id`),
   KEY `fk_fork_plan_user_idx` (`adopted_user_id`),
@@ -82,20 +84,21 @@ LOCK TABLES `forked_plan` WRITE;
 UNLOCK TABLES;
 
 
-DROP TABLE IF EXISTS `liked_plan`;
-CREATE TABLE `liked_plan` (
+DROP TABLE IF EXISTS `bookmark`;
+CREATE TABLE `bookmark` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
   `plan_id` int NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `fk_liked_plan_user_idx` (`user_id`),
-  KEY `fk_liked_plan_plan_idx` (`plan_id`),
-  CONSTRAINT `fk_liked_plan_plan` FOREIGN KEY (`plan_id`) REFERENCES `plan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_liked_plan_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  KEY `fk_bookmark_user_idx` (`user_id`),
+  KEY `fk_bookmark_plan_idx` (`plan_id`),
+  CONSTRAINT `fk_bookmark_plan` FOREIGN KEY (`plan_id`) REFERENCES `plan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_bookmark_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 
-LOCK TABLES `liked_plan` WRITE;
+LOCK TABLES `bookmark` WRITE;
 UNLOCK TABLES;
 
 
@@ -105,8 +108,8 @@ CREATE TABLE `notification` (
   `user_id` int NOT NULL,
   `type` enum('task_deadline','task_fork','follower','task_reminder') COLLATE utf8mb4_bin NOT NULL,
   `message_text` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `time` datetime NOT NULL,
-  `plan_id` int NOT NULL,
+  `time` datetime,
+  `plan_id` int,
   PRIMARY KEY (`id`),
   KEY `fk_notification_user_idx` (`user_id`),
   KEY `fk_notification_plan_idx` (`plan_id`),
@@ -130,8 +133,8 @@ CREATE TABLE `plan` (
   `picture` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
   `visibility` enum('private','public') COLLATE utf8mb4_bin NOT NULL,
   `status` enum('incompleted','completed','cancelled') COLLATE utf8mb4_bin NOT NULL,
-  `created_date` datetime DEFAULT NULL,
-  `updated_date` datetime DEFAULT NULL,
+  `created_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `expired_at` datetime(6) DEFAULT NULL,
   `expired_sent` bit(1) DEFAULT NULL,
   `reminder_at` datetime(6) DEFAULT NULL,

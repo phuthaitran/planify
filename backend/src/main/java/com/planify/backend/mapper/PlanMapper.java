@@ -11,8 +11,12 @@ import java.util.List;
 public interface PlanMapper {
     PlanRequest toRequest(Plan plan);
     @Mapping(source = "owner.id", target = "ownerId")
+    @Mapping(source = "createdAt", target = "createdAt")
+    @Mapping(source = "updatedAt", target = "updatedAt")
     PlanResponse toResponse(Plan plan);
     @Mapping(source = "owner.id", target = "ownerId")
+    @Mapping(source = "createdAt", target = "createdAt")
+    @Mapping(source = "updatedAt", target = "updatedAt")
     List<PlanResponse> toResponseList(List<Plan> plans);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

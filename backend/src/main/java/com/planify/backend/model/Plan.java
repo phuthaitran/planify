@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,6 +43,14 @@ public class Plan {
 
     String picture;
 
+    @CreationTimestamp
+    @Column(name="created_date", nullable = false, updatable = false)
+    LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name="updated_date", nullable = false)
+    LocalDateTime updatedAt;
+
     @Column
     LocalDateTime reminderAt;
 
@@ -57,7 +67,7 @@ public class Plan {
     Set<TagPlan> tagPlans = new HashSet<>();
 
     @OneToMany(mappedBy = "plan", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    Set<LikedPlan> plans = new HashSet<>();
+    Set<Bookmark> plans = new HashSet<>();
 
     @OneToMany(mappedBy = "originalPlan", cascade = CascadeType.REMOVE, orphanRemoval = true)
     Set<ForkedPlan> originalPlans = new HashSet<>();
