@@ -74,24 +74,10 @@ public class NotificationController {
                         .message("Notification removed successfully")
                         .build());
     }
-    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/notifications/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter stream(@AuthenticationPrincipal Jwt jwt) {
         Long userId = jwt.getClaim("userId");
         return notificationService.subscribe(userId);
     }
-
-//    @PostMapping("/notifications/web")
-//    public ResponseEntity<ApiResponse<NotificationResponse>> sendWebNotification(
-//            @RequestBody NotificationRequest request
-//    ) {
-//        Notification notif = notificationService.sendWebNotification(request);
-//
-//        return ResponseEntity.ok(
-//                ApiResponse.<NotificationResponse>builder()
-//                        .code(200)
-//                        .result(notificationMapper.toResponse(notif))
-//                        .build()
-//        );
-//    }
 
 }

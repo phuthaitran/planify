@@ -13,6 +13,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -30,6 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Service
+@Slf4j
 public class NotificationService {
     final Map<Long, List<SseEmitter>> emitters = new ConcurrentHashMap<>();
 
@@ -160,6 +162,8 @@ public class NotificationService {
 
         emitters.computeIfAbsent(userId, k -> new CopyOnWriteArrayList<>())
                 .add(emitter);
+        log.info("SSE subscribed: userId={}, total={}",
+                userId, emitters.get(userId).size());
 
         emitter.onCompletion(() -> removeEmitter(userId, emitter));
         emitter.onTimeout(() -> removeEmitter(userId, emitter));
@@ -170,7 +174,14 @@ public class NotificationService {
 
     public void send(Long userId, Object data) {
         List<SseEmitter> userEmitters = emitters.get(userId);
-        if (userEmitters == null) return;
+
+        if (userEmitters == null || userEmitters.isEmpty()) {
+            System.out.println("❌ NO SSE connection for userId = " + userId);
+            return;
+        }
+
+        System.out.println("✅ SSE connections for userId = " + userId
+                + " = " + userEmitters.size());
 
         for (SseEmitter emitter : userEmitters) {
             try {
@@ -184,6 +195,7 @@ public class NotificationService {
             }
         }
     }
+
 
     private void removeEmitter(Long userId, SseEmitter emitter) {
         List<SseEmitter> list = emitters.get(userId);

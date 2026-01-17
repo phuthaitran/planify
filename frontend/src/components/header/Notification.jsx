@@ -1,83 +1,55 @@
 // src/pages/Notifications.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Notification.css'; // we'll create this next
 
-// Using the same fake data (you can later replace with real data from API/context)
-const fakeNotifications = [
-  {
-    id: 1,
-    name: "Sarah Chen",
-    avatar: "https://i.pravatar.cc/48?u=sarah",
-    action: "commented on your post",
-    message: "This looks amazing! 🔥",
-    time: "5m ago",
-    read: false,
-    link: "/plans/123" // example - you can make these clickable
-  },
-  {
-    id: 2,
-    name: "Michael Park",
-    avatar: "https://i.pravatar.cc/48?u=michael",
-    action: "liked your photo",
-    time: "28m ago",
-    read: false,
-    link: "/commu"
-  },
-  {
-    id: 3,
-    name: "Emma Thompson",
-    avatar: "https://i.pravatar.cc/48?u=emma",
-    action: "started following you",
-    time: "2h ago",
-    read: true,
-    link: "/users/emma123"
-  },
-  {
-    id: 4,
-    name: "Alex Kim",
-    avatar: "https://i.pravatar.cc/48?u=alex",
-    action: "mentioned you in a comment",
-    message: "@vu check this out!",
-    time: "1d ago",
-    read: true
-  },
-  {
-    id: 5,
-    name: "Project Team",
-    avatar: "https://i.pravatar.cc/48?u=team",
-    action: "added a new task to",
-    message: "Website Redesign 2026",
-    time: "2d ago",
-    read: true
-  },
-  {
-    id: 6,
-    name: "Lisa Wong",
-    avatar: "https://i.pravatar.cc/48?u=lisa",
-    action: "shared your project",
-    time: "3d ago",
-    read: true
-  },
-  {
-    id: 7,
-    name: "David Lee",
-    avatar: "https://i.pravatar.cc/48?u=david",
-    action: "invited you to collaborate",
-    time: "4d ago",
-    read: false
-  }
-];
-
 const Notifications = () => {
-  const [filter, setFilter] = useState('all'); // 'all' | 'unread'
-  const navigate = useNavigate();
+    const [filter, setFilter] = useState('all');
+    const [notifications, setNotifications] = useState([]);
+    const navigate = useNavigate();
 
-  const displayedNotifications = fakeNotifications.filter(notif =>
-    filter === 'all' || !notif.read
-  );
+    useEffect(() => {
+        const es = new EventSource(
+            "http://localhost:8080/planify/notifications/stream",
+            { withCredentials: true }
+        );
 
-  const unreadCount = fakeNotifications.filter(n => !n.read).length;
+        es.onopen = () => {
+            console.log("✅ SSE connected");
+        };
+
+        es.addEventListener("notification", (e) => {
+            const data = JSON.parse(e.data);
+
+            // map backend → frontend model
+            const notif = {
+                id: data.id,
+                name: data.senderName,
+                avatar: data.senderAvatar,
+                action: data.action,
+                message: data.message,
+                time: "just now",
+                read: false,
+                link: data.link
+            };
+
+            setNotifications(prev => [notif, ...prev]);
+        });
+
+        es.onerror = () => {
+            console.error("❌ SSE error");
+            es.close();
+        };
+
+        return () => es.close();
+    }, []);
+
+    const displayedNotifications = notifications.filter(
+        notif => filter === 'all' || !notif.read
+    );
+
+    const unreadCount = notifications.filter(n => !n.read).length;
+
 
   return (
     <div className="notifications-page">
