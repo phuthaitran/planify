@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import PlanInfo from "../components/createPlan/PlanInfo";
-import PreviewModal from "../components/createPlan/PreviewModal";
+import React, { useState, useCallback } from "react";
+import PlanInfo from "../components/createplan/PlanInfo";
+import PreviewModal from "../components/createplan/Preview";
 import "./CreatePlan.css";
 
 const CreatePlan = () => {
@@ -9,41 +9,34 @@ const CreatePlan = () => {
     title: '',
     description: '',
     categories: [],
-    stages: []
+    stages: [{ title: '', description: '', tasks: [] }],
+    imageUrl: null
   });
 
-  const handleCreate = () => {
-    // Later:
-    // - collect plan data
-    // - send to backend
-    // - redirect to MyPlan page
-    console.log("Create plan");
-  };
+  const handleCreate = useCallback(() => {
+    // Validate plan data
+    if (!planData.title.trim()) {
+      alert("Please enter a plan title");
+      return;
+    }
 
-  const handlePreview = () => {
-    // Collect all the plan data here
-    // For demo purposes, using sample data
-    setPlanData({
-      title: 'Sample Plan Title',
-      description: 'This is a sample description of the plan',
-      categories: ['Study', 'Work'],
-      stages: [
-        {
-          title: 'Stage 1',
-          description: 'First stage description',
-          tasks: [
-            {
-              title: 'Task 1',
-              description: 'Task description',
-              duration: '5',
-              subtasks: ['Subtask 1', 'Subtask 2']
-            }
-          ]
-        }
-      ]
-    });
+    // TODO: Send to backend
+    console.log("Create plan with data:", planData);
+
+    // TODO: Redirect to MyPlan page
+  }, [planData]);
+
+  const handlePreview = useCallback(() => {
+    if (!planData.title.trim()) {
+      alert("Please enter a plan title before previewing");
+      return;
+    }
     setShowPreview(true);
-  };
+  }, [planData.title]);
+
+  const updatePlanData = useCallback((updates) => {
+    setPlanData(prev => ({ ...prev, ...updates }));
+  }, []);
 
   return (
     <div className="createplan-page">
@@ -54,7 +47,7 @@ const CreatePlan = () => {
 
       {/* Main Content */}
       <div className="createplan-content">
-        <PlanInfo />
+        <PlanInfo planData={planData} updatePlanData={updatePlanData} />
       </div>
 
       {/* Action Buttons */}
