@@ -66,7 +66,7 @@ export default function UserMenuPopup({
       {/* Actions */}
       <div className="user-dd-list">
         <button onClick={() => go("/myprofile")}>My profile</button>
-        <button className="danger" onClick={() => go("/logout")}>
+        <button className="danger" onClick={() => go("/")}>
           <FontAwesomeIcon icon={faArrowRightFromBracket} className="icon" />
           Log out
         </button>

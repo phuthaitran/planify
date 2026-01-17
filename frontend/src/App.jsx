@@ -1,29 +1,39 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+//mainlayout
 import MainLayout from "./layouts/MainLayout";
-import Home from "./pages/Home";
-import Add from "./pages/CreatePlan";
+
+//logsign
 import LogSign from "./pages/LoginSignup";
+
+//sidebar
+import Home from "./pages/Home";
 import MyPlan from "./pages/MyPlan";
 import SavedPlan from "./pages/SavedPlan";
 import Commu from "./pages/ExplorePage";
+import Add from "./pages/CreatePlan";
 import About from "./pages/AboutUs.jsx";
 
 // Profile Pages
 import MyProfile from "./pages/MyProfile";
 import OtherUser from "./pages/OtherUser";
 
+//plan
 import ViewPlan from "./components/plans/ViewPlan.jsx";
 import ViewMyPlan from "./components/plans/ViewMyPlan.jsx";
 import UserView from "./components/users/UserView";
 
 import "./App.css";
 
+//
+import Admin from "./pages/Admin.jsx";
+
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<MainLayout />}>
-          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/add" element={<Add />} />
 
           {/* Profile Routes */}
@@ -51,7 +61,10 @@ export default function App() {
           <Route path="/about" element={<About />} />
         </Route>
 
-        <Route path="/logout" element={<LogSign />} />
+        <Route path="/" element={<LogSign />} />
+        <Route path="/admin" element={<Admin />} />
+
+
       </Routes>
     </BrowserRouter>
   );

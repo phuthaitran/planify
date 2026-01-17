@@ -32,7 +32,7 @@ export default function Header() {
   return (
     <header className="app-header">
       {/* Logo */}
-      <NavLink to="/" className="app-header-logo">
+      <NavLink to="/home" className="app-header-logo">
         <img src={Logo} alt="Planify Logo" />
       </NavLink>
 
@@ -50,10 +50,9 @@ export default function Header() {
       <div className="app-header-actions">
         {/* Language */}
         <div ref={langRef} className="popup-trigger">
-          <FontAwesomeIcon
-            icon={faGlobe}
-            onClick={() => toggle("lang")}
-          />
+          <div className="trigger-icon" onClick={() => toggle("lang")}>
+            <FontAwesomeIcon icon={faGlobe} />
+          </div>
           <LanguageDropdown
             isOpen={openPopup === "lang"}
             onClose={() => setOpenPopup(null)}
@@ -65,10 +64,9 @@ export default function Header() {
 
         {/* Notifications */}
         <div ref={notifRef} className="popup-trigger">
-          <FontAwesomeIcon
-            icon={faBell}
-            onClick={() => toggle("notif")}
-          />
+          <div className="trigger-icon" onClick={() => toggle("notif")}>
+            <FontAwesomeIcon icon={faBell} />
+          </div>
           <NotificationDropdown
             isOpen={openPopup === "notif"}
             onClose={() => setOpenPopup(null)}
@@ -78,15 +76,15 @@ export default function Header() {
 
         {/* User */}
         <div ref={userRef} className="popup-trigger">
-          <FontAwesomeIcon
-            icon={faUser}
-            onClick={() => toggle("user")}
-          />
+          <div className="trigger-icon" onClick={() => toggle("user")}>
+            <FontAwesomeIcon icon={faUser} />
+          </div>
           <UserMenuPopup
             isOpen={openPopup === "user"}
             onClose={() => setOpenPopup(null)}
             containerRef={userRef}
             userName="Ngọc"
+            onClick={(e) => e.stopPropagation()}
           />
         </div>
       </div>
