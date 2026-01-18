@@ -112,7 +112,6 @@ const LoginSignup = () => {
 
       let username = loginData.username;
       let detectedRole = data?.result?.role || data?.role || "";
-
       try {
         const meRes = await authApi.me();
         username = meRes?.data?.result?.username || meRes?.data?.username || username;

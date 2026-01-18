@@ -2,6 +2,7 @@ package com.planify.backend.mapper;
 
 import com.planify.backend.dto.response.NotificationResponse;
 import com.planify.backend.model.Notification;
+import com.planify.backend.model.Plan;
 import com.planify.backend.model.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-18T02:26:17+0700",
+    date = "2026-01-18T15:05:56+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 25.0.1 (Oracle Corporation)"
 )
 @Component
@@ -25,6 +26,8 @@ public class NotificationMapperImpl implements NotificationMapper {
         NotificationResponse.NotificationResponseBuilder notificationResponse = NotificationResponse.builder();
 
         notificationResponse.recipientId( notificationRecipientId( notification ) );
+        notificationResponse.planId( notificationPlanId( notification ) );
+        notificationResponse.title( notificationPlanTitle( notification ) );
         notificationResponse.id( notification.getId() );
         notificationResponse.type( notification.getType() );
         notificationResponse.messageText( notification.getMessageText() );
@@ -59,5 +62,35 @@ public class NotificationMapperImpl implements NotificationMapper {
             return null;
         }
         return id;
+    }
+
+    private Integer notificationPlanId(Notification notification) {
+        if ( notification == null ) {
+            return null;
+        }
+        Plan plan = notification.getPlan();
+        if ( plan == null ) {
+            return null;
+        }
+        Integer id = plan.getId();
+        if ( id == null ) {
+            return null;
+        }
+        return id;
+    }
+
+    private String notificationPlanTitle(Notification notification) {
+        if ( notification == null ) {
+            return null;
+        }
+        Plan plan = notification.getPlan();
+        if ( plan == null ) {
+            return null;
+        }
+        String title = plan.getTitle();
+        if ( title == null ) {
+            return null;
+        }
+        return title;
     }
 }

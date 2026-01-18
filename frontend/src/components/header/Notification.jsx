@@ -15,21 +15,23 @@ const Notifications = () => {
         );
 
         es.onopen = () => {
-            console.log("✅ SSE connected");
+            console.log(" ✅ SSE connected");
         };
 
         es.addEventListener("notification", (e) => {
             const data = JSON.parse(e.data);
 
+            console.log(" RAW SSE DATA:", data);
             // map backend → frontend model
             const notif = {
                 id: data.id,
-                name: data.plan?.name,
+                planId: data.planIdd,
+                name: data.title,
                 action: data.type,
                 message: data.messageText,
                 time: "just now",
                 read: false,
-                link: `/plans/${data.plan?.id}`
+                link: `/plans/${data.planId}`
             };
 
 
@@ -45,7 +47,7 @@ const Notifications = () => {
 
         //  Cleanup when reload / unmount
         return () => {
-            console.log("🔌 SSE cleanup");
+            console.log(" SSE is cleanup");
             es.close();
         };
     }, []);
