@@ -54,16 +54,7 @@
 
 /* Content */
 .my-bio-content {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 24px;
   padding: 24px;
-}
-
-@container mybiomenu (max-width: 700px) {
-  .my-bio-content {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* About Me Box */
@@ -72,12 +63,6 @@
   border-radius: 8px;
   padding: 16px;
   height: fit-content;
-}
-
-@container mybiomenu (max-width: 700px) {
-  .my-bio-about-box {
-    order: -1;
-  }
 }
 
 .my-bio-about-title {

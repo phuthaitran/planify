@@ -37,6 +37,7 @@ export default function MyProfile() {
       <MyBioMenu
         bio={bio}
         onBioChange={handleBioChange}
+
       />
     </div>
   );
