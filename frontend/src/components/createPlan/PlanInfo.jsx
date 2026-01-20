@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import Stage from "./Stage";
 import "./PlanInfo.css";
 
@@ -13,38 +13,75 @@ const CATEGORIES = [
   "Project"
 ];
 
-const PlanInfo = () => {
-  const [planTitle, setPlanTitle] = useState('');
-  const [planDescription, setPlanDescription] = useState('');
-  const [stages, setStages] = useState([{ title: '', description: '', tasks: [] }]);
+const PlanInfo = ({ planData, updatePlanData }) => {
   const [showCategories, setShowCategories] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const fileInputRef = useRef(null);
 
-  const addStage = () => {
-    setStages([...stages, { title: '', description: '', tasks: [] }]);
-  };
+  const handleTitleChange = useCallback((e) => {
+    updatePlanData({ title: e.target.value });
+  }, [updatePlanData]);
 
-  const updateStage = (index, updatedStage) => {
-    const newStages = [...stages];
+  const handleDescriptionChange = useCallback((e) => {
+    updatePlanData({ description: e.target.value });
+  }, [updatePlanData]);
+
+  const handleImageChange = useCallback((e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Image size should be less than 5MB");
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        alert("Please select an image file");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        updatePlanData({ imageUrl: event.target.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  }, [updatePlanData]);
+
+  const handleRemoveImage = useCallback((e) => {
+    e.stopPropagation();
+    updatePlanData({ imageUrl: null });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, [updatePlanData]);
+
+  const addStage = useCallback(() => {
+    updatePlanData({
+      stages: [...planData.stages, { title: '', description: '', tasks: [] }]
+    });
+  }, [planData.stages, updatePlanData]);
+
+  const updateStage = useCallback((index, updatedStage) => {
+    const newStages = [...planData.stages];
     newStages[index] = updatedStage;
-    setStages(newStages);
-  };
+    updatePlanData({ stages: newStages });
+  }, [planData.stages, updatePlanData]);
 
-  const deleteStage = (index) => {
-    if (stages.length > 1) {
-      setStages(stages.filter((_, i) => i !== index));
+  const deleteStage = useCallback((index) => {
+    if (planData.stages.length > 1) {
+      updatePlanData({
+        stages: planData.stages.filter((_, i) => i !== index)
+      });
     } else {
       alert("You must have at least one stage!");
     }
-  };
+  }, [planData.stages, updatePlanData]);
 
-  const toggleCategory = (category) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
-    );
-  };
+  const toggleCategory = useCallback((category) => {
+    const newCategories = planData.categories.includes(category)
+      ? planData.categories.filter((c) => c !== category)
+      : [...planData.categories, category];
+    updatePlanData({ categories: newCategories });
+  }, [planData.categories, updatePlanData]);
 
   return (
     <div className="planinfo-wrapper">
@@ -55,17 +92,38 @@ const PlanInfo = () => {
           type="text"
           placeholder="Enter plan title"
           className="plan-title-input"
-          value={planTitle}
-          onChange={(e) => setPlanTitle(e.target.value)}
+          value={planData.title}
+          onChange={handleTitleChange}
         />
       </div>
 
       {/* Plan Info Card */}
       <div className="planinfo-card">
         {/* Image Upload */}
-        <div className="image-upload">
-          <input type="file" accept="image/*" />
-          <span>Upload Image</span>
+        <div className="image-upload" onClick={() => fileInputRef.current?.click()}>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+          {planData.imageUrl ? (
+            <>
+              <img src={planData.imageUrl} alt="Plan preview" className="image-preview" />
+              <button className="image-remove-btn" onClick={handleRemoveImage}>
+                ×
+              </button>
+            </>
+          ) : (
+            <div className="image-upload-label">
+              <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <span>Upload Image</span>
+            </div>
+          )}
         </div>
 
         {/* Description + Categories */}
@@ -74,8 +132,8 @@ const PlanInfo = () => {
             <label>Description</label>
             <textarea
               placeholder="Describe your plan..."
-              value={planDescription}
-              onChange={(e) => setPlanDescription(e.target.value)}
+              value={planData.description}
+              onChange={handleDescriptionChange}
             />
           </div>
 
@@ -84,7 +142,7 @@ const PlanInfo = () => {
               className="categories-btn"
               onClick={() => setShowCategories(!showCategories)}
             >
-              Categories
+              {showCategories ? 'Hide Categories' : 'Select Categories'}
             </button>
 
             {showCategories && (
@@ -93,7 +151,7 @@ const PlanInfo = () => {
                   <span
                     key={cat}
                     className={`category-tag ${
-                      selectedCategories.includes(cat) ? "active" : ""
+                      planData.categories.includes(cat) ? "active" : ""
                     }`}
                     onClick={() => toggleCategory(cat)}
                   >
@@ -108,10 +166,11 @@ const PlanInfo = () => {
 
       {/* Stages */}
       <div className="stage-list">
-        {stages.map((stage, index) => (
+        {planData.stages.map((stage, index) => (
           <Stage
             key={index}
             stage={stage}
+            stageNumber={index + 1}
             updateStage={(updatedStage) => updateStage(index, updatedStage)}
             deleteStage={() => deleteStage(index)}
           />

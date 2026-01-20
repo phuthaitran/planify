@@ -1,29 +1,40 @@
-import React from "react";
+import React, { useCallback } from "react";
 import Task from "./Task";
 import "./Stage.css";
 
-const Stage = ({ stage, updateStage, deleteStage }) => {
-  const addTask = () => {
+const Stage = ({ stage, stageNumber, updateStage, deleteStage }) => {
+  const handleTitleChange = useCallback((e) => {
+    updateStage({ ...stage, title: e.target.value });
+  }, [stage, updateStage]);
+
+  const handleDescriptionChange = useCallback((e) => {
+    updateStage({ ...stage, description: e.target.value });
+  }, [stage, updateStage]);
+
+  const addTask = useCallback(() => {
     updateStage({
       ...stage,
       tasks: [...stage.tasks, { title: '', description: '', duration: '', subtasks: [] }]
     });
-  };
+  }, [stage, updateStage]);
 
-  const updateTask = (index, updatedTask) => {
+  const updateTask = useCallback((index, updatedTask) => {
     const newTasks = [...stage.tasks];
     newTasks[index] = updatedTask;
     updateStage({ ...stage, tasks: newTasks });
-  };
+  }, [stage, updateStage]);
 
-  const deleteTask = (index) => {
-    updateStage({ ...stage, tasks: stage.tasks.filter((_, i) => i !== index) });
-  };
+  const deleteTask = useCallback((index) => {
+    updateStage({
+      ...stage,
+      tasks: stage.tasks.filter((_, i) => i !== index)
+    });
+  }, [stage, updateStage]);
 
   return (
     <div className="stage-wrapper">
       <div className="stage-header">
-        <h2>Stage</h2>
+        <h2>Stage {stageNumber}</h2>
         <button className="delete-stage-btn" onClick={deleteStage}>
           Delete Stage
         </button>
@@ -37,7 +48,7 @@ const Stage = ({ stage, updateStage, deleteStage }) => {
             type="text"
             placeholder="Enter stage title"
             value={stage.title}
-            onChange={(e) => updateStage({ ...stage, title: e.target.value })}
+            onChange={handleTitleChange}
           />
         </div>
 
@@ -47,7 +58,7 @@ const Stage = ({ stage, updateStage, deleteStage }) => {
             type="text"
             placeholder="Enter stage description"
             value={stage.description}
-            onChange={(e) => updateStage({ ...stage, description: e.target.value })}
+            onChange={handleDescriptionChange}
           />
         </div>
       </div>
@@ -58,6 +69,7 @@ const Stage = ({ stage, updateStage, deleteStage }) => {
           <Task
             key={index}
             task={task}
+            taskNumber={index + 1}
             updateTask={(updatedTask) => updateTask(index, updatedTask)}
             deleteTask={() => deleteTask(index)}
           />

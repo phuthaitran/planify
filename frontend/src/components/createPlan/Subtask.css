@@ -1,86 +1,112 @@
-* {
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
-    box-sizing: border-box;
+.subtask-app {
+  container-type: inline-size;
+  container-name: subtask;
+  background: #e8e9eb;
+  border-radius: 16px;
+  padding: clamp(14px, 3cqi, 20px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 16px;
 }
 
-.todo-app {
-    background: #e8e9eb;
+.subtask-app h4 {
+  color: #002765;
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.subtask-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f5f6f7;
+  border-radius: 30px;
+  padding: 4px 4px 4px 16px;
+  margin-bottom: 20px;
+}
+
+@container subtask (max-width: 400px) {
+  .subtask-input-row {
+    flex-direction: column;
     border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    margin-bottom: 24px;
-    margin-left: 0;
-    margin-right: auto;
-    max-width: 80%;
+    padding: 12px;
+    gap: 12px;
+  }
 }
 
-.todo-app h2 {
-    color: #002765;
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    font-size: 18px;
+.subtask-input-row input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 10px 8px;
+  font-size: 14px;
 }
 
-.row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #f5f6f7;
-    border-radius: 30px;
-    padding-left: 20px;
-    margin-bottom: 25px;
+@container subtask (max-width: 400px) {
+  .subtask-input-row input {
+    width: 100%;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 8px;
+  }
 }
 
-.row input {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    padding: 10px;
-    font-size: 14px;
+.subtask-add-btn {
+  background: #153677;
+  color: #fff;
+  flex-shrink: 0;
 }
 
-.row button {
-    border: none;
-    outline: none;
-    padding: 12px 30px;
-    background: #153677;
-    color: #fff;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 40px;
+.subtask-add-btn:hover {
+  background-color: #0f2556;
 }
 
-ul {
-    list-style: none;
-    padding: 0;
+@container subtask (max-width: 400px) {
+  .subtask-add-btn {
+    width: 100%;
+  }
 }
 
-ul li {
-    font-size: 15px;
-    padding: 12px 8px 12px 20px;
-    user-select: none;
-    cursor: pointer;
-    position: relative;
+.subtask-list {
+  list-style: none;
 }
 
-ul li span {
-    position: absolute;
-    right: 0;
-    top: 5px;
-    width: 40px;
-    height: 40px;
-    font-size: 22px;
-    color: #555;
-    line-height: 40px;
-    text-align: center;
-    border-radius: 50%;
-    cursor: pointer;
+.subtask-item {
+  font-size: 15px;
+  padding: 12px 8px 12px 16px;
+  user-select: none;
+  position: relative;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: #f5f6f7;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-ul li span:hover {
-    background: #f5f6f7;
+.subtask-item:hover {
+  background: #e5e7eb;
+}
+
+.subtask-text {
+  flex: 1;
+  word-break: break-word;
+}
+
+.subtask-remove-btn {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  font-size: 20px;
+  color: #dc2626;
+  background: transparent;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.subtask-remove-btn:hover {
+  background: rgba(220, 38, 38, 0.1);
+  color: #b91c1c;
 }

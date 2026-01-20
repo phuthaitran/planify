@@ -1,12 +1,31 @@
-import React from "react";
+import React, { useCallback } from "react";
 import Subtask from "./Subtask";
 import "./Task.css";
 
-const Task = ({ task, updateTask, deleteTask }) => {
+const Task = ({ task, taskNumber, updateTask, deleteTask }) => {
+  const handleTitleChange = useCallback((e) => {
+    updateTask({ ...task, title: e.target.value });
+  }, [task, updateTask]);
+
+  const handleDescriptionChange = useCallback((e) => {
+    updateTask({ ...task, description: e.target.value });
+  }, [task, updateTask]);
+
+  const handleDurationChange = useCallback((e) => {
+    const value = e.target.value;
+    if (value === '' || parseInt(value) >= 0) {
+      updateTask({ ...task, duration: value });
+    }
+  }, [task, updateTask]);
+
+  const handleSubtasksChange = useCallback((subtasks) => {
+    updateTask({ ...task, subtasks });
+  }, [task, updateTask]);
+
   return (
     <div className="task-wrapper">
       <div className="task-header">
-        <h2>Task</h2>
+        <h3>Task {taskNumber}</h3>
         <button className="delete-task-btn" onClick={deleteTask}>
           Delete Task
         </button>
@@ -20,7 +39,7 @@ const Task = ({ task, updateTask, deleteTask }) => {
             type="text"
             placeholder="Enter task title"
             value={task.title}
-            onChange={(e) => updateTask({ ...task, title: e.target.value })}
+            onChange={handleTitleChange}
           />
         </div>
 
@@ -30,11 +49,11 @@ const Task = ({ task, updateTask, deleteTask }) => {
             type="text"
             placeholder="Enter task description"
             value={task.description}
-            onChange={(e) => updateTask({ ...task, description: e.target.value })}
+            onChange={handleDescriptionChange}
           />
         </div>
 
-        <div className="task-field duration-field">
+        <div className="task-field">
           <label>Duration</label>
           <div className="duration-input">
             <input
@@ -42,7 +61,7 @@ const Task = ({ task, updateTask, deleteTask }) => {
               min="0"
               placeholder="0"
               value={task.duration}
-              onChange={(e) => updateTask({ ...task, duration: e.target.value })}
+              onChange={handleDurationChange}
             />
             <span className="duration-unit">Days</span>
           </div>
@@ -52,7 +71,7 @@ const Task = ({ task, updateTask, deleteTask }) => {
       {/* Subtask Section */}
       <Subtask
         subtasks={task.subtasks}
-        setSubtasks={(subtasks) => updateTask({ ...task, subtasks })}
+        setSubtasks={handleSubtasksChange}
       />
     </div>
   );

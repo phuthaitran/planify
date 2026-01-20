@@ -1,47 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import "./Subtask.css";
 
 const Subtask = ({ subtasks, setSubtasks }) => {
   const [inputValue, setInputValue] = useState("");
 
-  const addTask = () => {
-    if (inputValue.trim() === "") {
-      alert("You must write subtask!");
+  const addTask = useCallback(() => {
+    const trimmedValue = inputValue.trim();
+    if (trimmedValue === "") {
+      alert("Please enter a subtask!");
       return;
     }
 
-    setSubtasks([...subtasks, inputValue]);
+    setSubtasks([...subtasks, trimmedValue]);
     setInputValue("");
-  };
+  }, [inputValue, subtasks, setSubtasks]);
 
-  const removeTask = (indexToRemove) => {
+  const removeTask = useCallback((indexToRemove) => {
     setSubtasks(subtasks.filter((_, index) => index !== indexToRemove));
-  };
+  }, [subtasks, setSubtasks]);
+
+  const handleKeyPress = useCallback((e) => {
+    if (e.key === 'Enter') {
+      addTask();
+    }
+  }, [addTask]);
 
   return (
-    <div>
-      <div className="todo-app">
-        <h2>Subtask</h2>
+    <div className="subtask-app">
+      <h4>Subtasks</h4>
 
-        <div className="row">
-          <input
-            type="text"
-            placeholder="Add your subtask"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-          />
-          <button onClick={addTask}>Add</button>
-        </div>
+      <div className="subtask-input-row">
+        <input
+          type="text"
+          placeholder="Add your subtask"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyPress={handleKeyPress}
+        />
+        <button className="subtask-add-btn" onClick={addTask}>
+          Add
+        </button>
+      </div>
 
-        <ul>
+      {subtasks.length > 0 && (
+        <ul className="subtask-list">
           {subtasks.map((task, index) => (
-            <li key={index}>
-              {task}
-              <span onClick={() => removeTask(index)}>&times;</span>
+            <li key={index} className="subtask-item">
+              <span className="subtask-text">{task}</span>
+              <button
+                className="subtask-remove-btn"
+                onClick={() => removeTask(index)}
+                aria-label="Remove subtask"
+              >
+                ×
+              </button>
             </li>
           ))}
         </ul>
-      </div>
+      )}
     </div>
   );
 };

@@ -1,96 +1,103 @@
 .stage-wrapper {
-    width: 100%;
-    margin-bottom: 32px;
+  container-type: inline-size;
+  container-name: stage;
+  width: 100%;
+  margin-bottom: 32px;
 }
 
 .stage-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-    margin-left: 0;
-    margin-right: auto;
-    max-width: 90%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+@container stage (max-width: 500px) {
+  .stage-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .stage-header h2 {
-    font-size: 22px;
-    margin: 0;
-    color: #002765;
+  font-size: clamp(18px, 3cqi, 22px);
+  color: #002765;
+  flex: 1;
 }
 
 .delete-stage-btn {
-    padding: 8px 16px;
-    background-color: #153677;
-    color: #ffffff;
-    border: none;
-    border-radius: 20px;
-    font-size: 14px;
-    cursor: pointer;
+  background-color: #dc2626;
+  color: #ffffff;
 }
 
 .delete-stage-btn:hover {
-    opacity: 0.9;
+  background-color: #b91c1c;
+}
+
+@container stage (max-width: 500px) {
+  .delete-stage-btn {
+    width: 100%;
+  }
 }
 
 /* Stage card */
 .stage-card {
-    background: #e8e9eb;
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-    margin-bottom: 24px;
-    margin-left: 0;
-    margin-right: auto;
-    max-width: 90%;
+  background: #e8e9eb;
+  border-radius: 18px;
+  padding: clamp(16px, 3cqi, 24px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
 }
 
 .stage-field {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+.stage-field:last-child {
+  margin-bottom: 0;
 }
 
 .stage-field label {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: #002765;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #002765;
+  display: block;
 }
 
 .stage-field input {
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    outline: none;
-    background: #f5f6f7;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  background: #f5f6f7;
 }
 
 .stage-field input:focus {
-    border-color: #4e085f;
+  border-color: #4e085f;
+  box-shadow: 0 0 0 3px rgba(78, 8, 95, 0.1);
 }
 
 /* Task section */
 .task-section {
-    padding-left: 0;
+  margin-top: 16px;
 }
 
 /* Add task button */
 .add-task-btn {
-    margin-top: 16px;
-    margin-left: 0;
-    margin-right: auto;
-    display: block;
-    padding: 10px 16px;
-    background-color: #153677;
-    color: #ffffff;
-    border: none;
-    border-radius: 20px;
-    font-size: 14px;
-    cursor: pointer;
+  margin-top: 16px;
+  background-color: #153677;
+  color: #ffffff;
 }
 
 .add-task-btn:hover {
-    opacity: 0.9;
+  background-color: #0f2556;
+}
+
+@container stage (max-width: 500px) {
+  .add-task-btn {
+    width: 100%;
+  }
 }
