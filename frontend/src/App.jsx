@@ -1,45 +1,73 @@
-import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import LoginSignup from "./pages/LoginSignup.jsx";
+//mainlayout
+import MainLayout from "./layouts/MainLayout";
 
-//main
-import MainLayout from './layout/MainLayout.jsx';
+//logsign
+import LogSign from "./pages/LoginSignup";
 
-//page
-import Home from './pages/Home.jsx';
-import MyPlanPage from "./pages/MyPlanPage.jsx";
-import SavedPage from "./pages/SavedPage";
-import ExplorePage from "./pages/ExplorePage.jsx";
-import CreatePlan from "./pages/CreatePlan.jsx";
+//sidebar
+import Home from "./pages/Home";
+import MyPlan from "./pages/MyPlan";
+import SavedPlan from "./pages/SavedPlan";
+import Commu from "./pages/ExplorePage";
+import Add from "./pages/CreatePlan";
+import About from "./pages/AboutUs";
 
-//detail plan, just for demo
-import PlanDetailPage from "./layout/PlanDetailPage.jsx";
+// Profile Pages
+import MyProfile from "./pages/MyProfile";
+import OtherUser from "./pages/OtherUser";
 
-//idk
-import PlanPage from "./pages/PlanPage";
+//plan
+import ViewPlan from "./components/plans/ViewPlan";
+import ViewMyPlan from "./components/plans/ViewMyPlan";
+import UserView from "./components/users/UserView";
+import Notification from "./components/mainlayout/Notification"
+import "./App.css";
 
+//
+import Admin from "./pages/Admin";
 
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<MainLayout/>}>
-          <Route path="/" element={<Home/>} />
-          <Route path="/plan" element={<MyPlanPage/>} />
-          <Route path="/saved" element={<SavedPage/>} />
-          <Route path="/commu" element={<ExplorePage />} />
-          <Route path="/add" element={<CreatePlan/>} />  {/* testing login signup */}
+        <Route element={<MainLayout />}>
+          <Route path="/home" element={<Home />} />
+          <Route path="/add" element={<Add />} />
 
-          {/*detailplan*/}
-          <Route path="/plans/:id" element={<PlanDetailPage />} />
+          {/* Profile Routes */}
+          <Route path="/myprofile" element={<MyProfile />} />
+          <Route path="/profile/:username" element={<OtherUser />} />
 
+          {/* MyPlan Routes */}
+          <Route path="/myplan" element={<MyPlan />} />
+          <Route path="/myplan/plans/:id" element={<ViewMyPlan />} />
 
+          {/* Saved Plan Routes */}
+          <Route path="/saved" element={<SavedPlan />} />
+          <Route path="/saved/plans/:id" element={<ViewPlan />} />
+
+          {/* Community/Explore Routes */}
+          <Route path="/commu" element={<Commu />} />
+          <Route path="/commu/plans/:id" element={<ViewPlan />} />
+
+          {/* General Plan View (fallback) */}
+          <Route path="/plans/:id" element={<ViewPlan />} />
+
+          {/* User Profile View (legacy) */}
+          <Route path="/users/:id" element={<UserView />} />
+
+          <Route path="/about" element={<About />} />
+          <Route path="/notifications" element={<Notification/>} />
         </Route>
+
+        <Route path="/" element={<LogSign />} />
+
+        <Route path="/admin" element={<Admin />} />
+
+
       </Routes>
     </BrowserRouter>
   );
 }
-
-export default App;
-

@@ -1,0 +1,63 @@
+.createplan-page {
+  container-type: inline-size;
+  container-name: createplan;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 16px 60px;
+}
+
+/* Header */
+.createplan-header {
+  margin-bottom: 24px;
+}
+
+.createplan-header h1 {
+  font-size: clamp(22px, 3cqi, 28px);
+  font-weight: 700;
+  color: #002765;
+}
+
+/* Content */
+.createplan-content {
+  width: 100%;
+}
+
+/* Actions */
+.createplan-actions {
+  width: 100%;
+  padding: 16px 0;
+  margin-top: 40px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  border-top: 1px solid #eee;
+}
+
+@container createplan (max-width: 500px) {
+  .createplan-actions {
+    flex-direction: column-reverse;
+  }
+
+  .createplan-actions button {
+    width: 100%;
+  }
+}
+
+.review-btn {
+  background-color: #edeef0;
+  color: #333;
+}
+
+.review-btn:hover {
+  background-color: #d8dade;
+}
+
+.create-btn {
+  background-color: #153677;
+  color: #ffffff;
+}
+
+.create-btn:hover {
+  background-color: #0f2556;
+}

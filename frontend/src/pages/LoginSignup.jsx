@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // ← Để redirect
-import Eye from "../assets/icons/Eye.svg";
-import EyeOff from "../assets/icons/Eye_off.svg";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { authApi } from "../api/auth";
 
 const LoginSignup = () => {
@@ -25,10 +25,22 @@ const LoginSignup = () => {
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const [passwordError, setPasswordError] = useState("");
-  const [statusMsg, setStatusMsg] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Toast notifications (error, login success, etc.)
+  const [toasts, setToasts] = useState([]);
+
+  // Modal success sau đăng ký
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const addToast = (type, message) => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, type, message }]);
+
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 4000);
+  };
 
   const handleSignupChange = (e) => {
     const { name, value } = e.target;
@@ -36,9 +48,6 @@ const LoginSignup = () => {
       ...signupData,
       [name]: value,
     });
-    setPasswordError("");
-    setErrorMsg("");
-    setStatusMsg("");
   };
 
   const handleLoginChange = (e) => {
@@ -47,18 +56,13 @@ const LoginSignup = () => {
       ...loginData,
       [name]: value,
     });
-    setErrorMsg("");
-    setStatusMsg("");
   };
 
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
-    setErrorMsg("");
-    setStatusMsg("");
-    setPasswordError("");
 
     if (signupData.password !== signupData.confirmPassword) {
-      setPasswordError("Passwords do not match!");
+      addToast("error", "Passwords do not match!");
       return;
     }
 
@@ -69,23 +73,28 @@ const LoginSignup = () => {
         email: signupData.email.trim(),
         password: signupData.password,
       });
-      setStatusMsg("Đăng ký thành công! Hãy đăng nhập để tiếp tục.");
-      setIsSignUp(false); // Chuyển về form login
+
+      setShowSuccessModal(true);
+
       setSignupData({ username: "", email: "", password: "", confirmPassword: "" });
     } catch (err) {
       console.error("Signup error:", err);
-      setErrorMsg(
-        err.response?.data?.message || err.message || "Đăng ký thất bại. Vui lòng thử lại."
+      addToast(
+        "error",
+        err.response?.data?.message || err.message || "Signup failed, please try again."
       );
     } finally {
       setLoading(false);
     }
   };
 
+  const handleModalOk = () => {
+    setShowSuccessModal(false);
+    setIsSignUp(false);
+  };
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    setErrorMsg("");
-    setStatusMsg("");
     setLoading(true);
 
     try {
@@ -96,32 +105,46 @@ const LoginSignup = () => {
 
       const token = data?.result?.token || data?.token;
       if (!token) {
-        throw new Error("Không nhận được token từ server");
+        throw new Error("Unable to receive token from server");
       }
 
       localStorage.setItem("accessToken", token);
 
-      // Gọi API me để lấy thông tin user (username, etc.)
       let username = loginData.username;
+      let detectedRole = data?.result?.role || data?.role || "";
+
       try {
         const meRes = await authApi.me();
         username = meRes?.data?.result?.username || meRes?.data?.username || username;
+        detectedRole = meRes?.data?.result?.role || meRes?.data?.role || detectedRole;
       } catch (meErr) {
-        console.warn("Không thể lấy thông tin user (me):", meErr);
-        // Vẫn cho login nếu me thất bại (token vẫn hợp lệ)
+        console.warn("Cannot retrieve user info (me):", meErr);
       }
 
-      setStatusMsg(`Đăng nhập thành công! Xin chào ${username}!`);
+      if (!detectedRole) {
+        detectedRole = username?.toLowerCase() === "admin" ? "admin" : "user";
+      }
+
+      localStorage.setItem("role", detectedRole);
+
+      addToast("success", `Login successfully! Welcome ${username}!`);
       setLoginData({ username: "", password: "" });
 
-      // ← CHUYỂN HƯỚNG VỀ TRANG CHỦ
+      // Kiểm tra role và chuyển hướng phù hợp
+      const userRole = localStorage.getItem("role");
+
       setTimeout(() => {
-        navigate("/home");
-      }, 800); // Delay nhẹ để user thấy thông báo thành công
+        if (userRole === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/home");
+        }
+      }, 800);
     } catch (err) {
       console.error("Login error:", err);
-      setErrorMsg(
-        err.response?.data?.message || err.message || "Đăng nhập thất bại. Kiểm tra lại thông tin."
+      addToast(
+        "error",
+        err.response?.data?.message || err.message || "Login failed. Please recheck your login details."
       );
     } finally {
       setLoading(false);
@@ -275,16 +298,6 @@ const LoginSignup = () => {
           pointer-events: auto;
         }
 
-        /* Messages */
-        .message {
-          font-size: 0.95rem;
-          margin: 8px 0;
-          text-align: center;
-        }
-
-        .error { color: red; }
-        .success { color: green; }
-
         /* Password wrapper & eye icon */
         .password-wrapper {
           position: relative;
@@ -308,6 +321,7 @@ const LoginSignup = () => {
           cursor: pointer;
           opacity: 0.7;
           transition: opacity 0.2s ease;
+          color: #666;
         }
 
         .eye-icon:hover {
@@ -324,16 +338,128 @@ const LoginSignup = () => {
         p a:hover {
           text-decoration: underline;
         }
+
+        /* TOAST NOTIFICATIONS */
+        .toasts {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          z-index: 1000;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .toast {
+          min-width: 300px;
+          padding: 14px 18px;
+          border-radius: 8px;
+          color: white;
+          font-size: 0.95rem;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+          animation: slideIn 0.4s ease-out;
+        }
+
+        .toast.error {
+          background-color: #e74c3c;
+        }
+
+        .toast.success {
+          background-color: #27ae60;
+        }
+
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+
+        /* MODAL SUCCESS */
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 2000;
+          animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+          background: white;
+          padding: 30px 40px;
+          border-radius: 12px;
+          text-align: center;
+          max-width: 400px;
+          width: 90%;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h2 {
+          margin-bottom: 15px;
+          color: #27ae60;
+          font-size: 1.8rem;
+        }
+
+        .modal-content p {
+          margin-bottom: 30px;
+          color: #333;
+          font-size: 1rem;
+        }
+
+        .modal-content button {
+          padding: 12px 32px;
+          background: #0b2c59;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: bold;
+          font-size: 1rem;
+          transition: background 0.3s;
+        }
+
+        .modal-content button:hover {
+          background: #133c7a;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
       `}</style>
+
+      {/* Toast notifications */}
+      <div className="toasts">
+        {toasts.map((toast) => (
+          <div key={toast.id} className={`toast ${toast.type}`}>
+            {toast.message}
+          </div>
+        ))}
+      </div>
+
+      {/* Modal thành công đăng ký */}
+      {showSuccessModal && (
+        <div className="modal-overlay" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content">
+            <h2>Signup successfully!</h2>
+            <p>You have successfully created an account.<br />Please login to continue.</p>
+            <button onClick={handleModalOk}>OK</button>
+          </div>
+        </div>
+      )}
 
       <div className={`container ${isSignUp ? "active" : ""}`} id="container">
         {/* LOGIN FORM */}
         <div className="form-container login-container">
           <form onSubmit={handleLoginSubmit}>
             <h1>Login</h1>
-
-            {statusMsg && <p className="message success">{statusMsg}</p>}
-            {errorMsg && <p className="message error">{errorMsg}</p>}
 
             <input
               type="text"
@@ -355,22 +481,21 @@ const LoginSignup = () => {
                 required
                 disabled={loading}
               />
-              <img
-                src={showLoginPassword ? EyeOff : Eye}
-                alt="toggle password"
+              <FontAwesomeIcon
+                icon={showLoginPassword ? faEyeSlash : faEye}
                 className="eye-icon"
                 onClick={() => setShowLoginPassword(!showLoginPassword)}
               />
             </div>
 
             <button type="submit" disabled={loading}>
-              {loading ? "Đang xử lý..." : "Login"}
+              {loading ? "Loading..." : "Login"}
             </button>
 
             <p>
-              Chưa có tài khoản?{" "}
+              Don't have an account yet?{" "}
               <a href="#" onClick={(e) => { e.preventDefault(); setIsSignUp(true); }}>
-                Đăng ký ngay
+                Sign In
               </a>
             </p>
           </form>
@@ -380,10 +505,6 @@ const LoginSignup = () => {
         <div className="form-container signup-container">
           <form onSubmit={handleSignupSubmit}>
             <h1>Sign Up</h1>
-
-            {passwordError && <p className="message error">{passwordError}</p>}
-            {errorMsg && <p className="message error">{errorMsg}</p>}
-            {statusMsg && <p className="message success">{statusMsg}</p>}
 
             <input
               type="text"
@@ -415,9 +536,8 @@ const LoginSignup = () => {
                 required
                 disabled={loading}
               />
-              <img
-                src={showSignupPassword ? EyeOff : Eye}
-                alt="toggle password"
+              <FontAwesomeIcon
+                icon={showSignupPassword ? faEyeSlash : faEye}
                 className="eye-icon"
                 onClick={() => setShowSignupPassword(!showSignupPassword)}
               />
@@ -433,22 +553,21 @@ const LoginSignup = () => {
                 required
                 disabled={loading}
               />
-              <img
-                src={showConfirmPassword ? EyeOff : Eye}
-                alt="toggle confirm password"
+              <FontAwesomeIcon
+                icon={showConfirmPassword ? faEyeSlash : faEye}
                 className="eye-icon"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               />
             </div>
 
             <button type="submit" disabled={loading}>
-              {loading ? "Đang xử lý..." : "Sign Up"}
+              {loading ? "Loading..." : "Sign Up"}
             </button>
 
             <p>
-              Đã có tài khoản?{" "}
+              Already have an account?{" "}
               <a href="#" onClick={(e) => { e.preventDefault(); setIsSignUp(false); }}>
-                Đăng nhập
+                    Log In
               </a>
             </p>
           </form>

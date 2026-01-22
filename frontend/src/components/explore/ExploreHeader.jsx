@@ -1,29 +1,63 @@
-// src/components/explore/ExploreHeader.jsx
-import React from 'react';
-import SearchIcon from '../../assets/icons/search.svg';
+import React, { useState, useCallback } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import './ExploreHeader.css';
+
+const TABS = [
+  { id: 'subject', label: 'Subjects' },
+  { id: 'certificate', label: 'Certificates' },
+  { id: 'other', label: 'Other' }
+];
 
 const ExploreHeader = ({ activeTab, setActiveTab }) => {
-  return (
-    <div className="header">
-      <div className="search-bar">
-        <input type="text" placeholder="Tìm kiếm khóa học, giáo viên..." />
+  const [searchTerm, setSearchTerm] = useState('');
 
-        <span className="search-icon flex items-center gap-2 text-gray-600 font-medium">
-          <img
-            src={SearchIcon}
-            className="w-10 h-10 "
+  const handleSearch = useCallback((e) => {
+    e.preventDefault();
+    console.log('Searching for:', searchTerm);
+    // TODO: Implement actual search
+  }, [searchTerm]);
+
+  const handleSearchChange = useCallback((e) => {
+    setSearchTerm(e.target.value);
+  }, []);
+
+  const handleTabClick = useCallback((tabId) => {
+    setActiveTab(tabId);
+  }, [setActiveTab]);
+
+  return (
+    <div className="explore-header">
+      <form className="search-bar" onSubmit={handleSearch}>
+        <input
+          type="text"
+          placeholder="Search courses, teachers..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          aria-label="Search"
+        />
+
+        <button
+          type="submit"
+          className="search-icon-btn"
+          aria-label="Search"
+        >
+          <FontAwesomeIcon
+            icon={faMagnifyingGlass}
+            className="search-icon"
           />
-        </span>
-      </div>
+        </button>
+      </form>
 
       <div className="main-tabs">
-        {['subject', 'certificate', 'other'].map(tab => (
+        {TABS.map((tab) => (
           <button
-            key={tab}
-            className={activeTab === tab ? 'active' : ''}
-            onClick={() => setActiveTab(tab)}
+            key={tab.id}
+            className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+            onClick={() => handleTabClick(tab.id)}
+            aria-pressed={activeTab === tab.id}
           >
-            {tab === 'subject' ? 'Môn học' : tab === 'certificate' ? 'Chứng chỉ' : 'Khác'}
+            {tab.label}
           </button>
         ))}
       </div>
@@ -31,4 +65,4 @@ const ExploreHeader = ({ activeTab, setActiveTab }) => {
   );
 };
 
-export default ExploreHeader;
+export default React.memo(ExploreHeader);

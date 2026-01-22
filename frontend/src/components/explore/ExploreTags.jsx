@@ -1,39 +1,82 @@
-// src/components/explore/ExploreTags.jsx
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
+import './ExploreTags.css';
 
-const tagGroups = {
-  subject: ['Toán', 'Lý', 'Hóa', 'Văn', 'Anh', 'Sinh', 'Sử', 'Địa', 'Tin học'],
-  certificate: ['IELTS', 'TOEIC', 'VSTEP', 'SAT', 'IELTS UKVI', 'TOPIK'],
-  other: ['Kỹ năng mềm', 'Lập trình', 'Thiết kế', 'Marketing', 'Ngoại ngữ'],
+const TAG_GROUPS = {
+  subject: [
+    "Math", "Physics", "Chemistry", "Literature", "English",
+    "Biology", "History", "Geography", "Computer Science"
+  ],
+  certificate: [
+    "IELTS", "TOEIC", "VSTEP", "SAT", "IELTS UKVI", "TOPIK"
+  ],
+  other: [
+    "Soft Skills", "Programming", "Design", "Marketing", "Foreign Languages"
+  ],
 };
 
 const ExploreTags = ({ activeTab, pinnedTags, onPin, onUnpin }) => {
-  const currentTags = tagGroups[activeTab] || [];
+  const currentTags = useMemo(() => TAG_GROUPS[activeTab] || [], [activeTab]);
+
+  const availableTags = useMemo(() =>
+    currentTags.filter(tag => !pinnedTags.includes(tag)),
+    [currentTags, pinnedTags]
+  );
+
+  const handleUnpin = useCallback((tag) => (e) => {
+    e.stopPropagation();
+    onUnpin(tag);
+  }, [onUnpin]);
 
   return (
     <div className="tags-box">
+      {/* Pinned Tags Section */}
       {pinnedTags.length > 0 && (
         <div className="pinned-tags">
-          {pinnedTags.map(tag => (
-            <span key={`pinned-${tag}`} className="tag pinned">
-              <strong>{tag}</strong>
-              <button className="unpin-btn" onClick={() => onUnpin(tag)}>×</button>
-            </span>
+          <div className="pinned-label">Pinned:</div>
+          <div className="pinned-tags-list">
+            {pinnedTags.map(tag => (
+              <span
+                key={`pinned-${tag}`}
+                className="tag pinned"
+              >
+                <strong>{tag}</strong>
+                <button
+                  className="unpin-btn"
+                  onClick={handleUnpin(tag)}
+                  aria-label={`Unpin ${tag}`}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Available Tags Section */}
+      {availableTags.length > 0 && (
+        <div className="tags-container">
+          {availableTags.map((tag, index) => (
+            <button
+              key={`tag-${index}`}
+              className="tag"
+              onClick={() => onPin(tag)}
+              aria-label={`Pin ${tag}`}
+            >
+              {tag}
+            </button>
           ))}
         </div>
       )}
 
-      <div className="tags-container">
-        {currentTags
-          .filter(tag => !pinnedTags.includes(tag))
-          .map((tag, i) => (
-            <span key={i} className="tag" onClick={() => onPin(tag)}>
-              {tag}
-            </span>
-          ))}
-      </div>
+      {/* Empty State */}
+      {availableTags.length === 0 && pinnedTags.length === 0 && (
+        <div className="empty-tags">
+          <p>No tags available</p>
+        </div>
+      )}
     </div>
   );
 };
 
-export default ExploreTags;
+export default React.memo(ExploreTags);
