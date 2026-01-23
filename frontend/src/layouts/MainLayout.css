@@ -1,29 +1,22 @@
-/* layouts/MainLayout.css */
-
-.app-root {
-  display: flex;
-  height: 100vh;
-  background: #fafafa;
-  color: #1a1a1a;
-  font-family: Inter, Arial, sans-serif;
-  overflow: hidden;
-}
-
-.main-column {
+.layout-root {
   display: flex;
   flex-direction: column;
+  height: 100vh;
+}
+
+/* Header consumes fixed height */
+.layout-body {
   flex: 1;
-  min-width: 0;
+  display: flex;
   overflow: hidden;
 }
 
-/* Responsive shell behavior */
-@media (max-width: 900px) {
-  .app-root {
-    flex-direction: column;
-  }
+/* 🔑 MAIN CONTAINER */
+.layout-content {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
 
-  .main-column {
-    width: 100%;
-  }
+  container-type: inline-size;
+  container-name: main;
 }
