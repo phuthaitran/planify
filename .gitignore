@@ -12,7 +12,6 @@ build/
 # OS
 .DS_Store
 
-<<<<<<< HEAD
 HELP.md
 *target/
 .mvn/wrapper/maven-wrapper.jar
@@ -42,6 +41,35 @@ HELP.md
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-=======
+
+HELP.md
 *target/
->>>>>>> b1b6a5ee0d0ca0408fad574366f63cffecf87d6c
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+
+*target/
