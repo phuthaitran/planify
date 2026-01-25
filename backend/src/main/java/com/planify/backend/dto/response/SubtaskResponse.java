@@ -3,6 +3,8 @@ package com.planify.backend.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -16,4 +18,6 @@ public class SubtaskResponse {
     Integer duration;
     String status;
     Integer daysLeft;
+    LocalDateTime startedAt;
+    LocalDateTime completedAt;
 }

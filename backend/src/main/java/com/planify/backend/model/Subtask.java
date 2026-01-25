@@ -40,7 +40,8 @@ public class Subtask {
     String status;
 
     // New: optional scheduled date used for daily todo lists
-    LocalDate scheduled_date;
+    @Column(name = "scheduled_date")
+    LocalDateTime scheduledDate;
 
     @Column(name="started_at")
     LocalDateTime started_at;
@@ -48,9 +49,5 @@ public class Subtask {
     @Column(name="completed_at")
     LocalDateTime completed_at;
 
-    // Explicit camel-case accessors for code that expects Java-style property names
-    public LocalDate getScheduledDate() {
-        return this.scheduled_date;
-    }
 
 }

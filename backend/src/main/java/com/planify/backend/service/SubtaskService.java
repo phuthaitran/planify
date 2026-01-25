@@ -202,6 +202,9 @@ public class SubtaskService {
             }
             if (!request.getDuration().equals(oldDuration)) {
                 subtask.setDuration(request.getDuration());
+                LocalDateTime startDate = subtask.getStarted_at();
+                LocalDateTime endDate = startDate.plusDays(request.getDuration());
+                subtask.setScheduledDate(endDate);
                 durationChanged = true;
             }
         }
@@ -241,6 +244,9 @@ public class SubtaskService {
             throw new AppException(ErrorCode.SUBTASK_NOT_FOUND);
         }
         subtask.setStarted_at(LocalDateTime.now());
+        LocalDateTime startDate = subtask.getStarted_at();
+        LocalDateTime endDate = startDate.plusDays(subtask.getDuration());
+        subtask.setScheduledDate(endDate);
         return subtaskRepository.save(subtask);
     }
     public Subtask completeSubtask(Integer subtaskId) {

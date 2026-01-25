@@ -58,11 +58,17 @@ public class SubtaskController {
     @GetMapping("/plans/{planId}/{stageId}/{taskId}/{subtaskId}")
     ResponseEntity<ApiResponse<SubtaskResponse>> getSubtaskById(@PathVariable Integer planId, @PathVariable Integer stageId, @PathVariable Integer taskId, @PathVariable Integer subtaskId){
         Subtask subtask = subtaskService.getSubtaskById(subtaskId, taskId, stageId, planId);
-
+        SubtaskResponse response = subtaskMapper.toResponse(subtask);
+        if (subtask.getScheduledDate() != null) {
+            long days = ChronoUnit.DAYS.between(LocalDate.now(), subtask.getScheduledDate());
+            response.setDaysLeft((int) days);
+        } else {
+            response.setDaysLeft(null);
+        }
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<SubtaskResponse>builder()
                         .code(HttpStatus.OK.value())
-                        .result(subtaskMapper.toResponse(subtask))
+                        .result(response)
                         .build());
     }
 
