@@ -35,16 +35,25 @@ public class SecurityConfig {
     @Bean
     public BearerTokenResolver bearerTokenResolver() {
         return request -> {
-            if (request.getCookies() == null) return null;
+            // 1️⃣ Ưu tiên Authorization header (REST API)
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                return authHeader.substring(7);
+            }
 
-            for (Cookie c : request.getCookies()) {
-                if ("access_token".equals(c.getName())) {
-                    return c.getValue(); // 👈 JWT lấy từ cookie
+            // 2️⃣ Fallback sang cookie (SSE)
+            if (request.getCookies() != null) {
+                for (Cookie c : request.getCookies()) {
+                    if ("access_token".equals(c.getName())) {
+                        return c.getValue();
+                    }
                 }
             }
+
             return null;
         };
     }
+
 
 
     @Bean
