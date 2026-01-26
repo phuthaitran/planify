@@ -41,20 +41,25 @@ export default function UserMenuPopup({
     onClose();
   };
 
-  const handleLogout = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      if (token) {
-        await authApi.logout(token);
+    const handleLogout = async () => {
+      try {
+        const accessToken = localStorage.getItem("accessToken");
+        if (accessToken && accessToken !== "null") {
+          await authApi.logout().catch(() => {}); // bỏ qua lỗi API logout
+        }
+        localStorage.removeItem("accessToken");
+        navigate("/");
+
+      } catch (error) {
+        console.error("Logout failed:", error);
+
+        // Fail-safe: vẫn xóa token và redirect
+        localStorage.removeItem("accessToken");
+        navigate("/");
+      } finally {
+        onClose();
       }
-      localStorage.removeItem("token");
-      navigate("/");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    } finally {
-      onClose();
-    }
-  };
+    };
 
   if (!isOpen) return null;
 
