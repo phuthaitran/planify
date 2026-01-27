@@ -6,7 +6,8 @@ export const usersApi = {
   getAll: () => httpAuth.get("/users"),
 
   // GET /users/{id}
-  getById: (id) => httpAuth.get(`/users/${id}`),
+  getById: (id) => httpAuth.get(`/users/${
+  id}`),
 
   // POST /users
   create: (payload) => httpAuth.post("/users", payload),

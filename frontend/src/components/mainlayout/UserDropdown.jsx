@@ -41,20 +41,30 @@ export default function UserMenuPopup({
     onClose();
   };
 
-  const handleLogout = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      if (token) {
-        await authApi.logout(token);
+    // UserDropdown.jsx
+    const handleLogout = async () => {
+      try {
+        const accessToken = localStorage.getItem("accessToken");
+
+        // XÓA TOKEN TRƯỚC KHI GỌI API
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken"); // nếu có
+
+        // Gọi API logout (không quan trọng thành công hay thất bại)
+        if (accessToken && accessToken !== "null") {
+          await authApi.logout(accessToken).catch(() => {
+            // Bỏ qua lỗi từ API logout
+          });
+        }
+        navigate("/");
+      } catch (error) {
+        console.error("Logout error:", error);
+        // Đảm bảo navigate về trang chủ dù có lỗi
+        navigate("/");
+      } finally {
+        onClose();
       }
-      localStorage.removeItem("token");
-      navigate("/");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    } finally {
-      onClose();
-    }
-  };
+    };
 
   if (!isOpen) return null;
 

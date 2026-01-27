@@ -63,7 +63,8 @@ export default function App() {
           {/* User Profile View (legacy) */}
           <Route path="/users/:id" element={<UserView />} />
 
-          <Route path="/about" element={<About />} />
+          <Route path="/about" element={<About/>} />
+
           <Route path="/notifications" element={<Notification/>} />
         </Route>
 

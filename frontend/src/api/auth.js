@@ -10,10 +10,5 @@ export const authApi = {
   me: () => httpAuth.get('/users/myInfo'),
 
   // Improved logout
-  logout: (token) => {
-    if (token) {
-      return httpAuth.post('/auth/logout', { token });
-    }
-    return httpAuth.post('/auth/logout'); // fallback: empty body
-  },
+  logout: (token) => httpPublic.post('/auth/logout', { token }),
 };
