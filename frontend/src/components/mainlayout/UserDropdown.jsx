@@ -41,16 +41,14 @@ export default function UserMenuPopup({
     onClose();
   };
 
-    // UserDropdown.jsx
     const handleLogout = async () => {
       try {
         const accessToken = localStorage.getItem("accessToken");
-
         // XÓA TOKEN TRƯỚC KHI GỌI API
         localStorage.removeItem("accessToken");
+        localStorage.removeItem("role");
         localStorage.removeItem("refreshToken"); // nếu có
-
-        // Gọi API logout (không quan trọng thành công hay thất bại)
+        // Gọi API logout
         if (accessToken && accessToken !== "null") {
           await authApi.logout(accessToken).catch(() => {
             // Bỏ qua lỗi từ API logout
@@ -59,7 +57,6 @@ export default function UserMenuPopup({
         navigate("/");
       } catch (error) {
         console.error("Logout error:", error);
-        // Đảm bảo navigate về trang chủ dù có lỗi
         navigate("/");
       } finally {
         onClose();

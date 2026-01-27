@@ -195,10 +195,7 @@ export default function Admin() {
   };
 
   const handleLogout = async () => {
-    if (!window.confirm("Bạn có chắc chắn muốn đăng xuất?")) {
-      return;
-    }
-
+    if (!window.confirm("Bạn có chắc chắn muốn đăng xuất?")) {return;}
     try {
       const accessToken = localStorage.getItem("accessToken");
       // Xóa token trước (nhất quán với UserDropdown)
@@ -207,11 +204,10 @@ export default function Admin() {
       localStorage.removeItem("refreshToken");
       // Gọi API logout nếu token tồn tại
       if (accessToken && accessToken !== "null") {
-        await authApi.logout().catch(() => {
+        await authApi.logout(accessToken).catch(() => {
           // Bỏ qua lỗi API, vẫn tiếp tục logout local
         });
       }
-      // Chuyển hướng về trang chủ / login
       navigate("/");
     } catch (error) {
       console.error("Logout error:", error);
