@@ -14,6 +14,7 @@ import com.planify.backend.util.TimeCalculator;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PACKAGE, makeFinal = true)
 @Service
+@Slf4j
 public class TaskService {
     private StageRepository stageRepository;
     private TaskRepository taskRepository;
@@ -41,7 +43,7 @@ public class TaskService {
 //        task.setDuration(taskRequest.getDuration());
 
         task.setStage_id(stage);
-
+        log.info("Saving task with stage {}", task.getStage_id());
         return taskRepository.save(task);
     }
 
@@ -79,6 +81,10 @@ public class TaskService {
         }
 
         return findTaskByIdAndStageIdHelper(taskId, stageId);
+    }
+
+    public List<Task> getTasksByPlanId(Integer planId){
+        return taskRepository.findAllTaskByPlanId(planId);
     }
 
     // Helper to work around method name conflict in patch: call repository properly

@@ -62,7 +62,7 @@ const Task = ({ task, taskNumber, updateTask, deleteTask }) => {
       </div>
 
       <Subtask
-        subtasks={task.subtasks || []}
+        subtasks={task.subtasks.map(subtask => subtask.title).join(', ') || []}
         setSubtasks={handleSubtasksChange}
       />
     </div>

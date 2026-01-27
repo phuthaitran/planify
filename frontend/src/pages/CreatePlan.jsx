@@ -2,11 +2,14 @@ import { useState, useCallback } from "react";
 import PlanInfo from "../components/createplan/PlanInfo";
 import PreviewModal from "../components/createplan/Preview";
 import { createPlan } from "../api/plan";
+import { createTask } from "../api/task";
+import { createSubtask } from "../api/subtask";
 import { uploadImage } from "../api/image";
 import { useNavigate } from "react-router-dom";
 import { usePlans } from "../context/PlanContext.jsx";
 
 import "./CreatePlan.css";
+import { createStage } from "../api/stage.js";
 
 const CreatePlan = () => {
     const [planData, setPlanData] = useState({
@@ -16,12 +19,36 @@ const CreatePlan = () => {
         visibility: 'private',
         status: 'incompleted',
         duration: 0,
-        stages: [{title: '', description: '', tasks: []}],
         imageFile: null,
-        imageUrl: null
+        reviewUrl: null,
+        stages: [{
+            tempId: crypto.randomUUID(),
+            planId: crypto.randomUUID(),
+            title: '',
+            description: '',
+            tasks: [{
+                tempId: crypto.randomUUID(),
+                stageId: crypto.randomUUID(),
+                // title: '',
+                description: '',
+                subtasks: [
+                    {
+                    tempId: crypto.randomUUID(),
+                    taskId: crypto.randomUUID(),
+                    title: '',
+                    description: '',
+                    duration: 0,
+                    status: '',
+                    daysLeft: 0,
+                    startedAt: '',
+                    completedAt: '',
+                    }
+                ],
+            }],
+        }],
     });
     const [showPreview, setShowPreview] = useState(false);
-    const { addPlan } = usePlans();
+    const { addPlan, hydratePlan } = usePlans();
     const navigate = useNavigate();
 
     // Generic updater
@@ -41,26 +68,100 @@ const CreatePlan = () => {
         }
 
         try {
-            let imageUrl = null;
+            let reviewUrl = null;
             if (imageFile) {
                 const imgResponse = await uploadImage(imageFile);
-                imageUrl = imgResponse.data.result;
-                console.log("Uploaded picture path:", imageUrl);
+                reviewUrl = imgResponse.data.result;
+                console.log("Uploaded picture path:", reviewUrl);
             }
-            console.log(imageUrl)
-            const response = await createPlan({
+
+            const planResponse = await createPlan({
                 title: title,
                 description: description,
-                picture: imageUrl,
+                picture: reviewUrl,
                 duration: planData.duration,
                 status: planData.status,
                 visibility: planData.visibility
             });
 
-            addPlan(response.data.result)
-            navigate(`/plans/${response.data.result.id}`);
+            const planId = planResponse.data.result.id;
 
-            console.log("Create plan with data:", planData);
+            const stageResponses = await Promise.all(
+                planData.stages.map(stage =>
+                    createStage({
+                        planId: planId,
+                        title: stage.title,
+                        description: stage.description,
+                    })
+                )
+            );
+
+            const stageIdMap = {};
+            planData.stages.forEach((stage, index) => {
+                stageIdMap[stage.tempId] = stageResponses[index].data.result.id;
+            });
+
+            const taskEntries = [];
+            planData.stages.forEach(stage => {
+                stage.tasks.forEach(task => {
+                    taskEntries.push({ stageTempId: stage.tempId, task});
+                });
+            });
+            console.log("taskEntries: ", taskEntries)
+            
+            console.log("Creating tasks payload:", taskEntries.map(e => ({
+                stageId: stageIdMap[e.stageTempId],
+                description: e.task.description
+                })));
+
+
+            const taskResponses = await Promise.all(
+            taskEntries.map(({ stageTempId, task }) => {
+                console.log("Creating task:", {
+                    stageTempId,
+                    stageId: stageIdMap[stageTempId],
+                    task
+                });
+
+                return createTask({
+                    stageId: stageIdMap[stageTempId],
+                    // title: task.title,
+                    description: task.description,
+                });
+            })
+            );
+
+            
+            const taskIdMap = {};
+            taskEntries.forEach((entry, index) => {
+                taskIdMap[entry.task.tempId] = taskResponses[index].data.result.id;
+            });
+            console.log(":saokdaiskdis", taskIdMap)
+
+
+            const subtaskEntries = [];
+            planData.stages.forEach(stage => 
+                stage.tasks.forEach(task =>
+                    task.subtasks.forEach(subtask =>
+                        subtaskEntries.push({ taskTempId: task.tempId, subtask})
+                    )
+                )
+            );
+            const subtaskResponses = await Promise.all(
+                subtaskEntries.map(({ taskTempId, subtask }) =>
+                    createSubtask({
+                        taskId: taskIdMap[taskTempId],
+                        title: subtask.title,
+                        description: subtask.description,
+                    })
+                )
+            );
+
+            const fullPlan = await hydratePlan(planId);  // Combine subfields
+            addPlan(fullPlan);
+            console.log("Created plan with data:", fullPlan);
+
+            navigate(`/plans/${planId}`);
 
         } catch (error) {
             console.error("Error creating plan:", error);
