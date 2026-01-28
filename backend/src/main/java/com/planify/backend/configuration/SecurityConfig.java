@@ -1,6 +1,7 @@
 package com.planify.backend.configuration;
 
 import jakarta.servlet.http.Cookie;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -32,22 +33,48 @@ public class SecurityConfig {
     public SecurityConfig(@Lazy CustomJwtDecoder customJwtDecoder) {
         this.customJwtDecoder = customJwtDecoder;
     }
-    @Bean
-    public BearerTokenResolver bearerTokenResolver() {
-        return request -> {
-            if (request.getCookies() == null) return null;
+//    @Bean
+//    public BearerTokenResolver bearerTokenResolver() {
+//        return request -> {
+//            if (request.getCookies() == null) return null;
+//
+//            for (Cookie c : request.getCookies()) {
+//                if ("access_token".equals(c.getName())) {
+//                    return c.getValue(); // 👈 JWT lấy từ cookie
+//                }
+//            }
+//            return null;
+//        };
+//    }
 
-            for (Cookie c : request.getCookies()) {
-                if ("access_token".equals(c.getName())) {
-                    return c.getValue(); // 👈 JWT lấy từ cookie
-                }
-            }
-            return null;
-        };
+
+    @Bean
+    @Order(1)
+    public SecurityFilterChain sseFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/notifications/stream")
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2
+                                .bearerTokenResolver(request -> {
+                                    if (request.getCookies() == null) return null;
+                                    for (Cookie c : request.getCookies()) {
+                                        if ("access_token".equals(c.getName())) {
+                                            return c.getValue(); // COOKIE ONLY
+                                        }
+                                    }
+                                    return null;
+                                })
+                                .jwt(jwt -> jwt.decoder(customJwtDecoder))
+                );
+
+        return http.build();
     }
 
-
     @Bean
+    @Order(2)
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
         httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -61,8 +88,8 @@ public class SecurityConfig {
         //Đến phần security của phương thức GET token , chúng ta sẽ cấu hình rằng : Nếu User mà có một token hợp lệ thì sẽ Get được
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2
-                        // lấy JWT từ cookie
-                        .bearerTokenResolver(bearerTokenResolver())
+//                        // lấy JWT từ cookie
+//                        .bearerTokenResolver(bearerTokenResolver())
 
                         // decode + verify JWT
                         .jwt(jwtConfigurer ->
