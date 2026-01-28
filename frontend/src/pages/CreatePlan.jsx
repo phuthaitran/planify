@@ -26,25 +26,7 @@ const CreatePlan = () => {
             planId: crypto.randomUUID(),
             title: '',
             description: '',
-            tasks: [{
-                tempId: crypto.randomUUID(),
-                stageId: crypto.randomUUID(),
-                // title: '',
-                description: '',
-                subtasks: [
-                    {
-                    tempId: crypto.randomUUID(),
-                    taskId: crypto.randomUUID(),
-                    title: '',
-                    description: '',
-                    duration: 0,
-                    status: 'incompleted',
-                    daysLeft: 0,
-                    startedAt: '',
-                    completedAt: '',
-                    }
-                ],
-            }],
+            tasks: [],
         }],
     });
     const [showPreview, setShowPreview] = useState(false);
@@ -124,26 +106,37 @@ const CreatePlan = () => {
                 taskIdMap[entry.task.tempId] = taskResponses[index].data.result.id;
             });
 
-
-            const subtaskEntries = [];
+            // Process subtasks sequentially per task to avoid deadlock
+            // Group subtasks by task
+            const subtasksByTask = new Map();
             planData.stages.forEach(stage => 
-                stage.tasks.forEach(task =>
-                    task.subtasks.forEach(subtask =>
-                        subtaskEntries.push({ taskTempId: task.tempId, subtask})
-                    )
-                )
+                stage.tasks.forEach(task => {
+                    if (task.subtasks && task.subtasks.length > 0) {
+                        const taskId = taskIdMap[task.tempId];
+                        if (!subtasksByTask.has(taskId)) {
+                            subtasksByTask.set(taskId, []);
+                        }
+                        subtasksByTask.get(taskId).push(...task.subtasks);
+                    }
+                })
             );
-            const subtaskResponses = await Promise.all(
-                subtaskEntries.map(({ taskTempId, subtask }) =>
-                    createSubtask({
-                        taskId: taskIdMap[taskTempId],
-                        title: subtask.title,
-                        description: subtask.description,
-                        duration: parseInt(subtask.duration, 10) || 0,
-                        status: subtask.status || 'incompleted',
-                    })
-                )
-            );
+
+            // Create subtasks for each task sequentially to prevent concurrent lock contention
+            for (const [taskId, subtasks] of subtasksByTask.entries()) {
+                const validSubtasks = subtasks.filter(sub => sub.title && sub.title.trim());
+                if (validSubtasks.length > 0) {
+                    // Create subtasks sequentially to avoid concurrent updates to the same task row
+                    for (const subtask of validSubtasks) {
+                        await createSubtask({
+                            taskId: taskId,
+                            title: subtask.title,
+                            description: subtask.description || '',
+                            duration: parseInt(subtask.duration, 10) || 0,
+                            status: subtask.status || 'incompleted',
+                        });
+                    }
+                }
+            }
 
             const fullPlan = await hydratePlan(planId);  // Combine subfields
             addPlan(fullPlan);

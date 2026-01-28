@@ -10,13 +10,16 @@ import com.planify.backend.model.*;
 import com.planify.backend.repository.StageRepository;
 import com.planify.backend.repository.SubtaskRepository;
 import com.planify.backend.repository.TaskRepository;
+import com.planify.backend.repository.PlanRepository;
 import com.planify.backend.util.TimeCalculator;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +31,7 @@ public class TaskService {
     private StageRepository stageRepository;
     private TaskRepository taskRepository;
     private SubtaskRepository subtaskRepository;
+    private PlanRepository planRepository;
 
     public Task addTask(TaskRequest taskRequest){
         // Lookup stage by id (TaskRequest doesn't contain planId)
@@ -184,5 +188,53 @@ public class TaskService {
         }
         task.setCompleted_at(LocalDateTime.now());
         return taskRepository.save(task);
+    }
+
+    /**
+     * Batch save multiple subtasks for a task and update durations once at the end.
+     * This prevents deadlock issues caused by concurrent updates to the same task row.
+     */
+    @Transactional
+    public List<Subtask> addSubtasksBatch(Integer taskId, List<Subtask> subtasks) {
+        Task task = taskRepository.findTaskById(taskId);
+        if (task == null) {
+            throw new AppException(ErrorCode.TASK_NOT_FOUND);
+        }
+
+        // Insert all subtasks first without updating durations
+        List<Subtask> savedSubtasks = new ArrayList<>();
+        for (Subtask subtask : subtasks) {
+            if (subtask == null) continue;
+            
+            // Skip empty/invalid subtasks (those with empty title)
+            if (subtask.getTitle() == null || subtask.getTitle().trim().isEmpty()) {
+                continue;
+            }
+            
+            subtask.setTask_id(task);
+            Subtask saved = subtaskRepository.save(subtask);
+            savedSubtasks.add(saved);
+        }
+
+        // Calculate and update duration ONCE after all subtasks are inserted
+        if (!savedSubtasks.isEmpty()) {
+            Integer taskDuration = subtaskRepository.sumDurationByTaskId(task.getId());
+            taskRepository.updateDuration(task.getId(), taskDuration);
+
+            // Update stage and plan durations
+            Stage stage = task.getStage_id();
+            if (stage != null) {
+                Integer stageDuration = taskRepository.sumDurationByStageId(stage.getId());
+                stageRepository.updateDuration(stage.getId(), stageDuration);
+
+                Plan plan = stage.getPlan_id();
+                if (plan != null) {
+                    Long planDuration = stageRepository.sumDurationByPlanId(plan.getId());
+                    planRepository.updateDuration(plan.getId(), planDuration);
+                }
+            }
+        }
+
+        return savedSubtasks;
     }
 }

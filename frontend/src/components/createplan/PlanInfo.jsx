@@ -59,17 +59,7 @@ const PlanInfo = ({ planData, updatePlanData }) => {
         tempId: crypto.randomUUID(),
         title: '', 
         description: '', 
-        tasks: [{
-          tempId: crypto.randomUUID(),
-          description: '',
-          subtasks: [{
-            tempId: crypto.randomUUID(),
-            title: '',
-            description: '',
-            duration: 0,
-            status: '',
-          }]
-        }]
+        tasks: []
       }]
     });
   }, [planData.stages, updatePlanData]);

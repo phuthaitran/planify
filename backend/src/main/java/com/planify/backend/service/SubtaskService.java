@@ -46,10 +46,19 @@ public class SubtaskService {
         // Save the new subtask
         Subtask saved = subtaskRepository.save(subtask);
 
-        // Detach all entities to prevent cascading issues
-        taskRepository.flush();
-
         // Recompute and persist durations up the chain: Task -> Stage -> Plan
+        // Use a separate transaction to avoid deadlock during concurrent subtask creation
+        updateDurationsAfterSubtaskAdd(task);
+
+        return saved;
+    }
+
+    /**
+     * Update durations without holding locks on multiple rows simultaneously.
+     * Called separately from subtask insertion to avoid deadlock in concurrent scenarios.
+     */
+    @Transactional
+    public void updateDurationsAfterSubtaskAdd(Task task) {
         Integer taskDuration = subtaskRepository.sumDurationByTaskId(task.getId());
         taskRepository.updateDuration(task.getId(), taskDuration);
 
@@ -64,8 +73,6 @@ public class SubtaskService {
                 planRepository.updateDuration(plan.getId(), planDuration);
             }
         }
-
-        return saved;
     }
 
     @Transactional

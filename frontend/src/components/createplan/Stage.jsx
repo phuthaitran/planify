@@ -29,14 +29,9 @@ const Stage = ({ stage, stageNumber, updateStage, deleteStage }) => {
       ...stage,
       tasks: [...stage.tasks, { 
         tempId: crypto.randomUUID(),
-        description: "", 
-        subtasks: [{
-          tempId: crypto.randomUUID(),
-          title: '',
-          description: '',
-          duration: 0,
-          status: '',
-        }]
+        description: "",
+        title: "",
+        subtasks: []
       }],
     });
   }, [stage, updateStage]);
