@@ -1,21 +1,16 @@
 import React, { useMemo } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import httpPublic from '../../api/httpPublic';
 import LikeButton from './LikeButton';
 import './PlanCard.css';
 
 const PlanCard = ({ item }) => {
   console.log("items1: ", `${httpPublic.defaults.baseURL}${item.picture}`)
-  const location = useLocation();
 
-  // Memoize the path calculation
+  // Always redirect to the unified /plans/{id} route
   const planPath = useMemo(() => {
-    const basePath = location.pathname.split('/')[1];
-    const validParents = ['myplan', 'saved', 'commu'];
-    const parent = validParents.includes(basePath) ? basePath : '';
-
-    return parent ? `/${parent}/plans/${item.id}` : `/plans/${item.id}`;
-  }, [location.pathname, item.id]);
+    return `/plans/${item.id}`;
+  }, [item.id]);
 
   return (
     <div className="plan-card">
