@@ -139,6 +139,7 @@ public class PlanService {
 
         if (request.getTitle() != null) plan.setTitle(request.getTitle());
         if (request.getDescription() != null) plan.setDescription(request.getDescription());
+        if (request.getVisibility() != null) plan.setVisibility(request.getVisibility());
         if (request.getPicture() != null) plan.setPicture(request.getPicture());
         if (request.getStatus() != null) plan.setStatus(request.getStatus());
 
