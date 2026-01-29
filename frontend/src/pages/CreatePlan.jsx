@@ -68,15 +68,16 @@ const CreatePlan = () => {
 
             const planId = planResponse.data.result.id;
 
-            const stageResponses = await Promise.all(
-                planData.stages.map(stage =>
-                    createStage({
-                        planId: planId,
-                        title: stage.title,
-                        description: stage.description,
-                    })
-                )
-            );
+            // Create stages sequentially to preserve user-entered order
+            const stageResponses = [];
+            for (const stage of planData.stages) {
+                const resp = await createStage({
+                    planId: planId,
+                    title: stage.title,
+                    description: stage.description,
+                });
+                stageResponses.push(resp);
+            }
 
             const stageIdMap = {};
             planData.stages.forEach((stage, index) => {
@@ -90,15 +91,16 @@ const CreatePlan = () => {
                 });
             });
 
-            const taskResponses = await Promise.all(
-            taskEntries.map(({ stageTempId, task }) => {
-                return createTask({
-                    stageId: stageIdMap[stageTempId],
-                    // title: task.title,
-                    description: task.title,
+            // Create tasks sequentially to preserve ordering
+            const taskResponses = [];
+            for (const entry of taskEntries) {
+                const resp = await createTask({
+                    stageId: stageIdMap[entry.stageTempId],
+                    // title: entry.task.title,
+                    description: entry.task.title,
                 });
-            })
-            );
+                taskResponses.push(resp);
+            }
 
             
             const taskIdMap = {};
