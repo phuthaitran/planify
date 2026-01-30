@@ -1,152 +1,12 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import EditPlan from './EditPlan';
 import PreviewModal from '../createplan/Preview';
 import StatusDropdown from '../../components/home/StatusDropdown';
 import ReviewPlanPopup from './ReviewPlanPopUp';
+import { usePlans } from '../../context/PlanContext';
+import httpPublic from '../../api/httpPublic';
 import './ViewMyPlan.css';
-
-// Backend-ready structure with subtask statuses and deadlines
-const MOCK_PLANS = {
-  'my-recent-1': {
-    title: 'Morning Workout Routine',
-    description: 'Build a sustainable morning habit.',
-    reviewUrl: null,
-    categories: ['Fitness', 'Health'],
-    stages: [
-      {
-        title: 'Week 1: Basics',
-        description: 'Get started with simple routines.',
-        tasks: [
-          {
-            title: 'Warm-up & Push-ups',
-            description: 'Basic warm-up and strength building.',
-            duration: '7',
-            subtasks: [
-              {
-                text: '10 min jog in place',
-                status: 'DONE',
-                deadline: '2026-01-15',
-                completedAt: '2026-01-14'
-              },
-              {
-                text: '3 sets of push-ups',
-                status: 'IN_PROGRESS',
-                deadline: '2026-01-20',
-                completedAt: null
-              }
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  'my-progress-1': {
-    title: 'Learn React Advanced',
-    description: 'Master advanced React concepts.',
-    reviewUrl: null,
-    categories: ['Programming', 'Web Development', 'React'],
-    stages: [
-      {
-        title: 'Week 1: Hooks Fundamentals',
-        description: 'Deep dive into React Hooks.',
-        tasks: [
-          {
-            title: 'Custom Hooks Practice',
-            description: 'Create reusable custom hooks.',
-            duration: '7',
-            subtasks: [
-              {
-                text: 'useEffect for side effects',
-                status: 'DONE',
-                deadline: '2026-01-10',
-                completedAt: '2026-01-12'
-              },
-              {
-                text: 'useState for local state',
-                status: 'CANCELLED',
-                deadline: '2026-01-15',
-                completedAt: null
-              }
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  'my-all-1': {
-    title: 'Healthy Meal Planning',
-    description: 'Plan nutritious meals for better health.',
-    reviewUrl: null,
-    categories: ['Nutrition', 'Health'],
-    stages: [
-      {
-        title: 'Week 1: Planning Basics',
-        description: 'Learn to plan weekly meals.',
-        tasks: [
-          {
-            title: 'Grocery List Creation',
-            description: 'Make a healthy shopping list.',
-            duration: '7',
-            subtasks: [
-              {
-                text: 'Choose veggies',
-                status: 'INCOMPLETE',
-                deadline: '2026-01-25',
-                completedAt: null
-              },
-              {
-                text: 'Select proteins',
-                status: 'IN_PROGRESS',
-                deadline: '2026-01-27',
-                completedAt: null
-              }
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  'plan-1': {
-    title: 'IELTS Speaking Mastery',
-    description: 'A complete 8-week program designed to help you achieve Band 7+ in IELTS Speaking.',
-    reviewUrl: null,
-    categories: ['Language', 'Exam', 'English'],
-    stages: [
-      {
-        title: 'Week 1-2: Fluency & Coherence',
-        description: 'Build confidence and natural speaking flow.',
-        tasks: [
-          {
-            title: 'Daily Topic Practice',
-            description: 'Speak on 3 Part 1 topics every day.',
-            duration: '14',
-            subtasks: [
-              {
-                text: 'Record yourself',
-                status: 'DONE',
-                deadline: '2026-01-15',
-                completedAt: '2026-01-14'
-              },
-              {
-                text: 'Note new vocabulary',
-                status: 'IN_PROGRESS',
-                deadline: '2026-01-20',
-                completedAt: null
-              },
-              {
-                text: 'Self-evaluate fluency',
-                status: 'INCOMPLETE',
-                deadline: '2026-01-25',
-                completedAt: null
-              }
-            ],
-          },
-        ],
-      },
-    ],
-  },
-};
 
 const ViewMyPlan = () => {
   const { id } = useParams();
@@ -155,50 +15,24 @@ const ViewMyPlan = () => {
 
   const [plan, setPlan] = useState(null);
   const [originalPlan, setOriginalPlan] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [showReview, setShowReview] = useState(false);
 
-  useEffect(() => {
-    let isMounted = true;
+  const { getCachedPlanById, plans } = usePlans();
 
-    const fetchPlan = async () => {
-      setLoading(true);
-      setError(null);
+  // Get plan from context
+  const contextPlan = useMemo(() => {
+    return getCachedPlanById(Number(id));
+  }, [id, getCachedPlanById]);
 
-      try {
-        await new Promise(resolve => setTimeout(resolve, 600));
-
-        const foundPlan = MOCK_PLANS[id];
-
-        if (isMounted) {
-          if (!foundPlan) {
-            setError('Plan not found');
-          } else {
-            setPlan(foundPlan);
-            setOriginalPlan(JSON.parse(JSON.stringify(foundPlan)));
-          }
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError('Failed to load plan');
-          console.error(err);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchPlan();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [id]);
+  // Initialize plan state from context
+  useMemo(() => {
+    if (contextPlan && !plan) {
+      setPlan(contextPlan);
+      setOriginalPlan(JSON.parse(JSON.stringify(contextPlan)));
+    }
+  }, [contextPlan, plan]);
 
   // Calculate review statistics
   const calculateReviewData = useCallback(() => {
@@ -301,7 +135,8 @@ const ViewMyPlan = () => {
     navigate(-1);
   }, [navigate]);
 
-  if (loading) {
+  // Show loading state while plans are being fetched from context
+  if (!plans || plans.length === 0) {
     return (
       <div className="viewplan-loading">
         <div className="spinner" role="status" aria-label="Loading"></div>
@@ -310,10 +145,11 @@ const ViewMyPlan = () => {
     );
   }
 
-  if (error || !plan) {
+  // Show error if plan not found
+  if (!plan) {
     return (
       <div className="viewplan-error">
-        <h2>{error || 'Plan not found'}</h2>
+        <h2>Plan not found</h2>
         <button onClick={handleGoBack}>Go Back</button>
       </div>
     );
@@ -369,8 +205,8 @@ const ViewMyPlan = () => {
       <div className="viewplan-main">
         <div className="viewplan-sidebar">
           <div className="viewplan-image">
-            {plan.reviewUrl ? (
-              <img src={`${plan.reviewUrl}`} alt={plan.title} />
+            {plan.picture ? (
+              <img src={`${httpPublic.defaults.baseURL}${plan.picture}`} alt={plan.title} />
             ) : (
               <div className="placeholder-image">
                 <div className="landscape-icon"></div>
@@ -387,12 +223,17 @@ const ViewMyPlan = () => {
             <div className="info-section">
               <strong>Tags</strong>
               <div className="category-tags">
-                {plan.categories.map((cat, i) => (
+                {(plan.categories || []).map((cat, i) => (
                   <span key={i} className="category-tag">
                     {cat}
                   </span>
                 ))}
               </div>
+            </div>
+
+            <div className='plan-duration'>
+              <strong>Duration</strong>
+              <p>{plan.duration} Days</p>
             </div>
           </div>
         </div>
@@ -410,18 +251,18 @@ const ViewMyPlan = () => {
                 <p className="stage-description">{stage.description}</p>
               )}
 
+              {stage.duration && (
+                <p className="stage-duration">Duration: {stage.duration} Days</p>
+              )}
+
               <div className="stage-tasks">
                 {stage.tasks.map((task, taskIdx) => (
                   <div key={taskIdx} className="viewplan-task">
                     <div className="task-header">
                       <h4 className="task-title">
-                        Task {taskIdx + 1}: {task.title || 'Untitled Task'}
+                        Task {taskIdx + 1}: {task.description || 'Untitled Task'}
                       </h4>
                     </div>
-
-                    {task.description && (
-                      <p className="task-description">{task.description}</p>
-                    )}
 
                     {task.duration && (
                       <p className="task-duration">
@@ -435,9 +276,17 @@ const ViewMyPlan = () => {
                         <ul>
                           {task.subtasks.map((subtask, subtaskIdx) => (
                             <li key={subtaskIdx} className="subtask-item">
-                              <span className="subtask-text">
-                                {typeof subtask === 'string' ? subtask : subtask.text}
-                              </span>
+                              <div className="subtask-content">
+                                <span className="subtask-title">
+                                  {typeof subtask === 'string' ? subtask : subtask.title}
+                                </span>
+                                {typeof subtask === 'object' && subtask.description && (
+                                  <div className="subtask-description">{subtask.description}</div>
+                                )}
+                                {typeof subtask === 'object' && subtask.duration && (
+                                  <div className="subtask-duration">Duration: {subtask.duration} Days</div>
+                                )}
+                              </div>
                               {typeof subtask === 'object' && (
                                 <StatusDropdown
                                   value={subtask.status || 'INCOMPLETE'}

@@ -192,8 +192,14 @@
 
 .stage-description {
   color: #666;
-  margin: 12px 0 20px;
+  margin: 8px 0 12px;
   line-height: 1.6;
+}
+
+.stage-duration {
+  color: #1e8a4b;
+  font-weight: 600;
+  margin: 8px 0 12px;
 }
 
 .stage-tasks {
@@ -208,7 +214,7 @@
 }
 
 .task-header {
-  margin-bottom: 8px;
+  margin: 8px 0 12px;
 }
 
 .task-title {
@@ -251,6 +257,13 @@
   margin-bottom: 4px;
 }
 
+.subtask-duration {
+  margin: 8px 0 8px 0;
+  color: #2B818C;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 .no-stages {
   color: #888;
   font-style: italic;
@@ -280,7 +293,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .viewplan-error button {

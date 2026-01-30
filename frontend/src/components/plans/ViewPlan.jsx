@@ -52,13 +52,13 @@ const ViewPlan = () => {
 
   // const [plan, setPlan] = useState(null);
   const [isBookmarked, setIsBookmarked] = useState(false);   // ← Thêm state này
-  
+
   const { plans, getCachedPlanById } = usePlans();
   const loading = !plans.length;
   // const plan = MOCK_PLANS['plan-1'];
   const plan = getCachedPlanById(Number(id));
   const error = !loading && !plan ? "Plan not found" : null;
-  
+
   console.log("Viewing plan: ", plan)
   const handleForkClick = useCallback(() => {
     console.log('Fork Plan clicked - feature in development');
@@ -147,6 +147,11 @@ const ViewPlan = () => {
                 ))}
               </div>
             </div>
+
+            <div className='plan-duration'>
+              <strong>Duration</strong>
+              <p>{plan.duration} Days</p>
+            </div>
           </div>
         </div>
 
@@ -163,18 +168,18 @@ const ViewPlan = () => {
                 <p className="stage-description">{stage.description}</p>
               )}
 
+              {stage.duration && (
+                <p className="stage-duration">Duration: {stage.duration} Days</p>
+              )}
+
               <div className="stage-tasks">
                 {(stage.tasks || []).map((task, taskIdx) => (
                   <div key={taskIdx} className="viewplan-task">
                     <div className="task-header">
                       <h4 className="task-title">
-                        Task {taskIdx + 1}: {task.title || 'Untitled Task'}
+                        Task {taskIdx + 1}: {task.description || 'Untitled Task'}
                       </h4>
                     </div>
-
-                    {task.description && (
-                      <p className="task-description">{task.description}</p>
-                    )}
 
                     {task.duration && (
                       <p className="task-duration">
@@ -187,7 +192,15 @@ const ViewPlan = () => {
                         <strong>Subtasks:</strong>
                         <ul>
                           {(task.subtasks || []).map((sub, i) => (
-                            <li key={i}>{sub.title}</li>
+                            <li key={i}>
+                              <div className="subtask-title">{sub.title}</div>
+                              {sub.description && (
+                                <div className="subtask-description">{sub.description}</div>
+                              )}
+                              {sub.duration && (
+                                <div className="subtask-duration">Duration: {sub.duration} Days</div>
+                              )}
+                            </li>
                           ))}
                         </ul>
                       </div>

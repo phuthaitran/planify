@@ -12,7 +12,7 @@ import MyPlan from "./pages/MyPlan";
 import SavedPlan from "./pages/SavedPlan";
 import Commu from "./pages/ExplorePage";
 import Add from "./pages/CreatePlan";
-import About from "./pages/AboutUs.jsx";
+import About from "./pages/About.jsx";
 
 // Profile Pages
 import MyProfile from "./pages/MyProfile";
@@ -29,7 +29,7 @@ import "./App.css";
 import ForkPlan from "./components/fork&edit/ForkPlan.jsx"
 //
 import Admin from "./pages/Admin.jsx";
-
+import ViewPlanWrapper from "./components/plans/ViewPlanWrapper.jsx";
 
 import { PlansProvider } from "./context/PlanContext";
 
@@ -66,8 +66,8 @@ export default function App() {
             <Route path="/commu" element={<Commu />} />
             <Route path="/commu/plans/:id" element={<ViewPlan />} />
 
-            {/* General Plan View (fallback) */}
-            <Route path="/plans/:id" element={<ViewPlan />} />
+            {/* Unified Plan View Route - Smart wrapper that shows ViewMyPlan or ViewPlan */}
+            <Route path="/plans/:id" element={<ViewPlanWrapper />} />
 
             {/* User Profile View (legacy) */}
             <Route path="/users/:id" element={<UserView />} />
