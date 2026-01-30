@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LikeButton from './LikeButton';        // ← Đã thêm import
 import './ViewPlan.css';
-import { usePlans } from '../../context/PlanContext';
+import { useHydratedPlan } from '../../queries/useHydratedPlan';
 import httpPublic from '../../api/httpPublic';
 
 const MOCK_PLANS = {
@@ -52,14 +52,12 @@ const ViewPlan = () => {
 
   // const [plan, setPlan] = useState(null);
   const [isBookmarked, setIsBookmarked] = useState(false);   // ← Thêm state này
-  
-  const { plans, getCachedPlanById } = usePlans();
-  const loading = !plans.length;
+
+  const { data: fullPlan, hydrateIsLoading } = useHydratedPlan(id);  
   // const plan = MOCK_PLANS['plan-1'];
-  const plan = getCachedPlanById(Number(id));
-  const error = !loading && !plan ? "Plan not found" : null;
+  const error = !hydrateIsLoading && !fullPlan ? "Plan not found" : null;
   
-  console.log("Viewing plan: ", plan)
+  // console.log("Viewing plan: ", fullPlan)
   const handleForkClick = useCallback(() => {
     console.log('Fork Plan clicked - feature in development');
     navigate(`/plans/${id}/fork`);
@@ -76,7 +74,7 @@ const ViewPlan = () => {
     // TODO: Gọi API lưu bookmark hoặc lưu vào localStorage/context
   }, [id]);
 
-  if (loading) {
+  if (hydrateIsLoading) {
     return (
       <div className="viewplan-loading">
         <div className="spinner" role="status" aria-label="Loading"></div>
@@ -85,7 +83,7 @@ const ViewPlan = () => {
     );
   }
 
-  if (error || !plan) {
+  if (error || !fullPlan) {
     return (
       <div className="viewplan-error">
         <h2>{error || 'Plan not found'}</h2>
@@ -117,13 +115,13 @@ const ViewPlan = () => {
         </div>
       </div>
 
-      <h1 className="viewplan-title">{plan.title}</h1>
+      <h1 className="viewplan-title">{fullPlan.title}</h1>
 
       <div className="viewplan-main">
         <div className="viewplan-sidebar">
           <div className="viewplan-image">
-            {plan.picture ? (
-              <img src={`${httpPublic.defaults.baseURL}${plan.picture}`} alt={plan.title} />
+            {fullPlan.picture ? (
+              <img src={`${httpPublic.defaults.baseURL}${fullPlan.picture}`} alt={fullPlan.title} />
             ) : (
               <div className="placeholder-image">
                 <div className="landscape-icon"></div>
@@ -134,13 +132,13 @@ const ViewPlan = () => {
           <div className="viewplan-info">
             <div className="info-section">
               <strong>Description</strong>
-              <p>{plan.description}</p>
+              <p>{fullPlan.description}</p>
             </div>
 
             <div className="info-section">
               <strong>Tags</strong>
               <div className="category-tags">
-                {(plan.categories || []).map((cat, i) => (
+                {(fullPlan.categories || []).map((cat, i) => (
                   <span key={i} className="category-tag">
                     {cat}
                   </span>
@@ -151,7 +149,7 @@ const ViewPlan = () => {
         </div>
 
         <div className="viewplan-stages">
-          {(plan.stages || []).map((stage, stageIdx) => (
+          {(fullPlan.stages || []).map((stage, stageIdx) => (
             <div key={stageIdx} className="viewplan-stage">
               <div className="stage-header">
                 <h3 className="stage-title">
@@ -198,7 +196,7 @@ const ViewPlan = () => {
             </div>
           ))}
 
-          {(plan.stages || []).length === 0 && (
+          {(fullPlan.stages || []).length === 0 && (
             <p className="no-stages">No stages defined yet.</p>
           )}
         </div>

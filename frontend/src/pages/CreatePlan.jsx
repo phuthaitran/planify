@@ -6,8 +6,7 @@ import { createTask } from "../api/task";
 import { createSubtask } from "../api/subtask";
 import { uploadImage } from "../api/image";
 import { useNavigate } from "react-router-dom";
-import { usePlans } from "../context/PlanContext.jsx";
-
+import { usePlans } from "../queries/usePlans"
 import "./CreatePlan.css";
 import { createStage } from "../api/stage.js";
 
@@ -26,11 +25,28 @@ const CreatePlan = () => {
             planId: crypto.randomUUID(),
             title: '',
             description: '',
-            tasks: [],
+            tasks: [{
+                tempId: crypto.randomUUID(),
+                stageId: crypto.randomUUID(),
+                // title: '',
+                description: '',
+                subtasks: [
+                    {
+                    tempId: crypto.randomUUID(),
+                    taskId: crypto.randomUUID(),
+                    title: '',
+                    description: '',
+                    duration: 0,
+                    status: 'incompleted',
+                    daysLeft: 0,
+                    startedAt: '',
+                    completedAt: '',
+                    }
+                ],
+            }],
         }],
     });
     const [showPreview, setShowPreview] = useState(false);
-    const { addPlan, hydratePlan } = usePlans();
     const navigate = useNavigate();
 
     // Generic updater
@@ -41,9 +57,8 @@ const CreatePlan = () => {
         }));
     }, []);
 
-    const handleCreate = useCallback( async() => {
+    const handleCreate = useCallback( async() => { 
         const { title, description, imageFile} = planData;
-        
         if (!title.trim()) {
             alert("Please enter a plan title");
             return;
@@ -84,6 +99,7 @@ const CreatePlan = () => {
                 stageIdMap[stage.tempId] = stageResponses[index].data.result.id;
             });
 
+
             const taskEntries = [];
             planData.stages.forEach(stage => {
                 stage.tasks.forEach(task => {
@@ -102,11 +118,11 @@ const CreatePlan = () => {
                 taskResponses.push(resp);
             }
 
-            
             const taskIdMap = {};
             taskEntries.forEach((entry, index) => {
                 taskIdMap[entry.task.tempId] = taskResponses[index].data.result.id;
             });
+
 
             // Process subtasks sequentially per task to avoid deadlock
             // Group subtasks by task
@@ -140,9 +156,7 @@ const CreatePlan = () => {
                 }
             }
 
-            const fullPlan = await hydratePlan(planId);  // Combine subfields
-            addPlan(fullPlan);
-            console.log("Created plan with data:", fullPlan);
+            console.log("Created plan with data:", planData);
 
             navigate(`/plans/${planId}`);
 

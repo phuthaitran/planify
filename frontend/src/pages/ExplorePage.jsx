@@ -6,7 +6,7 @@ import UserCarousel from '../components/users/UserCarousel';
 import PlanList from '../components/plans/PlanList';
 import UserList from '../components/users/UserList';
 import './ExplorePage.css';
-import { usePlans } from '../context/PlanContext';
+import { usePlans } from '../queries/usePlans';
 
 const MOCK_PLANS = [
   { id: 'plan-1', title: 'IELTS Speaking Mastery', duration: '8 weeks • Advanced', category: 'english', isPublic: true },
@@ -33,7 +33,7 @@ const ExplorePage = () => {
   const [explorePlans, setExplorePlans] = useState([]);
   const [exploreUsers, setExploreUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { plans } = usePlans();
+  const { data: plans, isLoading } = usePlans();
 
   useEffect(() => {
     if (!plans) return;
