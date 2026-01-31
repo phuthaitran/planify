@@ -25,7 +25,7 @@ const MyPlan = () => {
   // Filter plans to show only those owned by current user
   const planData = useMemo(() => {
     const userPlans = plans.filter(plan => plan.ownerId === currentUserId);
-    
+
     return {
       recentlyOpened: [
         {
@@ -77,18 +77,6 @@ const MyPlan = () => {
   // Main view - carousel sections
   return (
     <div className="myplan-container">
-      <Carousel
-        title="Recently Opened"
-        items={planData.recentlyOpened}
-        onViewMore={() => handleViewMore('Recently Opened', planData.recentlyOpened)}
-      />
-
-      <Carousel
-        title="In Progress"
-        items={planData.inProgress}
-        onViewMore={() => handleViewMore('In Progress', planData.inProgress)}
-      />
-
       <PlanList plans={planData.allPlans} />
     </div>
   );
