@@ -6,7 +6,6 @@ import { createTask } from "../api/task";
 import { createSubtask } from "../api/subtask";
 import { uploadImage } from "../api/image";
 import { useNavigate } from "react-router-dom";
-import { usePlans } from "../queries/usePlans"
 import "./CreatePlan.css";
 import { createStage } from "../api/stage.js";
 
@@ -57,7 +56,7 @@ const CreatePlan = () => {
         }));
     }, []);
 
-    const handleCreate = useCallback( async() => { 
+    const handleCreate = useCallback( async() => {
         const { title, description, imageFile} = planData;
         if (!title.trim()) {
             alert("Please enter a plan title");
@@ -113,7 +112,7 @@ const CreatePlan = () => {
                 const resp = await createTask({
                     stageId: stageIdMap[entry.stageTempId],
                     // title: entry.task.title,
-                    description: entry.task.title,
+                    description: entry.task.description,
                 });
                 taskResponses.push(resp);
             }

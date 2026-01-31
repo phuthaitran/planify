@@ -193,9 +193,14 @@
   .subtask-add-form {
     padding: 16px;
   }
+
   .subtask-add-btn {
     width: 100%;
     align-self: stretch;
     border-radius: 8px;
   }
+}
+
+textarea {
+  font-family: Arial, Helvetica, sans-serif;
 }

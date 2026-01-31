@@ -49,6 +49,7 @@ public class TaskService {
     }
 
     // Update removeTask to require planId and validate stage->plan relationship
+    @Transactional
     public void removeTask(Integer taskId, Integer stageId, Integer planId){
         // Validate stage belongs to plan
         Stage stage = stageRepository.findStageByIdAndPlanId(stageId, planId);
@@ -62,6 +63,11 @@ public class TaskService {
         }
 
         taskRepository.delete(task);
+        Integer stageDuration = taskRepository.sumDurationByStageId(stageId);
+        stageRepository.updateDuration(stageId, stageDuration);
+
+        Long planDuration = stageRepository.sumDurationByPlanId(planId);
+        planRepository.updateDuration(planId, planDuration);
     }
 
     // Updated: accept planId to validate stage belongs to plan

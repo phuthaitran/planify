@@ -18,7 +18,7 @@ const MyPlan = () => {
     if (isLoading) return [];
     return allPlans.filter(plan => plan.status === "incompleted");
   }, [allPlans, isLoading]);
-  
+
   const recentPlans = useMemo (() => {
     const raw = localStorage.getItem("recentPlans");
     return raw ? JSON.parse(raw) : [];

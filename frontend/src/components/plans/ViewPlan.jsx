@@ -12,16 +12,16 @@ const ViewPlan = () => {
 
   const { data: fullPlan, isLoading, error, isError } = useHydratedPlan(id);
   const [toasts, setToasts] = useState([]);
-  
+
   const addToast = (type, message) => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, type, message }]);
-    
+
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
     }, 4000);
   };
-    
+
   const trackRecentPlan = (plan) => {
     const raw = localStorage.getItem("recentPlans");
     const plans = raw ? JSON.parse(raw) : [];
@@ -47,7 +47,7 @@ const ViewPlan = () => {
     try {
       const res = await forkPlan(id);
       const newPlan = res.data.result;
-  
+
       addToast("success", `Forking successful!`);
       navigate(`/plans/${newPlan.id}`);
 
@@ -138,6 +138,11 @@ const ViewPlan = () => {
                 ))}
               </div>
             </div>
+
+            <div className='plan-duration'>
+              <strong>Duration</strong>
+              <p>{fullPlan.duration} Days</p>
+            </div>
           </div>
         </div>
 
@@ -154,18 +159,18 @@ const ViewPlan = () => {
                 <p className="stage-description">{stage.description}</p>
               )}
 
+              {stage.duration && (
+                <p className="stage-duration">Duration: {stage.duration} Days</p>
+              )}
+
               <div className="stage-tasks">
                 {(stage.tasks || []).map((task, taskIdx) => (
                   <div key={taskIdx} className="viewplan-task">
                     <div className="task-header">
                       <h4 className="task-title">
-                        Task {taskIdx + 1}: {task.title || 'Untitled Task'}
+                        Task {taskIdx + 1}: {task.description || 'Untitled Task'}
                       </h4>
                     </div>
-
-                    {task.description && (
-                      <p className="task-description">{task.description}</p>
-                    )}
 
                     {task.duration && (
                       <p className="task-duration">
@@ -178,7 +183,15 @@ const ViewPlan = () => {
                         <strong>Subtasks:</strong>
                         <ul>
                           {(task.subtasks || []).map((sub, i) => (
-                            <li key={i}>{sub.title}</li>
+                            <li key={i}>
+                              <div className="subtask-title">{sub.title}</div>
+                              {sub.description && (
+                                <div className="subtask-description">{sub.description}</div>
+                              )}
+                              {sub.duration && (
+                                <div className="subtask-duration">Duration: {sub.duration} Days</div>
+                              )}
+                            </li>
                           ))}
                         </ul>
                       </div>
