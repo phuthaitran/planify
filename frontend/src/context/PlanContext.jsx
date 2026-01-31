@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getPlanById, getAllPlans } from "../api/plan"; 
+import { getPlanById, getAllPlans } from "../api/plan";
 import { getStagesByPlanId } from "../api/stage"
 import { getTasksByPlanId } from "../api/task";
 import { getSubtasksByPlanId } from "../api/subtask";
@@ -54,7 +54,7 @@ export function PlansProvider({ children }) {
 
   const hydratePlan = async (planId) => {
     const [
-      planRes, 
+      planRes,
       stagesRes,
       tasksRes,
       subtasksRes

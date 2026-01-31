@@ -3,8 +3,8 @@ import Subtask from "./Subtask";
 import "./Task.css";
 
 const Task = ({ task, taskNumber, updateTask, deleteTask }) => {
-  const handleTitleChange = useCallback((e) => {
-    updateTask({ ...task, title: e.target.value });
+  const handleDescriptionChange = useCallback((e) => {
+    updateTask({ ...task, description: e.target.value });
   }, [task, updateTask]);
 
   const handleSubtasksChange = useCallback((newSubtasks) => {
@@ -41,8 +41,8 @@ const Task = ({ task, taskNumber, updateTask, deleteTask }) => {
           <input
             type="text"
             placeholder="Enter task title"
-            value={task.title || ""}
-            onChange={handleTitleChange}
+            value={task.description || ""}
+            onChange={handleDescriptionChange}
           />
         </div>
 

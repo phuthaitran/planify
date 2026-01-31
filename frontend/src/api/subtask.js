@@ -2,10 +2,10 @@ import axios from 'axios';
 
 const API_URL = `http://localhost:8080/planify`;
 
-export const createSubtask = async(subtask) => {
+export const createSubtask = async (subtask) => {
     const token = localStorage.getItem("accessToken");
     return await axios.post(`${API_URL}/subtasks`, subtask, {
-	    headers: {
+        headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
         },
@@ -13,7 +13,7 @@ export const createSubtask = async(subtask) => {
     });
 };
 
-export const deleteSubtask = async(planId, stageId, taskId, subtaskId) => {
+export const deleteSubtask = async (planId, stageId, taskId, subtaskId) => {
     const token = localStorage.getItem("accessToken");
     return await axios.delete(`${API_URL}/plans/${planId}/${stageId}/${taskId}/${subtaskId}`, {
         headers: {
@@ -46,3 +46,13 @@ export const getAllSubtasks = (planId, stageId, taskId, subtaskId) => {
     });
 };
 
+export const updateSubtask = async (subtaskId, subtaskData) => {
+    const token = localStorage.getItem("accessToken");
+    return await axios.patch(`${API_URL}/subtasks/${subtaskId}`, subtaskData, {
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+    });
+};

@@ -214,8 +214,10 @@ public class SubtaskService {
             if (!request.getDuration().equals(oldDuration)) {
                 subtask.setDuration(request.getDuration());
                 LocalDateTime startDate = subtask.getStarted_at();
-                LocalDateTime endDate = startDate.plusDays(request.getDuration());
-                subtask.setScheduledDate(endDate);
+                if (startDate != null) {
+                    LocalDateTime endDate = startDate.plusDays(request.getDuration());
+                    subtask.setScheduledDate(endDate);
+                }
                 durationChanged = true;
             }
         }

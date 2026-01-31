@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Stage from '../createplan/Stage';
+import httpPublic from '../../api/httpPublic';
 import './EditPlanInfo.css';
 
 const CATEGORIES = [
@@ -10,6 +11,8 @@ const CATEGORIES = [
 const EditPlanInfo = ({ initialPlan = {}, onPlanChange }) => {
   const [planTitle, setPlanTitle] = useState(initialPlan.title || '');
   const [planDescription, setPlanDescription] = useState(initialPlan.description || '');
+  const [planPicture, setPlanPicture] = useState(initialPlan.picture || null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [stages, setStages] = useState(
     initialPlan.stages?.length > 0
       ? initialPlan.stages.map(stage => ({ ...stage }))
@@ -19,21 +22,47 @@ const EditPlanInfo = ({ initialPlan = {}, onPlanChange }) => {
     initialPlan.categories || []
   );
 
+  const fileInputRef = useRef(null);
+
+  // Set initial image preview from existing plan picture
+  useEffect(() => {
+    if (initialPlan.picture && !imagePreview) {
+      setImagePreview(`${httpPublic.defaults.baseURL}${initialPlan.picture}`);
+    }
+  }, [initialPlan.picture, imagePreview]);
+
   // Update parent whenever state changes
   useEffect(() => {
     const updatedPlan = {
+      ...initialPlan,
       title: planTitle,
       description: planDescription,
+      picture: planPicture,
       categories: selectedCategories,
       stages: stages.filter(stage =>
         stage.title || stage.description || (stage.tasks?.length > 0)
       )
     };
     onPlanChange?.(updatedPlan);
-  }, [planTitle, planDescription, selectedCategories, stages, onPlanChange]);
+  }, [planTitle, planDescription, planPicture, selectedCategories, stages, onPlanChange, initialPlan]);
+
+  const handleImageChange = useCallback((e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+      // Store file for upload - the parent component will handle the actual upload
+      setPlanPicture(file);
+    }
+  }, []);
+
+  const handleImageClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
 
   const addStage = useCallback(() => {
-    setStages(prev => [...prev, { title: '', description: '', tasks: [] }]);
+    setStages(prev => [...prev, { tempId: crypto.randomUUID(), title: '', description: '', tasks: [] }]);
   }, []);
 
   const updateStage = useCallback((index, updatedStage) => {
@@ -78,9 +107,28 @@ const EditPlanInfo = ({ initialPlan = {}, onPlanChange }) => {
 
       {/* Info Card */}
       <div className="planinfo-card">
-        <div className="image-upload">
-          <input type="file" accept="image/*" />
-          <span>Upload Image</span>
+        <div className="image-upload" onClick={handleImageClick}>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            style={{ display: 'none' }}
+          />
+          {imagePreview ? (
+            <img
+              src={imagePreview}
+              alt="Plan preview"
+              className="image-preview"
+            />
+          ) : (
+            <>
+              <div className="upload-placeholder">
+                <span className="upload-icon">📷</span>
+                <span>Click to upload image</span>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="planinfo-right">
@@ -117,8 +165,9 @@ const EditPlanInfo = ({ initialPlan = {}, onPlanChange }) => {
       <div className="stage-list">
         {stages.map((stage, index) => (
           <Stage
-            key={index}
+            key={stage.id || stage.tempId || index}
             stage={stage}
+            stageNumber={index + 1}
             updateStage={(updated) => updateStage(index, updated)}
             deleteStage={() => deleteStage(index)}
           />

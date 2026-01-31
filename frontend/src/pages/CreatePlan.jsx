@@ -41,9 +41,9 @@ const CreatePlan = () => {
         }));
     }, []);
 
-    const handleCreate = useCallback( async() => {
-        const { title, description, imageFile} = planData;
-        
+    const handleCreate = useCallback(async () => {
+        const { title, description, imageFile } = planData;
+
         if (!title.trim()) {
             alert("Please enter a plan title");
             return;
@@ -56,7 +56,7 @@ const CreatePlan = () => {
                 reviewUrl = imgResponse.data.result;
                 console.log("Uploaded picture path:", reviewUrl);
             }
-            
+
             const planResponse = await createPlan({
                 title: title,
                 description: description,
@@ -87,7 +87,7 @@ const CreatePlan = () => {
             const taskEntries = [];
             planData.stages.forEach(stage => {
                 stage.tasks.forEach(task => {
-                    taskEntries.push({ stageTempId: stage.tempId, task});
+                    taskEntries.push({ stageTempId: stage.tempId, task });
                 });
             });
 
@@ -97,12 +97,12 @@ const CreatePlan = () => {
                 const resp = await createTask({
                     stageId: stageIdMap[entry.stageTempId],
                     // title: entry.task.title,
-                    description: entry.task.title,
+                    description: entry.task.description,
                 });
                 taskResponses.push(resp);
             }
 
-            
+
             const taskIdMap = {};
             taskEntries.forEach((entry, index) => {
                 taskIdMap[entry.task.tempId] = taskResponses[index].data.result.id;
@@ -111,7 +111,7 @@ const CreatePlan = () => {
             // Process subtasks sequentially per task to avoid deadlock
             // Group subtasks by task
             const subtasksByTask = new Map();
-            planData.stages.forEach(stage => 
+            planData.stages.forEach(stage =>
                 stage.tasks.forEach(task => {
                     if (task.subtasks && task.subtasks.length > 0) {
                         const taskId = taskIdMap[task.tempId];
@@ -186,7 +186,7 @@ const CreatePlan = () => {
 
             {/* Preview Modal */}
             {showPreview && (
-                <PreviewModal planData={planData} onClose={() => setShowPreview(false)}/>
+                <PreviewModal planData={planData} onClose={() => setShowPreview(false)} />
             )}
         </div>
     );
