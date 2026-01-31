@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LikeButton from './LikeButton.jsx';        // ← Đã thêm import
 import './ViewPlan.css';
@@ -6,62 +6,41 @@ import { useHydratedPlan } from '../../queries/useHydratedPlan';
 import httpPublic from '../../api/httpPublic';
 import { forkPlan } from '../../api/plan';
 
-// const MOCK_PLANS = {
-//   'plan-1': {
-//     title: 'IELTS Speaking Mastery',
-//     description: 'A complete 8-week program designed to help you achieve Band 7+ in IELTS Speaking. Includes daily practice, feedback tips, and real exam simulations.',
-//     previewUrl: null,
-//     categories: ['Language', 'Exam', 'English'],
-//     stages: [
-//       {
-//         title: 'Week 1-2: Fluency & Coherence',
-//         description: 'Build confidence and natural speaking flow.',
-//         tasks: [
-//           {
-//             title: 'Daily Topic Practice',
-//             description: 'Speak on 3 Part 1 topics every day.',
-//             duration: '14',
-//             subtasks: ['Record yourself', 'Note new vocabulary', 'Self-evaluate fluency'],
-//           },
-//           {
-//             title: 'Long Turn Practice',
-//             description: 'Practice Part 2 cue cards.',
-//             duration: '14',
-//             subtasks: ['Time yourself (2 min)', 'Use linking words'],
-//           },
-//         ],
-//       },
-//       {
-//         title: 'Week 3-4: Lexical Resource',
-//         description: 'Expand vocabulary and use idiomatic language.',
-//         tasks: [
-//           {
-//             title: 'Themed Vocabulary Lists',
-//             description: 'Learn 20 new words/phrases per theme.',
-//             duration: '14',
-//             subtasks: ['Environment', 'Technology', 'Education', 'Health'],
-//           },
-//         ],
-//       },
-//     ],
-//   },
-// };
-
 const ViewPlan = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const { data: fullPlan, isLoading, error, isError } = useHydratedPlan(id);
   const [toasts, setToasts] = useState([]);
-
+  
   const addToast = (type, message) => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, type, message }]);
-
+    
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
     }, 4000);
   };
+    
+  const trackRecentPlan = (plan) => {
+    const raw = localStorage.getItem("recentPlans");
+    const plans = raw ? JSON.parse(raw) : [];
+
+    const filtered = plans.filter(p => p.id !== plan.id);
+
+    const updated = [
+      fullPlan,
+      ...filtered,
+    ].slice(0, 6);  // Maximum of 6 recent plans
+
+    localStorage.setItem("recentPlans", JSON.stringify(updated));
+  };
+
+  useEffect(() => {
+    if (fullPlan){
+      trackRecentPlan(fullPlan);
+    }
+  });
 
   // console.log("Viewing plan: ", fullPlan)
   const handleForkClick = useCallback(async() => {
