@@ -171,6 +171,83 @@
   box-shadow: 0 0 0 3px rgba(78, 8, 95, 0.1);
 }
 
+/* Plan duration card */
+.plan-duration-visibility-container {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.plan-duration-card {
+  background: #e8e9eb;
+  border-radius: 20px;
+  padding: clamp(16px, 3cqi, 24px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.plan-visibility-card {
+  width: 100%;
+  background: #e8e9eb;
+  border-radius: 20px;
+  padding: clamp(16px, 3cqi, 24px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.plan-visibility-card label {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #002765;
+  display: block;
+}
+
+@container planinfo (max-width: 600px) {
+  .plan-duration-visibility-container {
+    flex-direction: column;
+  }
+}
+
+.plan-duration-card label {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #002765;
+  display: block;
+}
+
+.duration-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.duration-input input {
+  width: 100px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  background: #f5f6f7;
+}
+
+@container task (max-width: 400px) {
+  .duration-input input {
+    width: 80px;
+  }
+}
+
+.duration-input input:focus {
+  border-color: #4e085f;
+  box-shadow: 0 0 0 3px rgba(78, 8, 95, 0.1);
+}
+
+.duration-unit {
+  font-size: 16px;
+  color: #666;
+}
+
 /* Categories */
 .categories-section {
   display: flex;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Stage from '../createplan/Stage';
 import httpPublic from '../../api/httpPublic';
 import './EditPlanInfo.css';
@@ -100,6 +100,14 @@ const EditPlanInfo = ({ initialPlan = {}, onPlanChange }) => {
     );
   }, []);
 
+  // Tính tổng duration của plan từ tất cả stages
+  const computedPlanDuration = useMemo(() => {
+    return stages.reduce((total, stage) => {
+      const stageDuration = stage.tasks.reduce((sum, task) => sum + Number(task.duration || 0), 0);
+      return total + stageDuration;
+    }, 0);
+  }, [stages]);
+
   return (
     <div className="planinfo-wrapper">
       {/* Title */}
@@ -133,8 +141,12 @@ const EditPlanInfo = ({ initialPlan = {}, onPlanChange }) => {
           ) : (
             <>
               <div className="upload-placeholder">
-                <span className="upload-icon">📷</span>
-                <span>Click to upload image</span>
+                <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <polyline points="21 15 16 10 5 21" />
+                </svg>
+                <span>Upload Image</span>
               </div>
             </>
           )}
@@ -182,6 +194,25 @@ const EditPlanInfo = ({ initialPlan = {}, onPlanChange }) => {
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      <div className="plan-duration-visibility-container">
+        <div className="plan-duration-card">
+          <label>Duration</label>
+          <div className="duration-input">
+            <input
+              type="number"
+              value={computedPlanDuration}
+              readOnly
+              disabled
+            />
+            <span className="duration-unit">days</span>
+          </div>
+        </div>
+
+        <div className="plan-visibility-card">
+          <label>Visibility</label>
         </div>
       </div>
 

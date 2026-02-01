@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useMemo } from "react";
 import Stage from "./Stage";
 import "./PlanInfo.css";
 
@@ -89,6 +89,14 @@ const PlanInfo = ({ planData, updatePlanData }) => {
     updatePlanData({ categories: newCategories });
   }, [planData.categories, updatePlanData]);
 
+  // Tính tổng duration của plan từ tất cả stages
+  const computedPlanDuration = useMemo(() => {
+    return planData.stages.reduce((total, stage) => {
+      const stageDuration = stage.tasks.reduce((sum, task) => sum + Number(task.duration || 0), 0);
+      return total + stageDuration;
+    }, 0);
+  }, [planData.stages]);
+
   return (
     <div className="planinfo-wrapper">
       {/* Plan Title */}
@@ -177,6 +185,25 @@ const PlanInfo = ({ planData, updatePlanData }) => {
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      <div className="plan-duration-visibility-container">
+        <div className="plan-duration-card">
+          <label>Duration</label>
+          <div className="duration-input">
+            <input
+              type="number"
+              value={computedPlanDuration}
+              readOnly
+              disabled
+            />
+            <span className="duration-unit">days</span>
+          </div>
+        </div>
+
+        <div className="plan-visibility-card">
+          <label>Visibility</label>
         </div>
       </div>
 
