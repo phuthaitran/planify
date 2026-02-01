@@ -184,6 +184,10 @@
   opacity: 0.9;
 }
 
+.confirm-no-btn:hover {
+  background-color: #d1d5db;
+}
+
 .save-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;

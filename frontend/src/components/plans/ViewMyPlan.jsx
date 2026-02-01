@@ -5,6 +5,7 @@ import PreviewModal from '../createplan/Preview';
 import StatusDropdown from '../../components/home/StatusDropdown';
 import ReviewPlanPopup from './ReviewPlanPopUp';
 import { usePlans } from '../../context/PlanContext';
+import { deletePlan } from '../../api/plan';
 import httpPublic from '../../api/httpPublic';
 import './ViewMyPlan.css';
 
@@ -18,6 +19,8 @@ const ViewMyPlan = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [showReview, setShowReview] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { getCachedPlanById, plans } = usePlans();
 
@@ -135,6 +138,28 @@ const ViewMyPlan = () => {
     navigate(-1);
   }, [navigate]);
 
+  const handleDeleteClick = useCallback(() => {
+    setShowDeleteConfirm(true);
+  }, []);
+
+  const handleConfirmDelete = useCallback(async () => {
+    setIsDeleting(true);
+    try {
+      await deletePlan(id);
+      // Refresh the page and navigate to My Plan
+      window.location.href = '/myplan';
+    } catch (error) {
+      console.error('Error deleting plan:', error);
+      alert('Failed to delete plan. Please try again.');
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  }, [id]);
+
+  const handleCancelDelete = useCallback(() => {
+    setShowDeleteConfirm(false);
+  }, []);
+
   // Show loading state while plans are being fetched from context
   if (!plans || plans.length === 0) {
     return (
@@ -196,6 +221,9 @@ const ViewMyPlan = () => {
           </div>
           <button className="btn-edit" onClick={() => setIsEditing(true)}>
             Edit Plan
+          </button>
+          <button className="btn-delete" onClick={handleDeleteClick}>
+            Delete
           </button>
         </div>
       </div>
@@ -316,6 +344,33 @@ const ViewMyPlan = () => {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="delete-confirm-overlay">
+          <div className="delete-confirm-modal">
+            <h3>Delete Plan</h3>
+            <p>Are you sure you want to delete "{plan.title}"?</p>
+            <p className="delete-warning">This action cannot be undone.</p>
+            <div className="delete-confirm-actions">
+              <button
+                className="btn-cancel"
+                onClick={handleCancelDelete}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn-confirm-delete"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Deleting...' : 'Yes, Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
