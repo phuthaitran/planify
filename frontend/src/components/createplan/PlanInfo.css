@@ -202,6 +202,40 @@
   display: block;
 }
 
+.visibility-options {
+  display: flex;
+  gap: 24px;
+  padding: 8px 0px;
+}
+
+.visibility-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 400;
+  font-size: 14px;
+  color: #333;
+}
+
+.visibility-option input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  accent-color: #4e085f;
+  cursor: pointer;
+}
+
+.visibility-option span {
+  user-select: none;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: #333 !important;
+  cursor: pointer;
+  text-align: center;
+}
+
 @container planinfo (max-width: 600px) {
   .plan-duration-visibility-container {
     flex-direction: column;

@@ -51,6 +51,7 @@ const EditPlan = ({ plan, setPlan, onPreview, onSave, onCancel }) => {
         title: localPlan.title,
         description: localPlan.description,
         picture: picturePath,
+        visibility: localPlan.visibility,
       });
 
       // 3. Update tags for the plan

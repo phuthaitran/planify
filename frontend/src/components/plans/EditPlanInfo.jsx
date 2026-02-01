@@ -30,6 +30,9 @@ const EditPlanInfo = ({ initialPlan = {}, onPlanChange }) => {
   const [selectedCategories, setSelectedCategories] = useState(
     initialPlan.categories || []
   );
+  const [visibility, setVisibility] = useState(
+    initialPlan.visibility || 'private'
+  );
 
   const fileInputRef = useRef(null);
 
@@ -48,12 +51,13 @@ const EditPlanInfo = ({ initialPlan = {}, onPlanChange }) => {
       description: planDescription,
       picture: planPicture,
       categories: selectedCategories,
+      visibility: visibility,
       stages: stages.filter(stage =>
         stage.title || stage.description || (stage.tasks?.length > 0)
       )
     };
     onPlanChange?.(updatedPlan);
-  }, [planTitle, planDescription, planPicture, selectedCategories, stages, onPlanChange, initialPlan]);
+  }, [planTitle, planDescription, planPicture, selectedCategories, visibility, stages, onPlanChange, initialPlan]);
 
   const handleImageChange = useCallback((e) => {
     const file = e.target.files?.[0];
@@ -213,6 +217,28 @@ const EditPlanInfo = ({ initialPlan = {}, onPlanChange }) => {
 
         <div className="plan-visibility-card">
           <label>Visibility</label>
+          <div className="visibility-options">
+            <label className="visibility-option">
+              <input
+                type="radio"
+                name="edit-visibility"
+                value="private"
+                checked={visibility === 'private'}
+                onChange={() => setVisibility('private')}
+              />
+              <span>Private</span>
+            </label>
+            <label className="visibility-option">
+              <input
+                type="radio"
+                name="edit-visibility"
+                value="public"
+                checked={visibility === 'public'}
+                onChange={() => setVisibility('public')}
+              />
+              <span>Public</span>
+            </label>
+          </div>
         </div>
       </div>
 

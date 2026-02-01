@@ -204,6 +204,28 @@ const PlanInfo = ({ planData, updatePlanData }) => {
 
         <div className="plan-visibility-card">
           <label>Visibility</label>
+          <div className="visibility-options">
+            <label className="visibility-option">
+              <input
+                type="radio"
+                name="visibility"
+                value="private"
+                checked={planData.visibility === 'private'}
+                onChange={() => updatePlanData({ visibility: 'private' })}
+              />
+              <span>Private</span>
+            </label>
+            <label className="visibility-option">
+              <input
+                type="radio"
+                name="visibility"
+                value="public"
+                checked={planData.visibility === 'public'}
+                onChange={() => updatePlanData({ visibility: 'public' })}
+              />
+              <span>Public</span>
+            </label>
+          </div>
         </div>
       </div>
 

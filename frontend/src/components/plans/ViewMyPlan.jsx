@@ -231,9 +231,14 @@ const ViewMyPlan = () => {
               </div>
             </div>
 
-            <div className='plan-duration'>
+            <div className='info-section'>
               <strong>Duration</strong>
               <p>{plan.duration} Days</p>
+            </div>
+
+            <div className='info-section'>
+              <strong>Visibility</strong>
+              <p>{plan.visibility}</p>
             </div>
           </div>
         </div>
