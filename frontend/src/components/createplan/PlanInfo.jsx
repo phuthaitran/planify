@@ -159,7 +159,7 @@ const PlanInfo = ({ planData, updatePlanData }) => {
               onClick={() => setShowCategories(!showCategories)}
             >
               {showCategories ? 'Hide Categories' : 'Select Categories'}
-              {planData.categories.length > 0 && ` (${planData.categories.length})`}
+              {planData.categories?.length > 0 && ` (${planData.categories?.length})`}
             </button>
 
             {showCategories && (
