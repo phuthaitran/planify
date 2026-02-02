@@ -10,7 +10,7 @@ import ViewPlan from './ViewPlan';
  */
 const ViewPlanWrapper = () => {
   const { id } = useParams();
-  const {data: fullPlan, isLoading } = useHydratedPlan(id); 
+  const { data: fullPlan, isLoading } = useHydratedPlan(id);
 
   // Get current user ID
   const currentUserId = localStorage.getItem("userId");
@@ -18,7 +18,7 @@ const ViewPlanWrapper = () => {
   // Determine if current user owns this plan
   const isOwnedByCurrentUser = useMemo(() => {
     if (!fullPlan || !currentUserId) return false;
-    return fullPlan.ownerId === currentUserId;
+    return String(fullPlan.ownerId) === currentUserId;
   }, [fullPlan, currentUserId]);
 
   // Show loading state while plans are being fetched

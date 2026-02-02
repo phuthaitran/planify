@@ -15,25 +15,8 @@ export const getAllSubtasks = (planId, stageId, taskId, subtaskId) =>
 export const updateSubtask = async (subtaskId, subtaskData) =>
     await httpAuth.patch(`/subtasks/${subtaskId}`, subtaskData);
 
-// May be replaced
-export const startSubtask = async (subtaskId) => {
-    const token = localStorage.getItem("accessToken");
-    return await axios.patch(`${API_URL}/subtasks/${subtaskId}/start`, {}, {
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-    });
-};
+export const startSubtask = async (subtaskId) =>
+    await httpAuth.patch(`/subtasks/${subtaskId}/start`, {});
 
-export const completeSubtask = async (subtaskId) => {
-    const token = localStorage.getItem("accessToken");
-    return await axios.patch(`${API_URL}/subtasks/${subtaskId}/complete`, {}, {
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-    });
-};
+export const completeSubtask = async (subtaskId) =>
+    await httpAuth.patch(`/subtasks/${subtaskId}/complete`, {});
