@@ -66,12 +66,12 @@ export default function App() {
             <Route path="/users/:id" element={<UserView />} />
 
             <Route path="/about" element={<About />} />
-            <Route path="/notifications" element={<Notification/>} />
+            <Route path="/notifications" element={<Notification />} />
           </Route>
 
           <Route path="/admin" element={<Admin />} />
 
-          </Route>
+        </Route>
         <Route path="/" element={<LogSign />} />
 
       </Routes>
