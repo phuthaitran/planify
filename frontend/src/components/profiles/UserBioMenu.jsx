@@ -1,48 +1,59 @@
-// UserBioMenu.jsx (đã cập nhật: giữ mock plans, dùng API cho followings/followers, dùng UserCard)
+// src/components/profiles/UserBioMenu.jsx
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { followApi } from "../../api/follow"; // giả định path đúng
-import UserCard from "../users/UserCard"; // dùng component bạn đã có
+import { followApi } from "../../api/follow";
+import UserCard from "../users/UserCard";
+import PlanCard from "../plans/PlanCard";          // ← import PlanCard
+import { usePlans } from "../../queries/usePlans"; // ← giả định bạn có hook này
 
 import "./UserBioMenu.css";
 
-// Giữ mock cho Public Plans
-const MOCK_USER_PUBLIC_PLANS = [
-  { id: 1, title: "Morning Workout Routine", stages: 3, tasks: 9 },
-  { id: 2, title: "Healthy Meal Prep", stages: 4, tasks: 12 },
-  { id: 3, title: "Yoga for Beginners", stages: 5, tasks: 15 },
-];
-
 export default function UserBioMenu({ bio, stats, onFollowChange }) {
-  const { id: profileId } = useParams(); // lấy từ URL nếu là /user/:id hoặc /profile/:id
+  const { id: profileId } = useParams(); // profileId từ URL: /user/:id hoặc /profile/:id
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("public-plans");
 
-  // Dữ liệu thật từ API
+  // Dữ liệu followers & followings từ API
   const [followers, setFollowers] = useState([]);
   const [followings, setFollowings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch followers & followings khi tab được chọn
+  // Lấy tất cả plans (giả định usePlans trả về plans của toàn hệ thống hoặc có thể filter)
+  const { data: plans = [], isLoading: isLoadingPlans } = usePlans();
+
+  // Lọc public plans của user này
+  const publicPlans = useMemo(() => {
+    if (isLoadingPlans || !plans?.length || !profileId) return [];
+
+    return plans.filter(
+      (plan) =>
+        plan.ownerId === Number(profileId) && plan.visibility === "public"
+    );
+  }, [plans, isLoadingPlans, profileId]);
+
+  // Fetch followers / followings khi tab thay đổi
   useEffect(() => {
-    if (!profileId || (activeTab !== "followers" && activeTab !== "followings")) return;
+    if (!profileId || (activeTab !== "followers" && activeTab !== "followings")) {
+      return;
+    }
 
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
+        let res;
         if (activeTab === "followers") {
-          const res = await followApi.getFollowers(profileId);
+          res = await followApi.getFollowers(profileId);
           setFollowers(res?.data?.result || []);
         } else {
-          const res = await followApi.getFollowings(profileId);
+          res = await followApi.getFollowings(profileId);
           setFollowings(res?.data?.result || []);
         }
       } catch (err) {
+        console.error("Lỗi tải danh sách follow:", err);
         setError("Không tải được danh sách");
-        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -51,68 +62,77 @@ export default function UserBioMenu({ bio, stats, onFollowChange }) {
     fetchData();
   }, [activeTab, profileId]);
 
-  const handleUserClick = useCallback((username) => {
-    navigate(`/user/${username}`); // hoặc /profile/${username} tùy route của bạn
-  }, [navigate]);
-
-  // Callback từ UserCard khi follow/unfollow
   const handleFollowToggle = useCallback(
     (userId, newIsFollowing) => {
       onFollowChange?.(userId, newIsFollowing);
-      // Có thể cập nhật stats nếu component cha cần
+      // Nếu cần cập nhật local state followers/followings thì thêm logic ở đây
     },
     [onFollowChange]
   );
 
   const renderContent = useMemo(() => {
-    if (loading) return <div className="user-empty-state">Đang tải...</div>;
-    if (error) return <div className="user-empty-state">{error}</div>;
+    // Loading & error chung cho followers/followings
+    if (loading && (activeTab === "followers" || activeTab === "followings")) {
+      return <div className="user-empty-state">Đang tải...</div>;
+    }
+    if (error && (activeTab === "followers" || activeTab === "followings")) {
+      return <div className="user-empty-state error">{error}</div>;
+    }
 
     switch (activeTab) {
       case "public-plans":
-        return MOCK_USER_PUBLIC_PLANS.length > 0 ? (
-          <div className="user-content-grid">
-            {MOCK_USER_PUBLIC_PLANS.map((plan) => (
-              <div key={plan.id} className="user-plan-card">
-                <div className="user-plan-card-image">📋</div>
-                <div className="user-plan-card-content">
-                  <div className="user-plan-card-title">{plan.title}</div>
-                  <div className="user-plan-card-meta">
-                    {plan.stages} stages • {plan.tasks} tasks
-                  </div>
-                </div>
-              </div>
+        if (isLoadingPlans) {
+          return <div className="user-empty-state">Đang tải kế hoạch...</div>;
+        }
+
+        if (publicPlans.length === 0) {
+          return (
+            <div className="user-empty-state">
+              <p>Chưa có kế hoạch công khai nào</p>
+              <span>Người dùng này chưa công bố kế hoạch nào</span>
+            </div>
+          );
+        }
+
+        return (
+          <div className="user-content-grid public-plans-grid">
+            {publicPlans.map((plan) => (
+              <PlanCard key={plan.id} item={plan} />
             ))}
-          </div>
-        ) : (
-          <div className="user-empty-state">
-            <p>No public plans yet</p>
-            <span>This user hasn't published any plans</span>
           </div>
         );
 
       case "followings":
-        return followings.length > 0 ? (
+        if (followings.length === 0) {
+          return (
+            <div className="user-empty-state">
+              <p>Chưa theo dõi ai</p>
+              <span>Người dùng này chưa follow bất kỳ ai</span>
+            </div>
+          );
+        }
+        return (
           <div className="user-content-grid">
             {followings.map((user) => (
               <UserCard
                 key={user.id}
                 user={user}
                 onFollowToggle={handleFollowToggle}
-                // Nếu UserCard cần onUserClick, truyền thêm
-                // onUserClick={() => handleUserClick(user.username)}
               />
             ))}
-          </div>
-        ) : (
-          <div className="user-empty-state">
-            <p>Chưa theo dõi ai</p>
-            <span>Người dùng này chưa follow ai</span>
           </div>
         );
 
       case "followers":
-        return followers.length > 0 ? (
+        if (followers.length === 0) {
+          return (
+            <div className="user-empty-state">
+              <p>Chưa có người theo dõi</p>
+              <span>Người dùng này chưa có follower nào</span>
+            </div>
+          );
+        }
+        return (
           <div className="user-content-grid">
             {followers.map((user) => (
               <UserCard
@@ -122,17 +142,21 @@ export default function UserBioMenu({ bio, stats, onFollowChange }) {
               />
             ))}
           </div>
-        ) : (
-          <div className="user-empty-state">
-            <p>Chưa có người theo dõi</p>
-            <span>Người dùng này chưa có follower</span>
-          </div>
         );
 
       default:
         return null;
     }
-  }, [activeTab, loading, error, followers, followings, handleFollowToggle]);
+  }, [
+    activeTab,
+    loading,
+    error,
+    followers,
+    followings,
+    publicPlans,
+    isLoadingPlans,
+    handleFollowToggle,
+  ]);
 
   return (
     <div className="user-bio-menu-container">
@@ -157,6 +181,7 @@ export default function UserBioMenu({ bio, stats, onFollowChange }) {
             Followers
           </button>
         </div>
+
         <div className="user-content-area">{renderContent}</div>
       </div>
     </div>
