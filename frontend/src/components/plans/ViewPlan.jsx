@@ -25,16 +25,54 @@ const ViewPlan = () => {
   };
 
   useEffect(() => {
-    if (fullPlan){
+    if (fullPlan) {
       trackRecentPlan(fullPlan);
     }
   });
 
   // console.log("Viewing plan: ", fullPlan)
-  const handleForkClick = useCallback(async() => {
+  const handleForkClick = useCallback(async () => {
     // console.log('Fork Plan clicked - feature in development');
     navigate(`/plans/${id}/fork`);
   }, [id, navigate]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchPlan = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        await new Promise(resolve => setTimeout(resolve, 600));
+
+        const foundPlan = MOCK_PLANS[id];
+
+        if (isMounted) {
+          if (!foundPlan) {
+            setError('Plan not found');
+          } else {
+            setPlan(foundPlan);
+            // TODO: Sau này có thể load trạng thái bookmark thật từ API/localStorage
+          }
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError('Failed to load plan');
+          console.error(err);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchPlan();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
 
   const handleGoBack = useCallback(() => {
     navigate(-1);
@@ -48,6 +86,13 @@ const ViewPlan = () => {
       </div>
     );
   }
+
+  // Handler cho LikeButton
+  const handleBookmarkToggle = useCallback((key, newValue) => {
+    setIsBookmarked(newValue);
+    console.log(`Plan ${id} bookmark toggled: ${newValue ? 'saved' : 'removed'}`);
+    // TODO: Gọi API lưu bookmark hoặc lưu vào localStorage/context
+  }, [id]);
 
   if (isError || !fullPlan) {
     return (
@@ -72,6 +117,8 @@ const ViewPlan = () => {
           <LikeButton
             itemId={Number(id)}
             type='plan'
+            isLiked={isBookmarked}
+            onToggle={handleBookmarkToggle}
           />
         </div>
       </div>

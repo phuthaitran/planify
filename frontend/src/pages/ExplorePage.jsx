@@ -9,6 +9,8 @@ import { searchPlans } from '../api/plan.js';
 import './ExplorePage.css';
 import { usePlans } from '../queries/usePlans';
 
+import { usersApi } from '../api/users';
+import { authApi } from '../api/auth';
 
 const ExplorePage = () => {
   const [activeTab, setActiveTab] = useState('subject');
@@ -18,6 +20,7 @@ const ExplorePage = () => {
   const [searchedPlans, setSearchedPlans] = useState([]);
   const [loadingSearch, setLoadingSearch] = useState(null);
   const [exploreUsers, setExploreUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const { data: plans, isLoading } = usePlans();
   const currentUserId = Number(localStorage.getItem("userId"));
@@ -48,8 +51,83 @@ const ExplorePage = () => {
 
   //=====================================================================
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchExploreData = async () => {
+      setLoading(true);
+
+      try {
+        // 1. Get current user info (to exclude self)
+        let myId = null;
+        try {
+          const meResponse = await authApi.me();
+          myId = meResponse?.data?.result?.id;
+          if (myId && isMounted) {
+            setCurrentUserId(myId);
+          }
+        } catch (meErr) {
+          // Not logged in or error → we won't exclude self
+          console.debug('Could not fetch current user info (possibly not logged in)', meErr);
+        }
+
+        // 2. Fetch all users
+        let users = [];
+        try {
+          const res = await usersApi.getAll();
+          console.log('Raw response from usersApi.getAll():', res);
+
+          const userList = res?.data?.result || [];
+
+          // Filter out admins + current user (if logged in)
+          const filteredUsers = userList.filter((u) => {
+            // Exclude admins
+            const isAdmin = Array.isArray(u.roles) && u.roles.some(
+              (role) => role.toUpperCase() === 'ADMIN' || role === 'SCOPE_ADMIN'
+            );
+            if (isAdmin) return false;
+
+            // Exclude current logged-in user (safest: compare by id)
+            if (myId && u.id === myId) return false;
+
+            return true;
+          });
+
+          // Map to the shape expected by UserCarousel / UserList
+          users = filteredUsers.map((u) => ({
+            id: u.id,
+            username: u.username || (u.email ? u.email.split('@')[0] : 'User'),
+            email: u.email,
+            avatar: u.avatar,
+            // followers: u.followers || 0,
+            // plans: u.plans || 0,
+            // isFollowing: u.isFollowing || false,
+          }));
+        } catch (userErr) {
+          console.warn('Failed to fetch users list:', userErr);
+          // users remains empty array → UI will show empty carousel
+        }
+
+        if (isMounted) {
+          setExploreUsers(users);
+        }
+      } catch (error) {
+        console.error('Error in fetchExploreData:', error);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchExploreData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
   const handlePinTag = useCallback((tag) => {
-    setPinnedTags(prev => {
+    setPinnedTags((prev) => {
       if (!prev.includes(tag)) {
         return [...prev, tag];
       }
@@ -58,7 +136,7 @@ const ExplorePage = () => {
   }, []);
 
   const handleUnpinTag = useCallback((tag) => {
-    setPinnedTags(prev => prev.filter(t => t !== tag));
+    setPinnedTags((prev) => prev.filter((t) => t !== tag));
   }, []);
 
   const handleViewMore = useCallback((title, items, type = 'plan') => {
@@ -69,7 +147,9 @@ const ExplorePage = () => {
     setFullView(null);
   }, []);
 
-  // Full view mode
+  // ────────────────────────────────────────────────
+  //                FULL VIEW MODE
+  // ────────────────────────────────────────────────
   if (fullView) {
     if (fullView.type === 'plan') {
       return (
@@ -110,7 +190,9 @@ const ExplorePage = () => {
     );
   }
 
-  // Main Explore View
+  // ────────────────────────────────────────────────
+  //                  MAIN EXPLORE VIEW
+  // ────────────────────────────────────────────────
   return (
     <div className="explore-page">
       <ExploreHeader

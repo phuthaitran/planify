@@ -43,7 +43,7 @@ export default function App() {
 
             {/* Profile Routes */}
             <Route path="/myprofile" element={<MyProfile />} />
-            <Route path="/profile/:username" element={<OtherUser />} />
+            <Route path="/profile/:id" element={<OtherUser />} />
 
             {/* MyPlan Routes */}
             <Route path="/myplan" element={<MyPlan />} />

@@ -119,7 +119,6 @@ const PlanInfo = ({ planData, updatePlanData }) => {
             ref={fileInputRef}
             type="file"
             accept="image/*"
-            onClick={(e) => e.stopPropagation()}  // Fix prompting twice
             onChange={handleImageChange}
           />
           {planData.reviewUrl ? (
