@@ -68,5 +68,7 @@ export const useBookmarks = () => {
     togglingId: toggleMutation.isPending 
       ? toggleMutation.variables?.planId 
       : null,
+      
+    isError: bookmarksQuery.isError,
   };
 };

@@ -1,89 +1,46 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import Carousel from '../components/plans/Carousel';
 import PlanList from '../components/plans/PlanList';
+import { useBookmarks } from '../queries/useBookmarks';
+import { useHydratedPlans } from '../queries/useHydratedPlans';
 import './SavedPlan.css';
 
 const SavedPage = () => {
   const [fullView, setFullView] = useState(null);
-  const [savedPlans, setSavedPlans] = useState({
-    english: [],
-    math: [],
-    coding: []
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const {bookmarks: plans, isLoading, isError } = useBookmarks();
+  const hydratedPlans = useHydratedPlans(plans);
+  const fullPlans = hydratedPlans.filter(q => q.data).map(q => q.data);
 
-  // Fetch saved plans from backend
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchSavedPlans = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        // TODO: Replace with your actual API endpoint
-        // const response = await fetch('/api/saved-plans');
-        // if (!response.ok) throw new Error('Failed to fetch plans');
-        // const data = await response.json();
-
-        // Simulated API call
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        const mockData = {
-          english: [
-            {
-              id: 'eng-1',
-              title: 'IELTS Speaking Practice',
-              duration: '4 weeks • Intermediate',
-              category: 'english'
-            }
-          ],
-          math: [
-            {
-              id: 'math-1',
-              title: 'Calculus Fundamentals',
-              duration: '6 weeks • Advanced',
-              category: 'math'
-            }
-          ],
-          coding: [
-            {
-              id: 'code-1',
-              title: 'React Development',
-              duration: '8 weeks • Beginner',
-              category: 'coding'
-            }
-          ]
-        };
-
-        if (isMounted) {
-          setSavedPlans(mockData);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(err.message);
-          console.error('Error fetching saved plans:', err);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
+  const savedPlans = useMemo(() => {
+  if (!fullPlans) {
+    return {
+      english: [],
+      math: [],
+      computerScience: [],
+      all: [],
     };
+  }
 
-    fetchSavedPlans();
+  return {
+    english: fullPlans.filter(plan =>
+      plan.categories?.includes('English')
+    ),
+    math: fullPlans.filter(plan =>
+      plan.categories?.includes('Math')
+    ),
+    computerScience: fullPlans.filter(plan =>
+      plan.categories?.includes('Computer Science')
+    ),
+    all: fullPlans,
+  };
+}, [fullPlans]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   // Memoized handler to prevent unnecessary re-renders
   const handleViewMore = useCallback((category, title) => {
     setFullView({
       title,
-      items: savedPlans[category]
+      items: savedPlans[category],
     });
   }, [savedPlans]);
 
@@ -113,7 +70,7 @@ const SavedPage = () => {
   }
 
   // Loading state
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="saved-page loading-container">
         <div className="spinner-wrapper">
@@ -125,7 +82,7 @@ const SavedPage = () => {
   }
 
   // Error state
-  if (error) {
+  if (isError) {
     return (
       <div className="saved-page loading-container">
         <div className="spinner-wrapper">
@@ -155,10 +112,17 @@ const SavedPage = () => {
       />
 
       <Carousel
-        title="Coding"
-        items={savedPlans.coding}
+        title="Computer Science"
+        items={savedPlans.computerScience}
         type="plan"
-        onViewMore={() => handleViewMore('coding', 'Coding')}
+        onViewMore={() => handleViewMore('computerScience', 'Computer Science')}
+      />
+
+      <Carousel
+        title="All Saved Plans"
+        items={fullPlans}
+        type="plan"
+        onViewMore={() => handleViewMore('all', 'All Saved Plans')}
       />
     </div>
   );

@@ -44,7 +44,7 @@ const Carousel = ({ title, items, type, onViewMore }) => {
     };
   }, [items.length, items]); // depend on items to re-calc when data changes
 
-  const maxOffset = Math.max(0, items.length - visibleCount);
+  const maxOffset = Math.max(0, (items?.length ?? 0) - visibleCount);
   const hasPrev = offset > 0;
   const hasNext = offset < maxOffset;
 
