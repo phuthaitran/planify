@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LikeButton from './LikeButton.jsx';        // ← Đã thêm import
 import './ViewPlan.css';
@@ -9,6 +9,7 @@ const ViewPlan = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: fullPlan, isLoading, error, isError } = useHydratedPlan(id);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   const trackRecentPlan = (plan) => {
     const raw = localStorage.getItem("recentPlans");
