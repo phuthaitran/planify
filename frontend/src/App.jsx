@@ -62,9 +62,6 @@ export default function App() {
             {/* Unified Plan View Route - Smart wrapper that shows ViewMyPlan or ViewPlan */}
             <Route path="/plans/:id" element={<ViewPlanWrapper />} />
 
-            {/* User Profile View (legacy) */}
-            <Route path="/users/:id" element={<UserView />} />
-
             <Route path="/about" element={<About />} />
             <Route path="/notifications" element={<Notification />} />
           </Route>

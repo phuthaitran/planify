@@ -145,9 +145,6 @@ const ViewMyPlan = () => {
         subtask.completedAt = null;
       }
 
-      // TODO: Send update to backend API
-      // await updateSubtaskStatus(planId, stageIdx, taskIdx, subtaskIdx, { status: newStatus, completedAt: subtask.completedAt });
-
       return updatedPlan;
     });
   }, []);
@@ -156,8 +153,6 @@ const ViewMyPlan = () => {
     console.log('Saved plan:', plan);
     setOriginalPlan(JSON.parse(JSON.stringify(plan)));
     setIsEditing(false);
-    // TODO: Send to API
-    // await savePlan(id, plan);
   }, [plan]);
 
   const handleCancel = useCallback(() => {
