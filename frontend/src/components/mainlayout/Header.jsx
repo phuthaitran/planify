@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
@@ -12,16 +12,34 @@ import Logo from "../../assets/Logo.svg";
 import UserMenuPopup from "./UserDropdown";
 import NotificationDropdown from "./NotificationDropdown";
 import LanguageDropdown from "./LanguageDropdown";
+import { authApi } from "../../api/auth";
 
 import "./Header.css";
 
 export default function Header() {
   const [openPopup, setOpenPopup] = useState(null);
   // "user" | "notif" | "lang" | null
+  const [userName, setUserName] = useState("");
 
   const userRef = useRef(null);
   const notifRef = useRef(null);
   const langRef = useRef(null);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await authApi.me();
+        const userData = response?.data?.result;
+        if (userData?.username) {
+          setUserName(userData.username);
+        }
+      } catch (error) {
+        console.error("Failed to fetch current user:", error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
 
   const toggle = (name) =>
     setOpenPopup((prev) => (prev === name ? null : name));
@@ -73,7 +91,7 @@ export default function Header() {
             isOpen={openPopup === "user"}
             onClose={() => setOpenPopup(null)}
             containerRef={userRef}
-            userName="Ngọc"
+            userName={userName}
           />
         </div>
       </div>

@@ -20,3 +20,6 @@ export const startSubtask = async (subtaskId) =>
 
 export const completeSubtask = async (subtaskId) =>
     await httpAuth.patch(`/subtasks/${subtaskId}/complete`, {});
+
+export const getTodoList = (userId) =>
+    httpAuth.get(`/users/${userId}/todo`);
