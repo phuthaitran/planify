@@ -46,7 +46,10 @@ public class PlanService {
         plan.setVisibility(request.getVisibility());
         plan.setStatus(request.getStatus());
 
-        plan.setPicture(request.getPicture().replace(" ", "_"));
+        String requestPicture = request.getPicture();
+        if (requestPicture != null) {
+            plan.setPicture(request.getPicture().replace(" ", "_"));
+        }
         plan.setReminderAt(request.getReminderAt());
         plan.setOwner(userRepository.findById(jwtUserContext.getCurrentUserId())
                 .orElseThrow(() -> new RuntimeException("Owner not found")));
@@ -87,17 +90,6 @@ public class PlanService {
         return plan;
     }
 
-    public Plan getPlanByName(String name) {
-        Plan plan = planRepository.findPlanByName(name);
-        boolean isPublic = "public".equals(plan.getVisibility());
-
-        if (!isPublic && jwtUserContext.neitherPlanOwnerNorAdmin(plan)) {
-            // Hide the plan completely
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plan not found");
-        }
-        return plan;
-    }
-
     public List<Plan> getPlanByUser(Integer userId) {
         List<Plan> plans = planRepository.findPlanByUserId(userId);
         return plans.stream()
@@ -118,13 +110,26 @@ public class PlanService {
                 .collect(Collectors.toList());
     }
 
-    public List<Plan> filterPlansByTags(List<String> tagNames) {
-        // Bạn có thể thêm logic kiểm tra ở đây
-        if (tagNames == null || tagNames.isEmpty()) {
+    public List<Plan> filterPlans(String query, List<String> tags) {
+
+        boolean hasQuery = query != null && !query.trim().isEmpty();
+        boolean hasTags = tags != null && !tags.isEmpty();
+
+        if (!hasQuery && !hasTags) {
             return planRepository.findAll();
         }
-        return planRepository.findByTagNames(tagNames);
+
+        if (hasQuery && !hasTags) {
+            return planRepository.searchByTitle(query);
+        }
+
+        if (!hasQuery && hasTags) {
+            return planRepository.findByTagNames(tags,tags.size());
+        }
+
+        return planRepository.searchByQueryAndTags(query, tags,tags.size());
     }
+
 
 
     // New: partial update for Plan
@@ -136,6 +141,7 @@ public class PlanService {
 
         if (request.getTitle() != null) plan.setTitle(request.getTitle());
         if (request.getDescription() != null) plan.setDescription(request.getDescription());
+        if (request.getVisibility() != null) plan.setVisibility(request.getVisibility());
         if (request.getPicture() != null) plan.setPicture(request.getPicture());
         if (request.getStatus() != null) plan.setStatus(request.getStatus());
 
@@ -190,9 +196,7 @@ public class PlanService {
         );
         TimeStatus status;
 
-        if (actualDuration < plan.getDuration()) {
-            status = TimeStatus.EARLY;
-        } else if (actualDuration > plan.getDuration()) {
+        if (actualDuration > plan.getDuration()) {
             status = TimeStatus.LATE;
         } else {
             status = TimeStatus.ON_TIME;

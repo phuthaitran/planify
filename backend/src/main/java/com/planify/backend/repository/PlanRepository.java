@@ -33,7 +33,6 @@ public interface PlanRepository extends JpaRepository<@NonNull Plan, @NonNull In
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM Plan p " +
             "JOIN FETCH p.owner u " +
-            // ĐIỀU KIỆN LỌC
             "WHERE p.reminderAt <= :now " +
             "AND p.reminderSent = FALSE")
     List<Plan> findRemindersPlanWithDetails(@Param("now") LocalDateTime now);
@@ -43,16 +42,45 @@ public interface PlanRepository extends JpaRepository<@NonNull Plan, @NonNull In
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM Plan p " +
             "JOIN FETCH p.owner u " +
-            // ĐIỀU KIỆN LỌC
             "WHERE p.expiredAt <= :now " +
             "AND p.expiredSent = FALSE")
     List<Plan> findDuePlansWithDetails(@Param("now") LocalDateTime now);
 
-    @Query("SELECT DISTINCT p FROM Plan p " +
-            "JOIN p.tagPlans tp " +
-            "JOIN tp.tag t " +
-            "WHERE t.tagName IN :tagNames")
-    List<Plan> findByTagNames(@Param("tagNames") List<String> tagNames);
+    @Query("""
+    SELECT p FROM Plan p
+    WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%'))
+""")
+    List<Plan> searchByTitle(@Param("query") String query);
+
+    @Query("""
+    SELECT DISTINCT p FROM Plan p
+    JOIN p.tagPlans tp
+    JOIN tp.tag t
+    WHERE t.tagName IN :tagNames AND p.visibility = 'public'
+    GROUP BY p.id
+    HAVING COUNT(DISTINCT t.tagName) = :tagCount
+""")
+    List<Plan> findByTagNames(
+            @Param("tagNames") List<String> tagNames,
+            @Param("tagCount") long tagCount
+    );
+
+    @Query("""
+    SELECT DISTINCT p FROM Plan p
+    JOIN p.tagPlans tp
+    JOIN tp.tag t
+    WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%'))
+    AND t.tagName IN :tagNames
+    GROUP BY p.id
+    HAVING COUNT(DISTINCT t.tagName) = :tagCount
+""")
+    List<Plan> searchByQueryAndTags(
+            @Param("query") String query,
+            @Param("tagNames") List<String> tagNames,
+            @Param("tagCount") long tagCount
+    );
+
+
 
     @Modifying
     @Query(value = "UPDATE plan SET duration = :duration WHERE id = :planId", nativeQuery = true)

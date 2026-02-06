@@ -1,37 +1,55 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import ExploreHeader from '../components/explore/ExploreHeader';
-import ExploreTags from '../components/explore/ExploreTags';
-import Carousel from '../components/plans/Carousel';
-import UserCarousel from '../components/users/UserCarousel';
-import PlanList from '../components/plans/PlanList';
-import UserList from '../components/users/UserList';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+
+import ExploreHeader from '../components/explore/ExploreHeader.jsx';
+import ExploreTags from '../components/explore/ExploreTags.jsx';
+import Carousel from '../components/plans/Carousel.jsx';
+import UserCarousel from '../components/users/UserCarousel.jsx';
+import PlanList from '../components/plans/PlanList.jsx';
+import { searchPlans } from '../api/plan.js';
 import './ExplorePage.css';
+import { usePlans } from '../queries/usePlans';
 
-const MOCK_PLANS = [
-  { id: 'plan-1', title: 'IELTS Speaking Mastery', duration: '8 weeks • Advanced', category: 'english', isPublic: true },
-  { id: 'plan-2', title: 'TOEFL Reading Pro', duration: '6 weeks • Intermediate', category: 'english', isPublic: true },
-  { id: 'plan-3', title: 'Business English Essentials', duration: '10 weeks • All levels', category: 'english', isPublic: true },
-  { id: 'plan-4', title: 'Academic Writing for IELTS', duration: '4 weeks • Band 7+', category: 'english', isPublic: true },
-  { id: 'plan-5', title: 'Daily English Conversation', duration: '12 weeks • Beginner', category: 'english', isPublic: true },
-  { id: 'plan-6', title: 'SAT Vocabulary Builder', duration: '8 weeks • High School', category: 'english', isPublic: true }
-];
-
-const MOCK_USERS = [
-  { id: 'user-1', name: 'Emma Johnson', description: 'IELTS 8.5 | Official Examiner & Mentor', avatar: null, followers: 2450, plans: 18, isFollowing: false },
-  { id: 'user-2', name: 'Alex Chen', description: 'TOEFL 115+ | 12 years teaching experience', avatar: null, followers: 1890, plans: 14, isFollowing: true },
-  { id: 'user-3', name: 'Sarah Williams', description: 'Helping students reach Band 7+ since 2015', avatar: null, followers: 3200, plans: 22, isFollowing: false },
-  { id: 'user-4', name: 'Michael Park', description: 'Cambridge CELTA | Pronunciation specialist', avatar: null, followers: 980, plans: 9, isFollowing: false },
-  { id: 'user-5', name: 'Lisa Nguyen', description: 'Business English & Job Interview Coach', avatar: null, followers: 1560, plans: 11, isFollowing: true },
-  { id: 'user-6', name: 'David Brown', description: 'SAT/ACT Expert | Top 1% scorer', avatar: null, followers: 2100, plans: 16, isFollowing: false }
-];
+import { usersApi } from '../api/users';
+import { authApi } from '../api/auth';
 
 const ExplorePage = () => {
   const [activeTab, setActiveTab] = useState('subject');
   const [pinnedTags, setPinnedTags] = useState([]);
   const [fullView, setFullView] = useState(null);
-  const [explorePlans, setExplorePlans] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchedPlans, setSearchedPlans] = useState([]);
+  const [loadingSearch, setLoadingSearch] = useState(null);
   const [exploreUsers, setExploreUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const { data: plans, isLoading } = usePlans();
+  const currentUserId = Number(localStorage.getItem("userId"));
+  const isSearching = searchTerm.length > 0 || pinnedTags.length > 0;
+  //===================SearchPlan========================
+  useEffect(() => {
+    if (!isSearching) return;
+
+    setLoadingSearch(true);
+
+    searchPlans({
+      query: searchTerm,
+      tags: pinnedTags
+    })
+      .then(res => {
+        setSearchedPlans(res.data.result ?? []);
+      })
+      .catch(console.error)
+      .finally(() => setLoadingSearch(false));
+
+  }, [searchTerm, pinnedTags]);
+
+  const explorePlans = useMemo(() => {
+    const source = isSearching ? searchedPlans : plans;
+
+    return source.filter(plan => plan.ownerId !== currentUserId);
+  }, [plans, searchedPlans, isSearching, currentUserId]);
+
+  //=====================================================================
 
   useEffect(() => {
     let isMounted = true;
@@ -40,14 +58,61 @@ const ExplorePage = () => {
       setLoading(true);
 
       try {
-        await new Promise(resolve => setTimeout(resolve, 600));
+        // 1. Get current user info (to exclude self)
+        let myId = null;
+        try {
+          const meResponse = await authApi.me();
+          myId = meResponse?.data?.result?.id;
+          if (myId && isMounted) {
+            setCurrentUserId(myId);
+          }
+        } catch (meErr) {
+          // Not logged in or error → we won't exclude self
+          console.debug('Could not fetch current user info (possibly not logged in)', meErr);
+        }
+
+        // 2. Fetch all users
+        let users = [];
+        try {
+          const res = await usersApi.getAll();
+          console.log('Raw response from usersApi.getAll():', res);
+
+          const userList = res?.data?.result || [];
+
+          // Filter out admins + current user (if logged in)
+          const filteredUsers = userList.filter((u) => {
+            // Exclude admins
+            const isAdmin = Array.isArray(u.roles) && u.roles.some(
+              (role) => role.toUpperCase() === 'ADMIN' || role === 'SCOPE_ADMIN'
+            );
+            if (isAdmin) return false;
+
+            // Exclude current logged-in user (safest: compare by id)
+            if (myId && u.id === myId) return false;
+
+            return true;
+          });
+
+          // Map to the shape expected by UserCarousel / UserList
+          users = filteredUsers.map((u) => ({
+            id: u.id,
+            username: u.username || (u.email ? u.email.split('@')[0] : 'User'),
+            email: u.email,
+            avatar: u.avatar,
+            // followers: u.followers || 0,
+            // plans: u.plans || 0,
+            // isFollowing: u.isFollowing || false,
+          }));
+        } catch (userErr) {
+          console.warn('Failed to fetch users list:', userErr);
+          // users remains empty array → UI will show empty carousel
+        }
 
         if (isMounted) {
-          setExplorePlans(MOCK_PLANS);
-          setExploreUsers(MOCK_USERS);
+          setExploreUsers(users);
         }
       } catch (error) {
-        console.error('Error fetching explore data:', error);
+        console.error('Error in fetchExploreData:', error);
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -61,9 +126,8 @@ const ExplorePage = () => {
       isMounted = false;
     };
   }, []);
-
   const handlePinTag = useCallback((tag) => {
-    setPinnedTags(prev => {
+    setPinnedTags((prev) => {
       if (!prev.includes(tag)) {
         return [...prev, tag];
       }
@@ -72,7 +136,7 @@ const ExplorePage = () => {
   }, []);
 
   const handleUnpinTag = useCallback((tag) => {
-    setPinnedTags(prev => prev.filter(t => t !== tag));
+    setPinnedTags((prev) => prev.filter((t) => t !== tag));
   }, []);
 
   const handleViewMore = useCallback((title, items, type = 'plan') => {
@@ -83,7 +147,9 @@ const ExplorePage = () => {
     setFullView(null);
   }, []);
 
-  // Full view mode
+  // ────────────────────────────────────────────────
+  //                FULL VIEW MODE
+  // ────────────────────────────────────────────────
   if (fullView) {
     if (fullView.type === 'plan') {
       return (
@@ -113,7 +179,7 @@ const ExplorePage = () => {
   }
 
   // Loading state
-  if (loading) {
+  if (isLoading || loadingSearch) {
     return (
       <div className="explore-page loading-container">
         <div className="spinner-wrapper">
@@ -124,12 +190,15 @@ const ExplorePage = () => {
     );
   }
 
-  // Main Explore View
+  // ────────────────────────────────────────────────
+  //                  MAIN EXPLORE VIEW
+  // ────────────────────────────────────────────────
   return (
     <div className="explore-page">
       <ExploreHeader
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        onSearch={setSearchTerm}
       />
 
       <ExploreTags
@@ -140,7 +209,7 @@ const ExplorePage = () => {
       />
 
       <Carousel
-        title="Popular Plans"
+        title="Community Plans"
         items={explorePlans}
         type="plan"
         onViewMore={() => handleViewMore('All Plans', explorePlans, 'plan')}
