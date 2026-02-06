@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import StatusDropdown from "./StatusDropdown";
 import { getTodoList, updateSubtask } from "../../api/subtask";
 import "./ToDo.css";
@@ -120,7 +121,9 @@ export default function ToDo() {
 
       {plans.map((plan) => (
         <div className="todo-plan" key={plan.planId}>
-          <div className="todo-plan__header">Plan: {plan.planName}</div>
+          <Link to={`/plans/${plan.planId}`} className="todo-plan__header">
+            Plan: {plan.planName}
+          </Link>
 
           <ul className="todo-list">
             {plan.tasks.map((task) => (
