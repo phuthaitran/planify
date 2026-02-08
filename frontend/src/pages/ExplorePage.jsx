@@ -46,7 +46,7 @@ const ExplorePage = () => {
   const explorePlans = useMemo(() => {
     const source = isSearching ? searchedPlans : plans;
 
-    return source.filter(plan => plan.ownerId !== currentUserId);
+    return source.filter(plan => plan.ownerId !== currentUserId && plan.visibility == 'public');
   }, [plans, searchedPlans, isSearching, currentUserId]);
 
   //=====================================================================
