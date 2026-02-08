@@ -530,22 +530,14 @@ const ViewMyPlan = () => {
 
   if (isEditing) {
     // Pass the plan with full subtask objects to EditPlan
+    // Note: EditPlan handles its own preview modal internally
     return (
-      <>
-        <EditPlan
-          plan={plan}
-          setPlan={setPlan}
-          onPreview={handlePreview}
-          onSave={handleSave}
-          onCancel={handleCancel}
-        />
-        {showPreview && (
-          <PreviewModal
-            planData={editedPlan}
-            onClose={() => setShowPreview(false)}
-          />
-        )}
-      </>
+      <EditPlan
+        plan={plan}
+        setPlan={setPlan}
+        onSave={handleSave}
+        onCancel={handleCancel}
+      />
     );
   }
 
