@@ -48,7 +48,7 @@ public interface PlanRepository extends JpaRepository<@NonNull Plan, @NonNull In
 
     @Query("""
     SELECT p FROM Plan p
-    WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%'))
+    WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%')) AND p.visibility = 'public'
 """)
     List<Plan> searchByTitle(@Param("query") String query);
 
@@ -70,7 +70,7 @@ public interface PlanRepository extends JpaRepository<@NonNull Plan, @NonNull In
     JOIN p.tagPlans tp
     JOIN tp.tag t
     WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%'))
-    AND t.tagName IN :tagNames
+    AND t.tagName IN :tagNames AND p.visibility = 'public'
     GROUP BY p.id
     HAVING COUNT(DISTINCT t.tagName) = :tagCount
 """)
