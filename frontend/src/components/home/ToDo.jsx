@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import StatusDropdown from "./StatusDropdown";
 import { getTodoList, updateSubtask, completeSubtask } from "../../api/subtask";
 import { recordSubtaskDone, recordSubtaskCancel } from "../../api/dailyPerformance";
+import { emitDailyPerformanceChanged } from "../../events/dailyPerformanceEvents";
 import "./ToDo.css";
 
 export default function ToDo() {
@@ -139,9 +140,11 @@ export default function ToDo() {
         await completeSubtask(subtaskId);
         await updateSubtask(subtaskId, { status: 'completed' });
         await recordSubtaskDone(planId);
+        emitDailyPerformanceChanged();
       } else if (type === 'cancel') {
         await updateSubtask(subtaskId, { status: 'cancelled' });
         await recordSubtaskCancel(planId);
+        emitDailyPerformanceChanged();
       }
     } catch (err) {
       console.error("Failed to update subtask status:", err);

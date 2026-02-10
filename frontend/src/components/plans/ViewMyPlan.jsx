@@ -10,6 +10,7 @@ import { startStage, completeStage } from '../../api/stage';
 import { startTask, completeTask } from '../../api/task';
 import { startSubtask, completeSubtask, updateSubtask, getSubtaskProgress } from '../../api/subtask';
 import { recordSubtaskStart, recordSubtaskDone, recordSubtaskCancel } from '../../api/dailyPerformance';
+import { emitDailyPerformanceChanged } from '../../events/dailyPerformanceEvents';
 import httpPublic from '../../api/httpPublic';
 import './ViewMyPlan.css';
 
@@ -344,6 +345,7 @@ const ViewMyPlan = () => {
 
         // Record in daily_performance table
         await recordSubtaskStart(plan.id);
+        emitDailyPerformanceChanged();
       } catch (error) {
         console.error('Failed to start subtask:', error);
         alert('Failed to start subtask. Please try again.');
@@ -418,6 +420,7 @@ const ViewMyPlan = () => {
 
         // Record in daily_performance table
         await recordSubtaskStart(plan.id);
+        emitDailyPerformanceChanged();
 
       } else if (type === 'done') {
         // Complete the subtask
@@ -457,6 +460,7 @@ const ViewMyPlan = () => {
 
         // Record in daily_performance table
         await recordSubtaskDone(plan.id);
+        emitDailyPerformanceChanged();
 
       } else if (type === 'cancel') {
         // Cancel the subtask
@@ -494,6 +498,7 @@ const ViewMyPlan = () => {
 
         // Record in daily_performance table
         await recordSubtaskCancel(plan.id);
+        emitDailyPerformanceChanged();
       }
     } catch (error) {
       console.error('Failed to update subtask:', error);
