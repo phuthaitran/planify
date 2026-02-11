@@ -159,19 +159,17 @@ public class SubtaskService {
                     TimeStatus.NOT_STARTED);
         }
         if (subtask.getCompleted_at() == null) {
-            if (Objects.equals(subtask.getStatus(), "cancelled")) {
-                return new ProgressResponse(
-                        0,
-                        subtask.getDuration(),
-                        TimeStatus.CANCELLED);
-            } else {
-                return new ProgressResponse(
-                        0,
-                        subtask.getDuration(),
-                        TimeStatus.IN_PROGRESS);
-            }
+            return new ProgressResponse(
+                    0,
+                    subtask.getDuration(),
+                    TimeStatus.IN_PROGRESS);
         }
-
+        if (Objects.equals(subtask.getStatus(), "cancelled")) {
+            return new ProgressResponse(
+                    0,
+                    subtask.getDuration(),
+                    TimeStatus.CANCELLED);
+        }
         long actualDuration = TimeCalculator.calculateActualDays(
                 subtask.getStarted_at(),
                 subtask.getCompleted_at());

@@ -142,6 +142,7 @@ export default function ToDo() {
         await recordSubtaskDone(planId);
         emitDailyPerformanceChanged();
       } else if (type === 'cancel') {
+        await completeSubtask(subtaskId);
         await updateSubtask(subtaskId, { status: 'cancelled' });
         await recordSubtaskCancel(planId);
         emitDailyPerformanceChanged();

@@ -21,6 +21,7 @@ export default function WeeklyChart() {
     const d = new Date(date);
     const day = d.getDay(); // 0 = Sunday
     const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    console.log(d);
     return new Date(d.setDate(diff));
   }
 
@@ -36,7 +37,11 @@ export default function WeeklyChart() {
   }
 
   function formatDate(date) {
-    return date.toISOString().split('T')[0];
+    // Use local date components to avoid UTC timezone shift
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   // ---------- Chart ----------
@@ -45,6 +50,7 @@ export default function WeeklyChart() {
 
     // Calculate start and end dates for the week
     const startDate = formatDate(weekStart);
+    console.log(startDate);
     const endDate = new Date(weekStart);
     endDate.setDate(endDate.getDate() + 6);
     const endDateStr = formatDate(endDate);
@@ -54,6 +60,7 @@ export default function WeeklyChart() {
       try {
         const response = await getWeeklyPerformance(startDate, endDateStr);
         const weeklyData = response.data || [];
+        console.log(weeklyData);
 
         // Initialize arrays for each day
         const done = Array(7).fill(0);
@@ -64,7 +71,9 @@ export default function WeeklyChart() {
         weeklyData.forEach(day => {
           if (!day.date) return;
           const dayDate = new Date(day.date);
-          const dayIndex = Math.floor((dayDate - weekStart) / (1000 * 60 * 60 * 24));
+          dayDate.setHours(dayDate.getHours() - 7);
+          const dayIndex = Math.floor((dayDate - weekStart) / (1000 * 60 * 60 * 24)) + 1;
+          console.log(dayIndex);
           if (dayIndex >= 0 && dayIndex < 7) {
             done[dayIndex] = day.subtasksCompleted || 0;
             incomplete[dayIndex] = day.subtasksIncompleted || 0;

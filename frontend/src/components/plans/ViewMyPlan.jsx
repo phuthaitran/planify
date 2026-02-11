@@ -468,11 +468,13 @@ const ViewMyPlan = () => {
         const task = plan.stages[stageIdx]?.tasks[taskIdx];
         const stage = plan.stages[stageIdx];
 
+        await completeSubtask(subtask.id);
         await updateSubtask(subtask.id, { status: 'cancelled' });
 
         // Compute updated plan state BEFORE setPlan (to avoid async timing issues)
         const updatedPlan = JSON.parse(JSON.stringify(plan));
         updatedPlan.stages[stageIdx].tasks[taskIdx].subtasks[subtaskIdx].status = 'cancelled';
+        updatedPlan.stages[stageIdx].tasks[taskIdx].subtasks[subtaskIdx].completedAt = new Date().toISOString();
 
         // Update local state
         setPlan(updatedPlan);
