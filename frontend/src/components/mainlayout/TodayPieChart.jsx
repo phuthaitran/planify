@@ -1,37 +1,42 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import Chart from "chart.js/auto";
 import "./TodayPieChart.css";
 import { getTodayDailyPerformance } from "../../api/dailyPerformance.js";
+import { onDailyPerformanceChanged } from "../../events/dailyPerformanceEvents.js";
 
 export default function TodayPieChart() {
     const chartRef = useRef(null);
     const chartInstance = useRef(null);
 
-    useEffect(() => {
-        const loadData = async () => {
-            try {
-                const res = await getTodayDailyPerformance();
+    const loadData = useCallback(async () => {
+        try {
+            const res = await getTodayDailyPerformance();
 
-                const {
-                    subtasksCompleted,
-                    subtasksIncompleted,
-                    subtasksCancelled,
-                } = res.data;
+            const {
+                subtasksCompleted,
+                subtasksIncompleted,
+                subtasksCancelled,
+            } = res.data;
 
-                // destroy chart cũ
-                chartInstance.current?.destroy();
+            const newData = [
+                subtasksCancelled,
+                subtasksCompleted,
+                subtasksIncompleted,
+            ];
 
+            if (chartInstance.current) {
+                // Update existing chart in-place
+                chartInstance.current.data.datasets[0].data = newData;
+                chartInstance.current.update();
+            } else {
+                // Create chart for the first time
                 chartInstance.current = new Chart(chartRef.current, {
                     type: "doughnut",
                     data: {
                         labels: ["Cancel", "Done", "Incomplete"],
                         datasets: [
                             {
-                                data: [
-                                    subtasksCancelled,
-                                    subtasksCompleted,
-                                    subtasksIncompleted,
-                                ],
+                                data: newData,
                                 backgroundColor: [
                                     "rgb(255, 99, 132)",
                                     "rgb(54, 162, 235)",
@@ -47,15 +52,22 @@ export default function TodayPieChart() {
                         },
                     },
                 });
-            } catch (err) {
-                console.error("Load daily performance failed", err);
             }
-        };
+        } catch (err) {
+            console.error("Load daily performance failed", err);
+        }
+    }, []);
 
+    useEffect(() => {
         loadData();
 
-        return () => chartInstance.current?.destroy();
-    }, []);
+        const unsubscribe = onDailyPerformanceChanged(loadData);
+
+        return () => {
+            unsubscribe();
+            chartInstance.current?.destroy();
+        };
+    }, [loadData]);
 
     return (
         <div className="today-pie">

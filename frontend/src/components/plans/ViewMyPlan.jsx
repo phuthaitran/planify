@@ -5,11 +5,12 @@ import PreviewModal from '../createplan/Preview';
 import StatusDropdown from '../../components/home/StatusDropdown';
 import ReviewPlanPopup from './ReviewPlanPopUp';
 import { useHydratedPlan } from '../../queries/useHydratedPlan';
-import { deletePlan, startPlan, completePlan } from '../../api/plan';
+import { deletePlan, startPlan, completePlan, updatePlan } from '../../api/plan';
 import { startStage, completeStage } from '../../api/stage';
 import { startTask, completeTask } from '../../api/task';
 import { startSubtask, completeSubtask, updateSubtask, getSubtaskProgress } from '../../api/subtask';
 import { recordSubtaskStart, recordSubtaskDone, recordSubtaskCancel } from '../../api/dailyPerformance';
+import { emitDailyPerformanceChanged } from '../../events/dailyPerformanceEvents';
 import httpPublic from '../../api/httpPublic';
 import './ViewMyPlan.css';
 
@@ -35,7 +36,7 @@ const ViewMyPlan = () => {
 
 
 
-    // Track started subtasks and confirmation dialogs
+  // Track started subtasks and confirmation dialogs
   const [startedSubtasks, setStartedSubtasks] = useState(new Set());
   const [hasStartedAnySubtask, setHasStartedAnySubtask] = useState(false);
   const [confirmModal, setConfirmModal] = useState({
@@ -51,20 +52,20 @@ const ViewMyPlan = () => {
   const { data: fullPlan, isLoading } = useHydratedPlan(id);
 
   // Initialize plan state from context
-    useEffect(() => {
-        if (fullPlan) {
-            setPlan(fullPlan);
-            setOriginalPlan(JSON.parse(JSON.stringify(fullPlan)));
+  useEffect(() => {
+    if (fullPlan) {
+      setPlan(fullPlan);
+      setOriginalPlan(JSON.parse(JSON.stringify(fullPlan)));
 
-            // reset state phụ nếu cần
-            setStartedSubtasks(new Set());
-            setHasStartedAnySubtask(false);
-            setIsEditing(false);
-        }
-    }, [id, fullPlan]);
+      // reset state phụ nếu cần
+      setStartedSubtasks(new Set());
+      setHasStartedAnySubtask(false);
+      setIsEditing(false);
+    }
+  }, [id, fullPlan]);
 
 
-    // Initialize startedSubtasks from database data (check started_at field)
+  // Initialize startedSubtasks from database data (check started_at field)
   useEffect(() => {
     if (plan && plan.stages) {
       const started = new Set();
@@ -215,11 +216,11 @@ const ViewMyPlan = () => {
   const handleDeleteClick = useCallback(() => {
     setShowDeleteConfirm(true);
   }, []);
-    const handleReminderClick = () => {
-        alert("⏰ Reminder feature coming soon!");
-    };
+  const handleReminderClick = () => {
+    alert("⏰ Reminder feature coming soon!");
+  };
 
-    const handleConfirmDelete = useCallback(async () => {
+  const handleConfirmDelete = useCallback(async () => {
     setIsDeleting(true);
     try {
       await deletePlan(id);
@@ -360,6 +361,7 @@ const ViewMyPlan = () => {
 
         // Record in daily_performance table
         await recordSubtaskStart(plan.id);
+        emitDailyPerformanceChanged();
       } catch (error) {
         console.error('Failed to start subtask:', error);
         alert('Failed to start subtask. Please try again.');
@@ -434,6 +436,7 @@ const ViewMyPlan = () => {
 
         // Record in daily_performance table
         await recordSubtaskStart(plan.id);
+        emitDailyPerformanceChanged();
 
       } else if (type === 'done') {
         // Complete the subtask
@@ -462,6 +465,16 @@ const ViewMyPlan = () => {
 
               if (areAllStagesFinished(updatedPlan)) {
                 await completePlan(plan.id);
+
+                // Determine plan status: 'cancelled' if ALL subtasks are cancelled, else 'completed'
+                const allCancelled = updatedPlan.stages.every(stage =>
+                  stage.tasks.every(task =>
+                    task.subtasks?.every(s =>
+                      s.status === 'cancelled' || s.status === 'CANCELLED'
+                    )
+                  )
+                );
+                await updatePlan(plan.id, { status: allCancelled ? 'cancelled' : 'completed' });
               }
             }
           }
@@ -473,6 +486,7 @@ const ViewMyPlan = () => {
 
         // Record in daily_performance table
         await recordSubtaskDone(plan.id);
+        emitDailyPerformanceChanged();
 
       } else if (type === 'cancel') {
         // Cancel the subtask
@@ -480,11 +494,13 @@ const ViewMyPlan = () => {
         const task = plan.stages[stageIdx]?.tasks[taskIdx];
         const stage = plan.stages[stageIdx];
 
+        await completeSubtask(subtask.id);
         await updateSubtask(subtask.id, { status: 'cancelled' });
 
         // Compute updated plan state BEFORE setPlan (to avoid async timing issues)
         const updatedPlan = JSON.parse(JSON.stringify(plan));
         updatedPlan.stages[stageIdx].tasks[taskIdx].subtasks[subtaskIdx].status = 'cancelled';
+        updatedPlan.stages[stageIdx].tasks[taskIdx].subtasks[subtaskIdx].completedAt = new Date().toISOString();
 
         // Update local state
         setPlan(updatedPlan);
@@ -499,6 +515,16 @@ const ViewMyPlan = () => {
 
               if (areAllStagesFinished(updatedPlan)) {
                 await completePlan(plan.id);
+
+                // Determine plan status: 'cancelled' if ALL subtasks are cancelled, else 'completed'
+                const allCancelled = updatedPlan.stages.every(stage =>
+                  stage.tasks.every(task =>
+                    task.subtasks?.every(s =>
+                      s.status === 'cancelled' || s.status === 'CANCELLED'
+                    )
+                  )
+                );
+                await updatePlan(plan.id, { status: allCancelled ? 'cancelled' : 'completed' });
               }
             }
           }
@@ -510,6 +536,7 @@ const ViewMyPlan = () => {
 
         // Record in daily_performance table
         await recordSubtaskCancel(plan.id);
+        emitDailyPerformanceChanged();
       }
     } catch (error) {
       console.error('Failed to update subtask:', error);
@@ -564,7 +591,7 @@ const ViewMyPlan = () => {
           ← Back
         </button>
         <div className="viewplan-actions">
-            <div ref={reviewBtnRef} style={{ position: 'relative' }}>
+          <div ref={reviewBtnRef} style={{ position: 'relative' }}>
             <button className="btn-review" onClick={() => {
               setShowReview(!showReview);
               if (!showReview) {
@@ -628,7 +655,14 @@ const ViewMyPlan = () => {
 
             <div className='info-section'>
               <strong>Visibility</strong>
-              <p>{plan.visibility}</p>
+              <p>{plan.visibility.charAt(0).toUpperCase() + plan.visibility.slice(1)}</p>
+            </div>
+
+            <div className='info-section'>
+              <strong>Status</strong>
+              <span className={`status-badge status-${plan.status.toLowerCase()}`}>
+                {plan.status.charAt(0).toUpperCase() + plan.status.slice(1)}
+              </span>
             </div>
           </div>
         </div>
