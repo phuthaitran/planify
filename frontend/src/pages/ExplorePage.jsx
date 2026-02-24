@@ -216,9 +216,9 @@ const ExplorePage = () => {
       />
 
       <UserCarousel
-        title="Featured Teachers"
+        title="Featured Users"
         users={exploreUsers}
-        onViewMore={() => handleViewMore('All Teachers', exploreUsers, 'user')}
+        onViewMore={() => handleViewMore('All Users', exploreUsers, 'user')}
       />
     </div>
   );
