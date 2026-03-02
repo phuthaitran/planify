@@ -73,10 +73,18 @@
 
 .my-content-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, max-content));
+  /* hoặc minmax(180px, 280px) nếu muốn giới hạn max */
+  justify-content: start;          /* ← quan trọng: không giãn đều nữa */
+  gap: 20px 24px;                  /* row-gap | column-gap */
 }
 
+/* Chỉ override cho public plans grid (vì nó có class riêng .public-plans-grid) */
+.my-content-grid.public-plans-grid {
+  grid-template-columns: repeat(auto-fit, 260px);
+  justify-content: start;
+  gap: 20px 24px;
+}
 
-
+/* Nếu follow vẫn ổn thì không cần chạm vào */
 

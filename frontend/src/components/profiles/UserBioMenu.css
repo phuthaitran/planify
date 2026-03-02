@@ -73,13 +73,25 @@
 
 /* Grid for Plans & Users */
 .user-content-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px 20px;
-  justify-content: space-between;
-  padding: 0 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, max-content));
+  /* hoặc minmax(180px, 280px) nếu muốn giới hạn max */
+  justify-content: start;          /* ← quan trọng: không giãn đều nữa */
+  gap: 20px 24px;
+}
+.user-content-grid.public-plans-grid {
+  grid-template-columns: repeat(auto-fit, 260px);
+  justify-content: start;
+  gap: 20px 24px;                    /* gap đồng đều hơn, hoặc giữ 20px 24px */
 }
 
+/* Đảm bảo PlanCard tôn trọng grid column (thêm nếu chưa có trong PlanCard.css) */
+.user-content-grid.public-plans-grid > * {
+  width: 100%;                     /* card luôn full width của cột */
+  max-width: 400px;                /* ← giới hạn max để card không to kinh khủng khi ít items (tùy chỉnh theo thiết kế) */
+  min-height: 200px;               /* tránh card quá thấp nếu nội dung ít */
+  box-sizing: border-box;
+}
 @container usercontentsection (max-width: 600px) {
   .user-content-grid {
     grid-template-columns: 1fr;
