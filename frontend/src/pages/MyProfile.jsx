@@ -24,7 +24,7 @@ export default function MyProfile() {
 
         const result = response?.data?.result;
         if (!result || !result.id) {
-          throw new Error("Không tìm thấy thông tin user hoặc ID");
+          throw new Error("User or ID information not found");
         }
 
         setUserData(result);
@@ -38,9 +38,9 @@ export default function MyProfile() {
 
         setLoading(false);
       } catch (err) {
-        console.error("Lỗi fetch profile:", err);
+        console.error("Fetch profile error:", err);
         console.error("Error detail:", err.response?.data);
-        setError("Không thể tải thông tin profile. Vui lòng đăng nhập lại.");
+        setError("Unable to load profile information. Please log in again.");
         setLoading(false);
       }
     };
@@ -58,11 +58,11 @@ export default function MyProfile() {
   };
 
   if (loading) {
-    return <div className="loading">Đang tải thông tin profile...</div>;
+    return <div className="loading">Loading profile information...</div>;
   }
 
   if (error || !userData || myId === null) {
-    return <div className="error">{error || "Không tìm thấy thông tin người dùng"}</div>;
+    return <div className="error">{error || "User information not found"}</div>;
   }
 
   return (
@@ -75,7 +75,7 @@ export default function MyProfile() {
       />
 
       <MyBioMenu
-        bio={userData.bio || "Chưa có tiểu sử"}
+        bio={userData.bio || "No bio available"}
         stats={stats}
         onStatsChange={handleStatsChange}
         userId={myId}

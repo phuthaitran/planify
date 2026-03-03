@@ -5,6 +5,7 @@ import ExploreTags from '../components/explore/ExploreTags.jsx';
 import Carousel from '../components/plans/Carousel.jsx';
 import UserCarousel from '../components/users/UserCarousel.jsx';
 import PlanList from '../components/plans/PlanList.jsx';
+import UserList from '../components/users/UserList.jsx';
 import { searchPlans } from '../api/plan.js';
 import './ExplorePage.css';
 import { usePlans } from '../queries/usePlans';

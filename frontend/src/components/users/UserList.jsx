@@ -83,8 +83,8 @@ const UserList = ({
           ) : (
             <div className="no-results">
               {searchTerm
-                ? `No teachers found for "${searchTerm}"`
-                : 'No teachers available yet.'}
+                ? `No users found for "${searchTerm}"`
+                : 'No users available yet.'}
             </div>
           )}
         </div>
