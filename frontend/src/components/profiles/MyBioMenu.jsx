@@ -33,8 +33,8 @@ export default function MyBioMenu({ bio, userId }) {
         setFollowers(followersRes?.data?.result || []);
         setFollowings(followingsRes?.data?.result || []);
       } catch (err) {
-        console.error("Lỗi preload follow data:", err);
-        setErrorFollow("Không tải được dữ liệu follow");
+        console.error("Preload follow data error:", err);
+        setErrorFollow("Unable to load follow data");
       } finally {
         setLoadingFollow(false);
       }
@@ -75,7 +75,7 @@ export default function MyBioMenu({ bio, userId }) {
 
   const renderContent = useMemo(() => {
     if (loadingFollow && (activeTab === "followers" || activeTab === "followings")) {
-      return <div className="my-empty-state">Đang tải...</div>;
+      return <div className="my-empty-state">Loading...</div>;
     }
 
     if (errorFollow && (activeTab === "followers" || activeTab === "followings")) {
@@ -84,13 +84,13 @@ export default function MyBioMenu({ bio, userId }) {
 
     switch (activeTab) {
       case "public-plans":
-        if (isLoadingPlans) return <div className="my-empty-state">Đang tải kế hoạch...</div>;
+        if (isLoadingPlans) return <div className="my-empty-state">Loading plans...</div>;
 
         if (publicPlans.length === 0) {
           return (
             <div className="my-empty-state">
-              <p>Chưa có kế hoạch công khai nào</p>
-              <span>Tạo và công bố kế hoạch để hiển thị tại đây</span>
+              <p>No public plans here</p>
+              <span>Create a public plan to display here</span>
             </div>
           );
         }
@@ -107,8 +107,8 @@ export default function MyBioMenu({ bio, userId }) {
         if (followings.length === 0) {
           return (
             <div className="my-empty-state">
-              <p>Chưa theo dõi ai</p>
-              <span>Khám phá và theo dõi người dùng khác</span>
+              <p>No followings</p>
+              <span>Start exploring and follow users to see them here</span>
             </div>
           );
         }
@@ -128,8 +128,8 @@ export default function MyBioMenu({ bio, userId }) {
         if (followers.length === 0) {
           return (
             <div className="my-empty-state">
-              <p>Chưa có người theo dõi</p>
-              <span>Chia sẻ profile để có thêm follower</span>
+              <p>No followers</p>
+              <span>Share your profile to gain more followers</span>
             </div>
           );
         }

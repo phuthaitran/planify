@@ -82,7 +82,7 @@ const LoginSignup = () => {
       console.error("Signup error:", err);
       addToast(
         "error",
-        err.response?.data?.message || err.message || "Đăng ký thất bại. Vui lòng thử lại."
+        err.response?.data?.message || err.message || "Signup failed! Please try again."
       );
     } finally {
       setLoading(false);
@@ -106,7 +106,7 @@ const LoginSignup = () => {
 
       const token = data?.result?.token || data?.token;
       if (!token) {
-        throw new Error("Không nhận được token từ server");
+        throw new Error("No token received from server");
       }
 
       localStorage.setItem("accessToken", token);
@@ -121,17 +121,17 @@ const LoginSignup = () => {
         username = meRes?.data?.result?.username || meRes?.data?.username || username;
         detectedRole = meRes?.data?.result?.role || meRes?.data?.role || detectedRole;
       } catch (meErr) {
-        console.warn("Không thể lấy thông tin user (me):", meErr);
+        console.warn("Unable to retrieve user info (me):", meErr);
       }
-      
+
       if (!detectedRole) {
         detectedRole = username?.toLowerCase() === "admin" ? "admin" : "user";
       }
-      
+
       localStorage.setItem("userId", userId);
       localStorage.setItem("role", detectedRole);
 
-      addToast("success", `Đăng nhập thành công! Xin chào ${username}!`);
+      addToast("success", `Login successful! Welcome ${username}!`);
       setLoginData({ username: "", password: "" });
 
       // Kiểm tra role và chuyển hướng phù hợp
@@ -148,7 +148,7 @@ const LoginSignup = () => {
       console.error("Login error:", err);
       addToast(
         "error",
-        err.response?.data?.message || err.message || "Đăng nhập thất bại. Kiểm tra lại thông tin."
+        err.response?.data?.message || err.message || "Login failed! Please check your information."
       );
     } finally {
       setLoading(false);
@@ -170,8 +170,8 @@ const LoginSignup = () => {
       {showSuccessModal && (
         <div className="modal-overlay" onClick={(e) => e.stopPropagation()}>
           <div className="modal-content">
-            <h2>Đăng ký thành công!</h2>
-            <p>Bạn đã tạo tài khoản thành công.<br />Hãy đăng nhập để tiếp tục.</p>
+            <h2>Signup successful!</h2>
+            <p>You have successfully created an account.<br />Please Login to continue.</p>
             <button onClick={handleModalOk}>OK</button>
           </div>
         </div>
@@ -289,7 +289,7 @@ const LoginSignup = () => {
             <p>
               Already have an account?{" "}
               <a href="#" onClick={(e) => { e.preventDefault(); setIsSignUp(false); }}>
-                    Log In
+                Log In
               </a>
             </p>
           </form>

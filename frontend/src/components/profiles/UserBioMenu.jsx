@@ -79,7 +79,7 @@ export default function UserBioMenu({ bio }) {
   const renderContent = useMemo(() => {
     // Loading & error cho tab follow
     if (loadingFollow && (activeTab === "followers" || activeTab === "followings")) {
-      return <div className="user-empty-state">Đang tải...</div>;
+      return <div className="user-empty-state">Loading...</div>;
     }
 
     if (errorFollow && (activeTab === "followers" || activeTab === "followings")) {
@@ -89,14 +89,14 @@ export default function UserBioMenu({ bio }) {
     switch (activeTab) {
       case "public-plans":
         if (isLoadingPlans) {
-          return <div className="user-empty-state">Đang tải kế hoạch...</div>;
+          return <div className="user-empty-state">Loading plans...</div>;
         }
 
         if (publicPlans.length === 0) {
           return (
             <div className="user-empty-state">
-              <p>Chưa có kế hoạch công khai nào</p>
-              <span>Người dùng này chưa công bố kế hoạch nào</span>
+              <p>No public plans here</p>
+              <span>This user have not made a public plan</span>
             </div>
           );
         }
@@ -113,8 +113,8 @@ export default function UserBioMenu({ bio }) {
         if (followings.length === 0) {
           return (
             <div className="user-empty-state">
-              <p>Chưa theo dõi ai</p>
-              <span>Người dùng này chưa follow bất kỳ ai</span>
+              <p>No follwings</p>
+              <span>This user have not follow anyone</span>
             </div>
           );
         }
@@ -134,8 +134,8 @@ export default function UserBioMenu({ bio }) {
         if (followers.length === 0) {
           return (
             <div className="user-empty-state">
-              <p>Chưa có người theo dõi</p>
-              <span>Người dùng này chưa có follower nào</span>
+              <p>No followers</p>
+              <span>This user does not have any followers</span>
             </div>
           );
         }
