@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+
 import { authApi } from "../api/auth";
+
 import "./LoginSignup.css"
 
 const LoginSignup = () => {
   const navigate = useNavigate();
-
   const [isSignUp, setIsSignUp] = useState(false);
-
   const [signupData, setSignupData] = useState({
     username: "",
     email: "",
@@ -30,13 +31,10 @@ const LoginSignup = () => {
 
   // Toast notifications (error, login success, etc.)
   const [toasts, setToasts] = useState([]);
-
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-
   const addToast = (type, message) => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, type, message }]);
-
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
     }, 4000);

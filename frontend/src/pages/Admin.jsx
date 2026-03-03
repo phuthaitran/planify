@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { usersApi } from "../api/user";
+
+//icon
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
+//api
 import { authApi } from "../api/auth";
+import { usersApi } from "../api/users";
 
-/* ================= STYLES ================= */
+/*  STYLES  */
 const cardStyle = {
   background: "#ffffff",
   border: "1px solid #e5e7eb",
@@ -34,7 +37,7 @@ const btnBase = {
   fontSize: 13,
 };
 
-/* ================= MODAL COMPONENT ================= */
+/*  MODAL COMPONENT  */
 const Modal = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null;
 
@@ -73,10 +76,9 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   );
 };
 
-/* ================= MAIN COMPONENT ================= */
+/* MAIN COMPONENT  */
 export default function Admin() {
-  const navigate = useNavigate(); 
-
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
@@ -195,13 +197,12 @@ export default function Admin() {
   };
 
   const handleLogout = async () => {
-    if (!window.confirm("Bạn có chắc chắn muốn đăng xuất?")) {
+    if (!window.confirm("Do you want to log out?")) {
       return;
     }
-
     try {
       const accessToken = localStorage.getItem("accessToken");
-      // Xóa token trước
+      // Delete token
       localStorage.removeItem("accessToken");
       localStorage.removeItem("role");
       localStorage.removeItem("refreshToken");
@@ -218,7 +219,7 @@ export default function Admin() {
 
   return (
     <>
-      {/* ================= MAIN CONTENT ================= */}
+      {/* MAIN CONTENT  */}
       <div
         style={{
           width: "100%",
@@ -239,7 +240,7 @@ export default function Admin() {
           <div>
             <p style={{ color: "#64748b", fontWeight: 600 }}>Admin Panel</p>
             <h1 style={{ fontSize: 28, color: "#0f172a", margin: "8px 0" }}>
-              Quản lý người dùng
+              Manage Users
             </h1>
           </div>
           <button
@@ -272,7 +273,7 @@ export default function Admin() {
               marginBottom: 12,
             }}
           >
-            <h2 style={{ fontSize: 18, color: "#0f172a" }}>Danh sách Users</h2>
+            <h2 style={{ fontSize: 18, color: "#0f172a" }}>Users List</h2>
             <button
               onClick={openAddModal}
               style={{
@@ -283,7 +284,7 @@ export default function Admin() {
                 fontWeight: 600,
               }}
             >
-              Thêm user
+              Add user
             </button>
           </div>
 
@@ -306,7 +307,7 @@ export default function Admin() {
                   Role
                 </th>
                 <th style={{ padding: "12px 10px", borderBottom: "1px solid #e5e7eb", width: "25%", textAlign: "center" }}>
-                  Hành động
+                  Action
                 </th>
               </tr>
             </thead>
@@ -314,13 +315,13 @@ export default function Admin() {
               {loadingUsers ? (
                 <tr>
                   <td colSpan={4} style={{ padding: 32, textAlign: "center" }}>
-                    Đang tải dữ liệu...
+                    Loading...
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
                   <td colSpan={4} style={{ padding: 32, textAlign: "center" }}>
-                    Chưa có user nào
+                    No user available
                   </td>
                 </tr>
               ) : (
@@ -337,13 +338,13 @@ export default function Admin() {
                     </td>
                     <td style={{ padding: "12px 10px", display: "flex", gap: 8, justifyContent: "center" }}>
                       <button style={{ ...btnBase, color: "#111111" }} onClick={() => openEditModal(u)}>
-                        Sửa
+                        Edit
                       </button>
                       <button
                         style={{ ...btnBase, background: "#fee2e2", borderColor: "#fecaca", color: "#991b1b" }}
                         onClick={() => openDeleteModal(u)}
                       >
-                        Xoá
+                        Delete
                       </button>
                     </td>
                   </tr>
@@ -354,11 +355,11 @@ export default function Admin() {
         </section>
       </div>
 
-      {/* ================= ADD / EDIT MODAL ================= */}
+      {/*  ADD / EDIT MODAL */}
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={modalMode === "add" ? "Thêm user mới" : "Sửa user"}
+        title={modalMode === "add" ? "add new user" : "Edit user"}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <input
@@ -430,7 +431,7 @@ export default function Admin() {
                 cursor: "pointer",
               }}
             >
-              {modalLoading ? "Đang xử lý..." : modalMode === "add" ? "Thêm" : "Lưu"}
+              {modalLoading ? "Loading..." : modalMode === "add" ? "Add" : "Save"}
             </button>
             <button
               onClick={() => setModalOpen(false)}
@@ -444,20 +445,20 @@ export default function Admin() {
                 cursor: "pointer",
               }}
             >
-              Huỷ
+              Cancel
             </button>
           </div>
         </div>
       </Modal>
 
-      {/* ================= DELETE CONFIRM MODAL ================= */}
+      {/*  DELETE CONFIRM MODAL */}
       <Modal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
-        title="Xác nhận xoá"
+        title="Confirm Delete"
       >
         <p style={{ margin: "0 0 20px", color: "#475569" }}>
-          Bạn có chắc muốn xoá user <strong>{userToDelete?.username}</strong>?
+          Do you want to delete user <strong>{userToDelete?.username}</strong>?
         </p>
         <div style={{ display: "flex", gap: 12 }}>
           <button
@@ -473,7 +474,7 @@ export default function Admin() {
               cursor: "pointer",
             }}
           >
-            {modalLoading ? "Đang xoá..." : "Xoá"}
+            {modalLoading ? "Loading..." : "Delete"}
           </button>
           <button
             onClick={() => setDeleteModalOpen(false)}
@@ -487,12 +488,12 @@ export default function Admin() {
               cursor: "pointer",
             }}
           >
-            Huỷ
+            Cancel
           </button>
         </div>
       </Modal>
 
-      {/* ================= NOTIFICATION ================= */}
+      {/* NOTIFICATION  */}
       {notification && (
         <div
           style={{
@@ -513,17 +514,6 @@ export default function Admin() {
         </div>
       )}
 
-      {/* ================= CSS ANIMATIONS ================= */}
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes slideUp {
-          from { transform: translateY(30px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-      `}</style>
     </>
   );
 }

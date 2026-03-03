@@ -1,4 +1,4 @@
-/* AboutUs.css - Container Query Optimized */
+/* AboutUs.css */
 
 .about-page {
   width: 100%;
@@ -156,17 +156,3 @@
   margin-top: 1.5rem;
 }
 
-@container main (max-width: 768px) {
-  .story-placeholder {
-    min-height: 220px;
-    padding: 40px 15px;
-  }
-
-  .placeholder-emoji {
-    font-size: 90px;
-  }
-
-  .placeholder-text {
-    font-size: 16px;
-  }
-}

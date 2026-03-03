@@ -1,17 +1,21 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 
+//components
 import ExploreHeader from '../components/explore/ExploreHeader.jsx';
 import ExploreTags from '../components/explore/ExploreTags.jsx';
 import Carousel from '../components/plans/Carousel.jsx';
 import UserCarousel from '../components/users/UserCarousel.jsx';
 import PlanList from '../components/plans/PlanList.jsx';
-import UserList from '../components/users/UserList.jsx';
-import { searchPlans } from '../api/plan.js';
-import './ExplorePage.css';
-import { usePlans } from '../queries/usePlans';
+import UserList from '../components/users/UserList';
 
+//api
+import { usePlans } from '../queries/usePlans';
+import { searchPlans } from '../api/plan.js';
 import { usersApi } from '../api/users';
 import { authApi } from '../api/auth';
+
+//css
+import './ExplorePage.css';
 
 const ExplorePage = () => {
   const [activeTab, setActiveTab] = useState('subject');
@@ -59,7 +63,7 @@ const ExplorePage = () => {
       setLoading(true);
 
       try {
-        // 1. Get current user info (to exclude self)
+        // 1. Get current user info to exclude self
         let myId = null;
         try {
           const meResponse = await authApi.me();
@@ -68,7 +72,7 @@ const ExplorePage = () => {
             setCurrentUserId(myId);
           }
         } catch (meErr) {
-          // Not logged in or error → we won't exclude self
+          // Not logged in or error → cannot exclude self
           console.debug('Could not fetch current user info (possibly not logged in)', meErr);
         }
 
@@ -80,17 +84,13 @@ const ExplorePage = () => {
 
           const userList = res?.data?.result || [];
 
-          // Filter out admins + current user (if logged in)
+          // exclude admins + current user
           const filteredUsers = userList.filter((u) => {
-            // Exclude admins
             const isAdmin = Array.isArray(u.roles) && u.roles.some(
               (role) => role.toUpperCase() === 'ADMIN' || role === 'SCOPE_ADMIN'
             );
             if (isAdmin) return false;
-
-            // Exclude current logged-in user (safest: compare by id)
             if (myId && u.id === myId) return false;
-
             return true;
           });
 
@@ -100,9 +100,6 @@ const ExplorePage = () => {
             username: u.username || (u.email ? u.email.split('@')[0] : 'User'),
             email: u.email,
             avatar: u.avatar,
-            // followers: u.followers || 0,
-            // plans: u.plans || 0,
-            // isFollowing: u.isFollowing || false,
           }));
         } catch (userErr) {
           console.warn('Failed to fetch users list:', userErr);
