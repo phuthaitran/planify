@@ -1,7 +1,7 @@
 // src/pages/Notifications.jsx
 import React, { useState } from 'react';
 import { useNavigate,useOutletContext  } from 'react-router-dom';
-import './Notification.css'; // we'll create this next
+import './Notification.css'; 
 
 const Notifications = () => {
   const [filter, setFilter] = useState('all');

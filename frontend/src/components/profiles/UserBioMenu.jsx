@@ -21,7 +21,7 @@ export default function UserBioMenu({ bio }) {
 
   const { data: plans = [], isLoading: isLoadingPlans } = usePlans();
 
-  // Pre-fetch followers & followings ngay khi mount (để count đúng từ đầu)
+  // Pre-fetch followers & followings upon mounting
   useEffect(() => {
     if (!profileId) return;
 
@@ -37,8 +37,8 @@ export default function UserBioMenu({ bio }) {
         setFollowers(followersRes?.data?.result || []);
         setFollowings(followingsRes?.data?.result || []);
       } catch (err) {
-        console.error("Lỗi preload follow data:", err);
-        setErrorFollow("Không tải được dữ liệu follow");
+        console.error("Preload follow data error:", err);
+        setErrorFollow("Unable to load follow data");
       } finally {
         setLoadingFollow(false);
       }
@@ -57,11 +57,11 @@ export default function UserBioMenu({ bio }) {
 
   const handleFollowToggle = useCallback(
     (targetUserId, newIsFollowing) => {
-      // Cập nhật local state để UI phản ánh ngay (đặc biệt khi unfollow)
+      // Update the local state so the UI reflects it immediately
       if (activeTab === "followers") {
         setFollowers((prev) =>
           newIsFollowing
-            ? prev // follow lại (hiếm xảy ra ở tab này)
+            ? prev
             : prev.filter((u) => u.id !== targetUserId)
         );
       } else if (activeTab === "followings") {
@@ -71,13 +71,11 @@ export default function UserBioMenu({ bio }) {
             : prev.filter((u) => u.id !== targetUserId)
         );
       }
-      // Nếu bạn cần thông báo hoặc cập nhật gì thêm (ví dụ: refetch stats ở parent), có thể thêm ở đây
     },
     [activeTab]
   );
 
   const renderContent = useMemo(() => {
-    // Loading & error cho tab follow
     if (loadingFollow && (activeTab === "followers" || activeTab === "followings")) {
       return <div className="user-empty-state">Loading...</div>;
     }

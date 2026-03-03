@@ -44,7 +44,7 @@ export default function FollowButton({
       } catch (err) {
         console.error("Failed to load follow status:", err);
         if (isMounted) {
-          setError("Không tải được trạng thái follow");
+          setError("Unable to load follow status");
         }
       } finally {
         if (isMounted) {
@@ -53,11 +53,9 @@ export default function FollowButton({
       }
     };
 
-    // Nếu có initial đáng tin cậy → dùng trước, nhưng vẫn verify bằng cache sau
     if (normalizedInitial !== null) {
       setIsFollowing(normalizedInitial);
       setIsLoading(false);
-      // Vẫn verify lại bằng cache để chắc chắn (non-blocking)
       followApi.getIsFollowing(userId).then((realStatus) => {
         if (isMounted) setIsFollowing(realStatus);
       });
@@ -88,7 +86,7 @@ export default function FollowButton({
     } catch (err) {
       console.error("Follow/Unfollow failed:", err);
       setIsFollowing(prevFollowing);
-      setError(err?.response?.data?.message || "Có lỗi xảy ra");
+      setError(err?.response?.data?.message || "An error occurred");
     }
   };
 
@@ -96,10 +94,10 @@ export default function FollowButton({
   let buttonClassModifier = "";
 
   if (isLoading) {
-    buttonText = "Đang tải...";
+    buttonText = "Loading...";
     buttonClassModifier = "loading";
   } else if (error) {
-    buttonText = "Lỗi";
+    buttonText = "Error";
     buttonClassModifier = "error";
   } else if (isFollowing) {
     buttonText = "Following";

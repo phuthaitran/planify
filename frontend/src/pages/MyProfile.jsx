@@ -28,7 +28,7 @@ export default function MyProfile() {
         }
 
         setUserData(result);
-        setMyId(result.id); // Lưu ID để truyền xuống MyBioMenu
+        setMyId(result.id); 
 
         setStats({
           followings: Number(result.followings) || 0,

@@ -16,7 +16,6 @@
   animation: userDropdownSlide 0.18s ease-out;
 }
 
-/* Animation riêng cho user dropdown */
 @keyframes userDropdownSlide {
   from {
     opacity: 0;

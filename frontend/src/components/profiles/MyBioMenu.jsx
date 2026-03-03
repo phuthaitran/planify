@@ -12,12 +12,12 @@ export default function MyBioMenu({ bio, userId }) {
 
   const [followers, setFollowers] = useState([]);
   const [followings, setFollowings] = useState([]);
-  const [loadingFollow, setLoadingFollow] = useState(true); // riêng cho follow data
+  const [loadingFollow, setLoadingFollow] = useState(true); 
   const [errorFollow, setErrorFollow] = useState(null);
 
   const { data: plans = [], isLoading: isLoadingPlans } = usePlans();
 
-  // Pre-fetch followers & followings NGAY KHI MOUNT (không phụ thuộc tab)
+  // Pre-fetch followers & followings upon mounting
   useEffect(() => {
     if (!userId) return;
 
@@ -41,9 +41,7 @@ export default function MyBioMenu({ bio, userId }) {
     };
 
     fetchFollowData();
-  }, [userId]); // Chỉ chạy 1 lần khi có userId
-
-  // Chỉ fetch lại nếu cần (ví dụ sau khi follow/unfollow thay đổi lớn), nhưng thường không cần
+  }, [userId]); 
 
   const publicPlans = useMemo(() => {
     if (isLoadingPlans || !plans?.length) return [];
@@ -58,7 +56,7 @@ export default function MyBioMenu({ bio, userId }) {
       if (activeTab === "followers") {
         setFollowers((prev) =>
           newIsFollowing
-            ? prev // follow lại → thường không xảy ra
+            ? prev 
             : prev.filter((u) => u.id !== targetUserId)
         );
       } else if (activeTab === "followings") {
@@ -68,7 +66,6 @@ export default function MyBioMenu({ bio, userId }) {
             : prev.filter((u) => u.id !== targetUserId)
         );
       }
-      // Nếu muốn cập nhật count ngay lập tức ở tab khác → có thể set lại state tương ứng
     },
     [activeTab]
   );

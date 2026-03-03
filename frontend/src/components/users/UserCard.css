@@ -146,7 +146,6 @@
     padding: 8px 14px;
   }
 }
-/* Thêm hoặc sửa phần này */
 
 .user-email {
   font-size: 13px;
@@ -154,10 +153,10 @@
   margin: 0;
   line-height: 1.4;
   display: -webkit-box;
-  -webkit-line-clamp: 1;           /* giới hạn 1 dòng */
+  -webkit-line-clamp: 1;           
   -webkit-box-orient: vertical;
   overflow: hidden;
-  word-break: break-all;            /* tránh tràn email dài */
+  word-break: break-all;         
 }
 
 /* Container query responsive */

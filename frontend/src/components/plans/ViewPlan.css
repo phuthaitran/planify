@@ -423,7 +423,7 @@
 }
 
 .viewplan-actions .like-btn.saved .bookmark-icon {
-  color: #3b82f6;           /* hoặc màu bạn thích: #e11d48, #f59e0b, ... */
+  color: #3b82f6;          
 }
 
 .viewplan-actions .like-btn:hover .bookmark-icon {
@@ -433,7 +433,7 @@
 /* Nút Fork Plan */
 .btn-fork {
   padding: 10px 20px;
-  background: #6366f1;          /* Indigo - bạn có thể đổi thành #3498db nếu thích */
+  background: #6366f1;      
   color: white;
   border: none;
   border-radius: 8px;

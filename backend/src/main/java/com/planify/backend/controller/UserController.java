@@ -24,8 +24,8 @@ public class UserController {
 
     @PostMapping
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request){
-        return ApiResponse.<UserResponse>builder() //builder() = đưa ra bản thiết kế để bắt đầu xây.
-                .result(userService.createUser(request)) //✔ builder() → Tạo bộ khung ApiResponse //result(...) → Gắn dữ liệu trả về vào result// build() → Hoàn thành, tạo object cuối cùng để trả về API
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.createUser(request))
                 .build();
     }
 
@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    ApiResponse<UserResponse> getUser(@PathVariable("userId") Integer userId){ //@PathVariable giúp chuyển userId từ @GetMapping("/{userId}") vào 1 biến đó là Integer "userId"
+    ApiResponse<UserResponse> getUser(@PathVariable("userId") Integer userId){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.getUser(Integer.valueOf(userId)))
                 .build();

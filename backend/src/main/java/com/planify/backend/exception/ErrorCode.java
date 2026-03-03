@@ -3,7 +3,7 @@ package com.planify.backend.exception;
 public enum ErrorCode{
     //Khai báo các key
     UNCATEGORIZED_EXCEPTION(1111, "Uncategorized error"),
-    INVALID_KEY(1005, "Invalid message key"), //Đây là lỗi viết sai chính tả khi điền các cái này vào message ở Class UserCreationRequest
+    INVALID_KEY(1005, "Invalid message key"),
     USER_EXISTED(1001, "User existed"),
     USERNAME_INVALID(1002, "Username must be at least 3 characters"),
     INVALID_PASSWORD(1003, "Password must be at least 8 characters"),
@@ -27,7 +27,6 @@ public enum ErrorCode{
         this.message = message;
     }
 
-    //Chỉ cần getter là đủ
     public int getCode() {
         return code;
     }

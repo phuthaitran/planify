@@ -8,7 +8,7 @@ import {
 export const useBookmarks = () => {
   const queryClient = useQueryClient();
 
-  // 🔹 Fetch bookmarks
+  // Fetch bookmarks
   const bookmarksQuery = useQuery({
     queryKey: ['bookmarks'],
     queryFn: async() => {
@@ -20,7 +20,7 @@ export const useBookmarks = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // 🔹 Toggle mutation (optimistic)
+  // Toggle mutation (optimistic)
   const toggleMutation = useMutation({
     mutationFn: ({ planId, isSaved }) => {
       return isSaved ? unbookmark(planId) : bookmark(planId);

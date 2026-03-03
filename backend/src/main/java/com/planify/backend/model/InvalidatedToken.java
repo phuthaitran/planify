@@ -16,6 +16,6 @@ import java.util.Date;
 @Entity
 public class InvalidatedToken {
     @Id
-    String id; //Chính là ID được gen ra từ hàm generateToken
-    Date expiryTime; //Thời gian hết hạn của token
+    String id;
+    Date expiryTime;
 }

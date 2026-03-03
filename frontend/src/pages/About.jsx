@@ -35,7 +35,6 @@ const About = () => {
                 <em>Despite just being a small project made by a group of students, we hope that Planify will be helpful to many young people trying to learn on their own every day.</em>
               </p>
             </div>
-            {/* Bỏ phần ảnh, thay bằng không gian trống hoặc bạn có thể thêm icon/emoji lớn nếu muốn */}
             <div className="story-placeholder text-center">
               <div className="placeholder-emoji">📚✨</div>
               <p className="placeholder-text">A tool built with passion by students, for students</p>

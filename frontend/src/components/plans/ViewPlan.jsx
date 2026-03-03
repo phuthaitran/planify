@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import LikeButton from './LikeButton.jsx';        // ← Đã thêm import
+import LikeButton from './LikeButton.jsx';  
 import './ViewPlan.css';
 import { useHydratedPlan } from '../../queries/useHydratedPlan';
 import httpPublic from '../../api/httpPublic';
@@ -50,7 +50,7 @@ const ViewPlan = () => {
     );
   }
 
-  // Handler cho LikeButton
+  // Handler for LikeButton
   const handleBookmarkToggle = useCallback((key, newValue) => {
     setIsBookmarked(newValue);
     console.log(`Plan ${id} bookmark toggled: ${newValue ? 'saved' : 'removed'}`);

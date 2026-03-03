@@ -2,8 +2,8 @@
 
 .plan-card {
   position: relative;
-  width: 240px;                     /* ← fixed pixel width — no more 100% */
-  flex-shrink: 0;                   /* ← prevents shrinking in flex contexts like carousel */
+  width: 240px;                     /* fixed pixel width — no more 100% */
+  flex-shrink: 0;                   /* prevents shrinking in flex contexts like carousel */
   min-width: 240px;                 /* safety for very narrow screens */
   max-width: 240px;                 /* enforce exact width */
   background: white;

@@ -1,4 +1,4 @@
-/* Bio Menu Container - Giống MyBioMenu */
+/* Bio Menu Container */
 .user-bio-menu-container {
   container-type: inline-size;
   container-name: userbiomenu;
@@ -75,21 +75,19 @@
 .user-content-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, max-content));
-  /* hoặc minmax(180px, 280px) nếu muốn giới hạn max */
-  justify-content: start;          /* ← quan trọng: không giãn đều nữa */
+  justify-content: start;      
   gap: 20px 24px;
 }
 .user-content-grid.public-plans-grid {
   grid-template-columns: repeat(auto-fit, 260px);
   justify-content: start;
-  gap: 20px 24px;                    /* gap đồng đều hơn, hoặc giữ 20px 24px */
+  gap: 20px 24px;                 
 }
 
-/* Đảm bảo PlanCard tôn trọng grid column (thêm nếu chưa có trong PlanCard.css) */
 .user-content-grid.public-plans-grid > * {
-  width: 100%;                     /* card luôn full width của cột */
-  max-width: 400px;                /* ← giới hạn max để card không to kinh khủng khi ít items (tùy chỉnh theo thiết kế) */
-  min-height: 200px;               /* tránh card quá thấp nếu nội dung ít */
+  width: 100%;                     
+  max-width: 400px;               
+  min-height: 200px;               
   box-sizing: border-box;
 }
 @container usercontentsection (max-width: 600px) {
@@ -98,7 +96,6 @@
   }
 }
 
-/* Public Plan Card - Giữ gần giống MyPlanCard */
 .user-plan-card {
   background: white;
   border-radius: 12px;
@@ -140,7 +137,6 @@
   color: #8e8e8e;
 }
 
-/* User Follower Card - Đồng bộ với .my-user-card */
 .user-follower-card {
   background: white;
   border-radius: 12px;
@@ -195,7 +191,6 @@
   color: #8e8e8e;
 }
 
-/* Nút Follow / Unfollow - Đồng bộ style với MyBioMenu */
 .user-follower-follow-btn {
   padding: 8px 20px;
   font-size: 13px;

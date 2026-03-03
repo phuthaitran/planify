@@ -31,7 +31,6 @@ const LoginSignup = () => {
   // Toast notifications (error, login success, etc.)
   const [toasts, setToasts] = useState([]);
 
-  // Modal success sau đăng ký
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const addToast = (type, message) => {
@@ -134,7 +133,6 @@ const LoginSignup = () => {
       addToast("success", `Login successful! Welcome ${username}!`);
       setLoginData({ username: "", password: "" });
 
-      // Kiểm tra role và chuyển hướng phù hợp
       const userRole = localStorage.getItem("role");
 
       setTimeout(() => {
@@ -166,7 +164,7 @@ const LoginSignup = () => {
         ))}
       </div>
 
-      {/* Modal thành công đăng ký */}
+      {/* Sign up success modal */}
       {showSuccessModal && (
         <div className="modal-overlay" onClick={(e) => e.stopPropagation()}>
           <div className="modal-content">

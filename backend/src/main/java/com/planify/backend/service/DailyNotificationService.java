@@ -106,7 +106,7 @@ public class DailyNotificationService {
                 start,
                 end
         );
-        // phòng trường hợp không có record nào
+        // if there is no report
         if (response == null) {
             return DailyPerformanceResponse.builder()
                     .subtasksCompleted(0)

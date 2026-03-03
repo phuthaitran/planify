@@ -35,7 +35,7 @@ const Stage = ({ stage, stageNumber, updateStage, deleteStage }) => {
     });
   }, [stage, updateStage]);
 
-  // Tính tổng duration của stage từ tất cả tasks
+  // Calculate stage's duration from all tasks
   const computedStageDuration = useMemo(() => {
     return stage.tasks.reduce((sum, task) => sum + Number(task.duration || 0), 0);
   }, [stage.tasks]);

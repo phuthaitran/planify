@@ -16,20 +16,20 @@
   align-items: center;
   margin-bottom: 12px;
   gap: 12px;
-  flex-wrap: nowrap; /* Đảm bảo không xuống dòng */
+  flex-wrap: nowrap; 
 }
 
 .section-title {
   font-size: 20px;
   font-weight: 600;
-  margin: 0 !important; /* Thêm !important để chắc chắn */
+  margin: 0 !important; 
   padding: 0;
   color: #1e293b;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* Thêm ... nếu text quá dài */
+  text-overflow: ellipsis;
   flex: 1;
-  min-width: 0; /* Quan trọng: cho phép flex item co lại */
+  min-width: 0; 
 }
 
 .view-more-btn {

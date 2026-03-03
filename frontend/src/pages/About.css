@@ -129,7 +129,6 @@
 
 /* Container Query Responsive */
 
-/* Placeholder thay thế ảnh */
 .story-placeholder {
   display: flex;
   flex-direction: column;
@@ -157,7 +156,6 @@
   margin-top: 1.5rem;
 }
 
-/* Responsive cho placeholder */
 @container main (max-width: 768px) {
   .story-placeholder {
     min-height: 220px;

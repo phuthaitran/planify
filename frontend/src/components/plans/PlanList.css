@@ -2,7 +2,7 @@
 
 .planlist-wrapper {
   width: 100%;
-  max-width: 1200px;           /* ← wider container like userlist */
+  max-width: 1200px;           /* wider container like userlist */
   margin: 24px auto 0;
   background: white;
   border-radius: 12px;
@@ -122,7 +122,7 @@
 
 .plan-card {
   position: relative;
-  width: 100%;                  /* ← changed: now fills wrapper */
+  width: 100%;                  /* changed: now fills wrapper */
   background: white;
   border-radius: 12px;
   overflow: hidden;

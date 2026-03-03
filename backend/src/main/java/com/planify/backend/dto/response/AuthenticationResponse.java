@@ -9,7 +9,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-//Class này dùng để Kiểm tra xem username và password có đúng không
 public class AuthenticationResponse {
     String token;
     boolean authenticated;

@@ -12,7 +12,6 @@
   user-select: none;
 }
 
-/* Animation riêng cho language dropdown */
 @keyframes languageDropdownSlide {
   from {
     opacity: 0;

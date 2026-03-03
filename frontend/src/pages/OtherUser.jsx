@@ -50,8 +50,6 @@ export default function OtherUser() {
 
       <UserBioMenu
         bio={user.bio || "No bio available"}
-        // onFollowChange nếu bạn muốn xử lý gì thêm khi follow/unfollow
-        // onFollowChange={(userId, isFollowing) => console.log(userId, isFollowing)}
       />
     </div>
   );
