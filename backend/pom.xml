@@ -64,7 +64,6 @@
     </build>
 
     <dependencies>
-        <!-- Cấu hình MVC để tích hợp vào Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -82,7 +81,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!--Dependency này dành cho security -> khi chạy nó sẽ không cho bất kì ai Get được user -->
+        <!--Security-related dependency -> When running, it will prevent anyone from getting the user -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
@@ -124,7 +123,7 @@
             <artifactId>mapstruct</artifactId>
             <version>1.5.5.Final</version>
         </dependency>
-        <!-- Thư viện của JWT -->
+        <!-- JWT library -->
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>

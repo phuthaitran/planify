@@ -29,9 +29,9 @@
 }
 
 .my-avatar-frame {
-  width: 96px;                /* tăng size cho đẹp hơn, giống UserAvatar */
+  width: 96px;                
   height: 96px;
-  border-radius: 16px;        /* bo tròn nhẹ hơn, hiện đại */
+  border-radius: 16px;       
   overflow: hidden;
   background: #e0e0e0;
   border: 3px solid #fff;
@@ -56,7 +56,7 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-/* Nút camera chỉnh sửa avatar */
+
 .my-avatar-input {
   display: none;
 }
@@ -96,14 +96,14 @@
 }
 
 .my-avatar-username {
-  font-size: 28px;            /* to hơn, nổi bật giống UserAvatar */
+  font-size: 28px;           
   font-weight: 700;
   color: #262626;
   margin: 0 0 8px 0;
   line-height: 1.2;
 }
 
-.my-avatar-email {            /* thêm class này nếu bạn muốn hiển thị email */
+.my-avatar-email {          
   font-size: 15px;
   color: #606060;
   margin: 0 0 16px 0;
@@ -113,7 +113,7 @@
 .my-avatar-stats {
   display: flex;
   align-items: center;
-  gap: 32px;                  /* khoảng cách rộng rãi hơn */
+  gap: 32px;               
   font-size: 15px;
   color: #262626;
   margin-top: 12px;
@@ -125,7 +125,7 @@
 
 .my-avatar-stat-number {
   font-weight: 700;
-  font-size: 18px;            /* số to hơn, dễ đọc */
+  font-size: 18px;         
   display: block;
   margin-bottom: 4px;
 }

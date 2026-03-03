@@ -45,7 +45,7 @@ export default function UserMenuPopup({
     const handleLogout = async () => {
       try {
         const accessToken = localStorage.getItem("accessToken");
-        // XÓA TOKEN TRƯỚC KHI GỌI API
+        // Remove token before calling the API
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         if (accessToken && accessToken !== "null") {

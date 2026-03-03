@@ -43,7 +43,6 @@ const UserCard = ({ user, onFollowToggle }) => {
         <div className="user-info">
           <h3 className="user-name">{displayName}</h3>
           {showEmail && <p className="user-email">{user.email}</p>}
-          {/* Bỏ phần user-stats */}
         </div>
       </Link>
 

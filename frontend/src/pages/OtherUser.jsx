@@ -20,11 +20,11 @@ export default function OtherUser() {
         setUser(res.data.result);
       } catch (err) {
         if (err.response?.status === 401) {
-          alert("Phiên đăng nhập hết hạn");
+          alert("Login session expired.");
           navigate("/");
           return;
         }
-        setError("Không tải được thông tin người dùng");
+        setError("Unable to load user information.");
       } finally {
         setLoading(false);
       }
@@ -33,7 +33,7 @@ export default function OtherUser() {
     loadUser();
   }, [id, navigate]);
 
-  if (loading) return <div className="loading">Đang tải...</div>;
+  if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">{error}</div>;
   if (!user) return null;
 
@@ -50,8 +50,6 @@ export default function OtherUser() {
 
       <UserBioMenu
         bio={user.bio || "No bio available"}
-        // onFollowChange nếu bạn muốn xử lý gì thêm khi follow/unfollow
-        // onFollowChange={(userId, isFollowing) => console.log(userId, isFollowing)}
       />
     </div>
   );

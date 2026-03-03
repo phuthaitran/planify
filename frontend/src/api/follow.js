@@ -2,8 +2,8 @@
 import httpAuth from "./httpAuth";
 import { authApi } from "./auth";
 
-// Cache toàn cục (trong session): Set chứa các user ID mà current user đang follow
-let followingCache = null; // null = chưa load, Set = đã load
+// Global cache (in session): A set containing the user IDs that the current user is following
+let followingCache = null; // null = not loaded, Set = loaded
 
 export const followApi = {
   // POST /users/{targetId}/follow
@@ -35,18 +35,18 @@ export const followApi = {
     if (!targetId) return false;
     targetId = Number(targetId);
 
-    // Cache đã load → trả về ngay (nhanh nhất)
+    // loaded cache -> return immediately
     if (followingCache instanceof Set) {
       return followingCache.has(targetId);
     }
 
-    // Cache chưa có → load followings của mình
+    // Cache not available → load users followings
     try {
       const meRes = await authApi.me();
       const myId = meRes?.data?.result?.id;
 
       if (!myId) {
-        console.warn("Không lấy được myId");
+        console.warn("Unable to retrieve myID");
         return false;
       }
 
@@ -59,18 +59,18 @@ export const followApi = {
 
       return followingCache.has(targetId);
     } catch (err) {
-      console.error("Lỗi khi load followings để check:", err);
+      console.error("Error loading followings for checking:", err);
       return false;
     }
   },
 
-  // Giữ lại cho tương thích (nếu code cũ vẫn gọi)
+  // Keep this for compatibility reasons
   isFollowing: async (targetId) => {
-    console.warn("isFollowing deprecated → dùng getIsFollowing thay thế");
+    console.warn("isFollowing deprecated → use getIsFollowing instead");
     return followApi.getIsFollowing(targetId);
   },
 
-  // Gọi khi logout để clear cache
+  // Call this when logging out to clear the cache
   clearFollowingCache: () => {
     followingCache = null;
   },

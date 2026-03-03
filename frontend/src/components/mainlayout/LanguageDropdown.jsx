@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import './LanguageDropdown.css'; // We'll create this next
+import './LanguageDropdown.css';
 
 const LanguageDropdown = ({ isOpen, onClose, containerRef, currentLanguage, onChangeLanguage }) => {
   const dropdownRef = useRef(null);

@@ -12,17 +12,17 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "tag_plan") // Tên bảng trung gian trong DB của bạn
+@Table(name = "tag_plan")
 public class TagPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "plan_id") // Cột plan_id trong DB
+    @JoinColumn(name = "plan_id")
     private Plan plan;
 
     @ManyToOne
-    @JoinColumn(name = "tag_id") // Cột tag_id trong DB
+    @JoinColumn(name = "tag_id")
     private Tag tag;
 }

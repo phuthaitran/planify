@@ -1,6 +1,3 @@
-/* Thêm vào file ViewMyPlan.css của bạn */
-
-/* Subtask item layout - đẩy dropdown sang phải */
 .viewplan-container .subtask-item {
   display: flex;
   align-items: center;
@@ -15,13 +12,11 @@
   line-height: 1.5;
 }
 
-/* Đảm bảo dropdown luôn ở bên phải và không bị ảnh hưởng */
 .viewplan-container .subtask-item> :last-child {
   flex-shrink: 0;
   margin-left: auto;
 }
 
-/* CSS cô lập cho StatusDropdown component */
 .viewplan-container .status-dropdown-wrapper {
   position: relative;
   display: inline-block;
@@ -53,7 +48,6 @@
   outline-offset: 2px;
 }
 
-/* Màu sắc cho từng status */
 .viewplan-container .status-dropdown-trigger.status-done {
   background: #dcfce7;
   color: #16a34a;
@@ -124,7 +118,7 @@
   background: #eff6ff;
 }
 
-/* Icon cho dropdown */
+/* Dropdown icon */
 .viewplan-container .dropdown-arrow {
   display: inline-block;
   width: 0;
@@ -135,7 +129,7 @@
   margin-left: 2px;
 }
 
-/* Status icon trong option */
+/* Status icon in option */
 .viewplan-container .status-icon {
   width: 16px;
   height: 16px;

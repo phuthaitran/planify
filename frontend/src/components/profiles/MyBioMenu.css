@@ -73,10 +73,16 @@
 
 .my-content-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, max-content));
+  justify-content: start;        
+  gap: 20px 24px;                  
 }
 
+.my-content-grid.public-plans-grid {
+  grid-template-columns: repeat(auto-fit, 260px);
+  justify-content: start;
+  gap: 20px 24px;
+}
 
 
 

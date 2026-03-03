@@ -51,8 +51,6 @@ public class AuthenticationController {
         );
     }
 
-
-    //Check token đúng hay sai thì mới cho đăng nhập
     @PostMapping("/introspect")
     ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
         return ApiResponse.<IntrospectResponse>builder()

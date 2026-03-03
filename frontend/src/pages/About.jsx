@@ -1,4 +1,5 @@
-import './AboutUs.css';
+import React from 'react';
+import './About.css';
 
 const About = () => {
   return (
@@ -22,7 +23,7 @@ const About = () => {
                 but how hard it is to actually stick to it.
               </p>
               <p>
-                As students ourselves, we've experienced the initial excitement of setting ambitious learning goals — only
+                As students ourselves, we've experienced the initial excitement of setting ambitious learning goals - only
                 to watch motivation fade without proper tracking, reminders, or feedback. We realized that self-learning
                 in today's fast-changing world requires more than just willpower; it needs structure, accountability,
                 and a supportive community.
@@ -30,13 +31,13 @@ const About = () => {
               <p>
                 That's why we created <strong>Planify</strong> — a blend of "Plan" and "Simplify."
               </p>
+              <p className="mt-4">
+                <em>Despite just being a small project made by a group of students, we hope that Planify will be helpful to many young people trying to learn on their own every day.</em>
+              </p>
             </div>
-            <div className="story-image text-center">
-              <img
-                src="https://via.placeholder.com/500x400?text=Planify+Team"
-                alt="Planify Team"
-                className="image-rounded shadow"
-              />
+            <div className="story-placeholder text-center">
+              <div className="placeholder-emoji">📚✨</div>
+              <p className="placeholder-text">A tool built with passion by students, for students</p>
             </div>
           </div>
         </div>
@@ -99,7 +100,9 @@ const About = () => {
             Planify is proudly developed by a passionate team of students as part of <strong>Group Project B3</strong>,<br />
             using modern technologies: React.js, Spring Boot, MySQL, and Agile methodology.
           </p>
-
+          <p className="mt-4 lead">
+            This is our learning project — thank you for your support!
+          </p>
         </div>
       </section>
     </div>

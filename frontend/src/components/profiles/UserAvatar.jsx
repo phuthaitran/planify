@@ -1,5 +1,5 @@
 import { useState } from "react";
-import FollowButton from "../users/FollowButton"; // điều chỉnh path cho đúng
+import FollowButton from "../users/FollowButton";
 import "./UserAvatar.css";
 
 export default function UserAvatar({
@@ -46,8 +46,6 @@ export default function UserAvatar({
             />
           )}
         </div>
-
-        {/* Đã xóa toàn bộ phần stats */}
       </div>
     </div>
   );

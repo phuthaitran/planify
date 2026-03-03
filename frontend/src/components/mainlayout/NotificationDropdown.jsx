@@ -50,7 +50,7 @@ const NotificationDropdown = ({
         // 2. navigate
         if (notif.link) {
             navigate(notif.link);
-            onClose(); // đóng dropdown
+            onClose(); // close dropdown
         }
     };
 

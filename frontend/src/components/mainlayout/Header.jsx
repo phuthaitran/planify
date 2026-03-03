@@ -84,8 +84,8 @@ export default function Header({ notifications = [], setNotifications }) {
                   isOpen={openPopup === "notif"}
                   onClose={() => setOpenPopup(null)}
                   containerRef={notifRef}
-                  notifications={notifications}        // ✅ THÊM
-                  setNotifications={setNotifications}  // ✅ THÊM
+                  notifications={notifications}        
+                  setNotifications={setNotifications}  
               />
           </div>
 

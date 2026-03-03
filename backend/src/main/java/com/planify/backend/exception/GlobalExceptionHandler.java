@@ -12,7 +12,7 @@ import org.springframework.web.context.request.async.AsyncRequestNotUsableExcept
 
 import java.io.IOException;
 
-@ControllerAdvice //Khai báo class này để khi có một Exception xảy ra thì Class này sẽ chịu trách nhiệm xử lý
+@ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
@@ -23,9 +23,7 @@ public class GlobalExceptionHandler {
             AsyncRequestNotUsableException.class
     })
     public void ignoreSseException(Exception ex) {
-        // ✅ SSE client disconnect → KHÔNG PHẢI ERROR
-        // ❌ KHÔNG log error
-        // ❌ KHÔNG trả ApiResponse
+
     }
 
     @ExceptionHandler(value = RuntimeException.class)
@@ -36,7 +34,7 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
         apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
 
-        return ResponseEntity.badRequest().body(apiResponse);//Đây nội dung là trả về lỗi từ người dùng gây ra (lỗi 400)
+        return ResponseEntity.badRequest().body(apiResponse);
     }
 
     @ExceptionHandler(value = AuthenticationException.class)

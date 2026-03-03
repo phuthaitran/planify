@@ -8,7 +8,7 @@ const Task = ({ task, taskNumber, updateTask, deleteTask }) => {
   }, [task, updateTask]);
 
   const handleSubtasksChange = useCallback((newSubtasks) => {
-    // Tính duration mới = tổng của tất cả subtasks
+    // Calculate the new duration as the sum of all subtasks
     const totalDuration = newSubtasks.reduce(
       (sum, sub) => sum + Number(sub.duration || 0),
       0
@@ -17,11 +17,10 @@ const Task = ({ task, taskNumber, updateTask, deleteTask }) => {
     updateTask({
       ...task,
       subtasks: newSubtasks,
-      duration: totalDuration,           // tự động cập nhật
+      duration: totalDuration,           // updates automatically
     });
   }, [task, updateTask]);
 
-  // Hoặc dùng useMemo nếu muốn hiển thị mà không lưu vào state
   const computedDuration = useMemo(() => {
     if (!task.subtasks || !Array.isArray(task.subtasks)) return 0;
     return task.subtasks.reduce((sum, sub) => sum + Number(sub?.duration || 0), 0);
@@ -47,13 +46,13 @@ const Task = ({ task, taskNumber, updateTask, deleteTask }) => {
           />
         </div>
 
-        {/* Duration của task: hiển thị tổng, có thể read-only */}
+        {/* Task's duration: shows total */}
         <div className="task-field duration-field">
           <label>Duration</label>
           <div className="duration-input">
             <input
               type="number"
-              value={computedDuration}           // hoặc task.duration nếu bạn lưu
+              value={computedDuration}  
               readOnly
               disabled
             />

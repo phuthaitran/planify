@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // ← Thêm để dùng navigate
+import { useNavigate } from "react-router-dom";
 import { usersApi } from "../api/user";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -75,7 +75,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 
 /* ================= MAIN COMPONENT ================= */
 export default function Admin() {
-  const navigate = useNavigate(); // ← Thêm để điều hướng
+  const navigate = useNavigate(); 
 
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
@@ -123,7 +123,7 @@ export default function Admin() {
       setUsers(mappedUsers);
     } catch (err) {
       console.error("Fetch users error:", err);
-      alert("Không thể tải danh sách user");
+      alert("Unable to load user list");
     } finally {
       setLoadingUsers(false);
     }
@@ -151,7 +151,7 @@ export default function Admin() {
 
   const handleSubmit = async () => {
     if (!form.username || !form.email || (!form.password && modalMode === "add")) {
-      alert("Vui lòng điền đầy đủ thông tin");
+      alert("Please fill in all the information");
       return;
     }
 

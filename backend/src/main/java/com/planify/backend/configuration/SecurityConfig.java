@@ -29,7 +29,6 @@ public class SecurityConfig {
 
     private final CustomJwtDecoder customJwtDecoder;
 
-    // Sử dụng constructor injection với @Lazy để tránh circular dependency
     public SecurityConfig(@Lazy CustomJwtDecoder customJwtDecoder) {
         this.customJwtDecoder = customJwtDecoder;
     }
@@ -63,23 +62,18 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
         httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(AbstractHttpConfigurer::disable)//Cái này nó sẽ bảo vệ app của bạn khỏi attach 2 , ở đây mình không cần nên mình tắt nó đi
+                .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers("/planify/notifications/stream").authenticated()
                         .anyRequest().authenticated());
 
-        //Đến phần security của phương thức GET token , chúng ta sẽ cấu hình rằng : Nếu User mà có một token hợp lệ thì sẽ Get được
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2
-//                        // lấy JWT từ cookie
-//                        .bearerTokenResolver(bearerTokenResolver())
-
-                        // decode + verify JWT
                         .jwt(jwtConfigurer ->
                                 jwtConfigurer.decoder(customJwtDecoder)
-                        ) //decoder : Chuyển đổi chuỗi JWT thành object để đọc thông tin bên trong:)
+                        )
         );
 
 
@@ -92,7 +86,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(10);
     }
 
-    // Tạo CorsConfigurationSource để sử dụng trong SecurityFilterChain
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();

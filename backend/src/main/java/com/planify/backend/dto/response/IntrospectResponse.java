@@ -9,7 +9,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-//Class này để kiểm tra xem token đăng nhập đúng hay không
 public class IntrospectResponse {
     boolean valid;
 }

@@ -11,7 +11,7 @@
   overflow: hidden;
 }
 
-/* 🔑 MAIN CONTAINER */
+/* MAIN CONTAINER */
 .layout-content {
   flex: 1;
   overflow: auto;

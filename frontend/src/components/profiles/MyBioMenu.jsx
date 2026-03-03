@@ -12,12 +12,12 @@ export default function MyBioMenu({ bio, userId }) {
 
   const [followers, setFollowers] = useState([]);
   const [followings, setFollowings] = useState([]);
-  const [loadingFollow, setLoadingFollow] = useState(true); // riêng cho follow data
+  const [loadingFollow, setLoadingFollow] = useState(true); 
   const [errorFollow, setErrorFollow] = useState(null);
 
   const { data: plans = [], isLoading: isLoadingPlans } = usePlans();
 
-  // Pre-fetch followers & followings NGAY KHI MOUNT (không phụ thuộc tab)
+  // Pre-fetch followers & followings upon mounting
   useEffect(() => {
     if (!userId) return;
 
@@ -33,17 +33,15 @@ export default function MyBioMenu({ bio, userId }) {
         setFollowers(followersRes?.data?.result || []);
         setFollowings(followingsRes?.data?.result || []);
       } catch (err) {
-        console.error("Lỗi preload follow data:", err);
-        setErrorFollow("Không tải được dữ liệu follow");
+        console.error("Preload follow data error:", err);
+        setErrorFollow("Unable to load follow data");
       } finally {
         setLoadingFollow(false);
       }
     };
 
     fetchFollowData();
-  }, [userId]); // Chỉ chạy 1 lần khi có userId
-
-  // Chỉ fetch lại nếu cần (ví dụ sau khi follow/unfollow thay đổi lớn), nhưng thường không cần
+  }, [userId]); 
 
   const publicPlans = useMemo(() => {
     if (isLoadingPlans || !plans?.length) return [];
@@ -58,7 +56,7 @@ export default function MyBioMenu({ bio, userId }) {
       if (activeTab === "followers") {
         setFollowers((prev) =>
           newIsFollowing
-            ? prev // follow lại → thường không xảy ra
+            ? prev 
             : prev.filter((u) => u.id !== targetUserId)
         );
       } else if (activeTab === "followings") {
@@ -68,14 +66,13 @@ export default function MyBioMenu({ bio, userId }) {
             : prev.filter((u) => u.id !== targetUserId)
         );
       }
-      // Nếu muốn cập nhật count ngay lập tức ở tab khác → có thể set lại state tương ứng
     },
     [activeTab]
   );
 
   const renderContent = useMemo(() => {
     if (loadingFollow && (activeTab === "followers" || activeTab === "followings")) {
-      return <div className="my-empty-state">Đang tải...</div>;
+      return <div className="my-empty-state">Loading...</div>;
     }
 
     if (errorFollow && (activeTab === "followers" || activeTab === "followings")) {
@@ -84,13 +81,13 @@ export default function MyBioMenu({ bio, userId }) {
 
     switch (activeTab) {
       case "public-plans":
-        if (isLoadingPlans) return <div className="my-empty-state">Đang tải kế hoạch...</div>;
+        if (isLoadingPlans) return <div className="my-empty-state">Loading plans...</div>;
 
         if (publicPlans.length === 0) {
           return (
             <div className="my-empty-state">
-              <p>Chưa có kế hoạch công khai nào</p>
-              <span>Tạo và công bố kế hoạch để hiển thị tại đây</span>
+              <p>No public plans here</p>
+              <span>Create a public plan to display here</span>
             </div>
           );
         }
@@ -107,8 +104,8 @@ export default function MyBioMenu({ bio, userId }) {
         if (followings.length === 0) {
           return (
             <div className="my-empty-state">
-              <p>Chưa theo dõi ai</p>
-              <span>Khám phá và theo dõi người dùng khác</span>
+              <p>No followings</p>
+              <span>Start exploring and follow users to see them here</span>
             </div>
           );
         }
@@ -128,8 +125,8 @@ export default function MyBioMenu({ bio, userId }) {
         if (followers.length === 0) {
           return (
             <div className="my-empty-state">
-              <p>Chưa có người theo dõi</p>
-              <span>Chia sẻ profile để có thêm follower</span>
+              <p>No followers</p>
+              <span>Share your profile to gain more followers</span>
             </div>
           );
         }

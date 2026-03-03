@@ -11,15 +11,12 @@
   overflow: hidden;
   z-index: 1000;
   user-select: none;
-
-  /* Đổi tên animation */
   opacity: 0;
   transform: translateY(-6px);
   animation: notificationSlide 0.18s ease-out forwards;
   transform-origin: top right;
 }
 
-/* Đổi tên keyframes */
 @keyframes notificationSlide {
   from {
     opacity: 0;
@@ -31,7 +28,6 @@
   }
 }
 
-/* Phần còn lại giữ nguyên */
 .notification-header {
   display: flex;
   justify-content: space-between;

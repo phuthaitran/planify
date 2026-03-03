@@ -20,17 +20,14 @@ import java.util.Optional;
 @Configuration
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
-@Slf4j //Dùng để log
-//Class này nó sẽ tự tạo cho mình một ADMIN khi Web được khởi chạy
+@Slf4j
 public class ApplicationInitConfig {
 
     PasswordEncoder passwordEncoder;
 
     @Bean
-    //Cái hàm này nó sẽ được khởi chạy mỗi khi ứng dụng của chúng ta start
     ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository, UserRoleRepository userRoleRepository){
         return args -> {
-            // Đảm bảo luôn tồn tại cả 2 role ADMIN và USER
             roleRepository.findByName(RoleName.ADMIN)
                     .or(() -> {
                         log.info("Role ADMIN not found, creating default ADMIN role");

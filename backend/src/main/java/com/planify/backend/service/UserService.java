@@ -50,10 +50,9 @@ public class UserService {
         //Hash Password
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        // Lưu lần 1: để JPA fill created_date, updated_date, id,...
         User savedUser = userRepository.save(user);
 
-        //Xử lý Role
+        // Handle roles
         Role roleUser = roleRepository.findByName(RoleName.USER)
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
@@ -102,7 +101,7 @@ public class UserService {
     }
 
     public UserResponse updateUser(Integer id, UserUpdateRequest request ){
-        // Lấy thông tin user hiện tại từ SecurityContext
+        // Take current user info from SecurityContext
         var context = SecurityContextHolder.getContext();
         var authentication = context.getAuthentication();
 
@@ -112,17 +111,17 @@ public class UserService {
 
         String currentUsername = authentication.getName();
 
-        // Lấy user cần update từ database
+        // Take the updated user from the database
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        // Kiểm tra quyền: phải là chính user đó HOẶC là ADMIN
+        // Check authorization: either that user or the admins
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("SCOPE_ADMIN"));
 
         boolean isOwner = user.getUsername().equals(currentUsername);
 
-        // Nếu không phải admin và không phải chính chủ thì từ chối
+        // Otherwise decline
         if (!isAdmin && !isOwner) {
             log.warn("User {} attempted to update user {} without permission", currentUsername, id);
             throw new AppException(ErrorCode.UNAUTHORIZED);
@@ -132,7 +131,6 @@ public class UserService {
 
         userMapper.updateUser(user , request);
 
-        // Chỉ update password nếu có trong request
         if(request.getPassword() != null && !request.getPassword().isEmpty()){
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
@@ -142,14 +140,12 @@ public class UserService {
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @Transactional
     public void deleteUser(Integer id){
-        // Kiểm tra user có tồn tại không
+        // Check if the user exists
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        // Xóa các UserRole liên quan (có thể đã có cascade, nhưng để chắc chắn)
         userRoleRepository.deleteAll(user.getUserRoles());
 
-        // Cuối cùng mới xóa user
         userRepository.deleteById(id);
 
         log.info("User with id {} has been deleted", id);

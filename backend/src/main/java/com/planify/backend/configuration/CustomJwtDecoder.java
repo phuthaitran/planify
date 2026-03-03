@@ -20,7 +20,7 @@ import java.util.Objects;
 @Component
 public class CustomJwtDecoder implements JwtDecoder {
     @Value("${jwt.signerKey}")
-    private String signerKey; //Sử dụng cái signerKey ở trong file application.yaml
+    private String signerKey; //Using signerKey in application.yaml
 
     @Autowired
     @Lazy
@@ -42,14 +42,14 @@ public class CustomJwtDecoder implements JwtDecoder {
             throw new JwtException(e.getMessage());
         }
 
-        //Thứ 2 : Nếu token còn hiệu lực thì mình uỷ quyền cho NimbusJwtDecoder này để nó thực hiện xác thực cái token
-        // và nó sẽ build cái jwt này theo cái yêu cầu của Spring Security
+        // If the token is valid, authorize imbusJwtDecoder to verify the token and build the JWT according to
+        // Spring Security's requirements.
         if(Objects.isNull(nimbusJwtDecoder)){
             SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes() , "HS512");
             nimbusJwtDecoder = NimbusJwtDecoder
                     .withSecretKey(secretKeySpec)
                     .macAlgorithm(MacAlgorithm.HS512)
-                    .build(); //Chuyển đổi chuỗi JWT thành object để đọc thông tin bên trong:
+                    .build();
         }
 
         return nimbusJwtDecoder.decode(token);
