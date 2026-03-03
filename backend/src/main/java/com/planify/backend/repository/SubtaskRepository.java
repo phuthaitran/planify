@@ -53,6 +53,7 @@ public interface SubtaskRepository extends JpaRepository<@NonNull Subtask, @NonN
         WHERE st.scheduledDate > :from
           AND st.scheduledDate <= :to
           AND st.scheduledSent = false
+          AND st.status IN ('incompleted')
     """)
         List<Subtask> findSubTasksToRemind(
                 @Param("from") LocalDateTime from,

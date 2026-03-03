@@ -2,7 +2,6 @@
 import httpAuth from "./httpAuth";
 import { authApi } from "./auth";
 
-// Global cache (in session): A set containing the user IDs that the current user is following
 let followingCache = null; // null = not loaded, Set = loaded
 
 export const followApi = {
@@ -30,12 +29,12 @@ export const followApi = {
   // GET /users/{id}/followings
   getFollowings: (id) => httpAuth.get(`/users/${id}/followings`),
 
-  // Ưu tiên dùng hàm này để check trạng thái follow (dùng cache nếu có)
+  // check follow
   getIsFollowing: async (targetId) => {
     if (!targetId) return false;
     targetId = Number(targetId);
 
-    // loaded cache -> return immediately
+    // loaded cache
     if (followingCache instanceof Set) {
       return followingCache.has(targetId);
     }
@@ -64,13 +63,12 @@ export const followApi = {
     }
   },
 
-  // Keep this for compatibility reasons
   isFollowing: async (targetId) => {
     console.warn("isFollowing deprecated → use getIsFollowing instead");
     return followApi.getIsFollowing(targetId);
   },
 
-  // Call this when logging out to clear the cache
+  // clear the cache
   clearFollowingCache: () => {
     followingCache = null;
   },

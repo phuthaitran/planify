@@ -1,4 +1,4 @@
-/* ExplorePage.css - Container Query Optimized */
+/* ExplorePage.css */
 
 .explore-page {
   width: 100%;
@@ -32,48 +32,9 @@
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
 .loading-text {
   font-size: 16px;
   font-weight: 500;
   color: #64748b;
   margin: 0;
-}
-
-/* Container Query Responsive */
-@container main (max-width: 768px) {
-  .explore-page {
-    padding: 16px;
-  }
-
-  .spinner {
-    width: 40px;
-    height: 40px;
-    border-width: 3px;
-  }
-
-  .loading-text {
-    font-size: 14px;
-  }
-}
-
-@container main (max-width: 480px) {
-  .explore-page {
-    padding: 12px;
-  }
-}
-
-/* Print Styles */
-@media print {
-  .explore-page {
-    background: white;
-    padding: 20px;
-  }
-
-  .spinner-wrapper {
-    display: none;
-  }
 }

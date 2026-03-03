@@ -152,7 +152,7 @@ public class AuthenticationService {
                     .expiryTime(expiryTime)
                     .build();
 
-            //Lưu vào bảng InvalidatedToken trong database
+            // Save to InvalidatedToken in the database
             invalidatedTokenRepository.save(invalidatedToken);
         }catch(AppException e){
             log.info("Token already expired");

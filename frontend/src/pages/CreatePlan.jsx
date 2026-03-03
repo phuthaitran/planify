@@ -1,7 +1,10 @@
 import React, { useState, useCallback } from "react";
 import PlanInfo from "../components/createplan/PlanInfo";
 import PreviewModal from "../components/createplan/Preview";
+
+//api
 import { createPlan } from "../api/plan";
+import { createStage } from "../api/stage.js";
 import { createTask } from "../api/task";
 import { createSubtask } from "../api/subtask";
 import { uploadImage } from "../api/image";
@@ -9,7 +12,7 @@ import { setTagsForPlan } from "../api/tag";
 import { useNavigate } from "react-router-dom";
 
 import "./CreatePlan.css";
-import { createStage } from "../api/stage.js";
+
 
 const CreatePlan = () => {
   const [planData, setPlanData] = useState({
